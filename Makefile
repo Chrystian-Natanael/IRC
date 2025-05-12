@@ -2,8 +2,8 @@
 #                                   NAME                                         #
 #* ******************************************************************************#
 
-NAME = #! INSERT NAME
-FILE_EXTENSION = #! INSER FILE EXTENSION
+NAME = irc
+FILE_EXTENSION = .cpp
 .DEFAULT_GOAL := all
 .PHONY: all clean fclean re tests help
 .SILENT:
@@ -35,18 +35,18 @@ RESET = \033[0m
 #                                   PATH                                         #
 #* ******************************************************************************#
 
-SRCS_PATH = #! INSERT SRC PATH
-INCS_PATH = #! INSERT INCLUDES PATH
-BUILD_DIR := #! INSERT BUILD PATH
-TARGET_DIR = #! INSERT BIN PATH
-GTEST_DIR = tests/googletest #! VERIFY PATH OF TESTER
+SRCS_PATH = src/
+INCS_PATH = include/
+BUILD_DIR := build/
+TARGET_DIR = bin/
+GTEST_DIR = tests/googletest
 
 #* ******************************************************************************#
 #                                   FILES                                        #
 #* ******************************************************************************#
 
 GTEST_REPO = git@github.com:google/googletest.git
-SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION))
+SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION)) # !Do not use wildcard (fix in future, obviously)
 OBJS = $(SRCS:%$(FILE_EXTENSION)=$(BUILD_DIR)%.o)
 DEPS = $(OBJS:.o=.d)
 
@@ -57,15 +57,15 @@ DEPS = $(OBJS:.o=.d)
 MKDIR := mkdir -p
 RM := rm -rf
 SLEEP = sleep 0.1
-COMP = c++ #! INSERT C OR CPP COMPILER
+COMP = c++
 SHELL := /bin/bash
 
 #* ******************************************************************************#
 #                                 FLAGS E COMP                                   #
 #* ******************************************************************************#
 
-CFLAGS = -std=c++98 -Wall -Wextra -Werror #! INSERT C OR CPP FLAGS
-DFLAGS = -std=c++98 -Wall -Wextra -Werror -g3 -fsanitize=address #! INSERT C OR CPP FLAGS
+CFLAGS = -std=c++98 -Wall -Wextra -Werror
+DFLAGS = -std=c++98 -Wall -Wextra -Werror -g3
 LDLIBS = -ldl -lglfw -pthread
 CPPFLAGS = $(addprefix -I,$(INCS_PATH)) -MMD -MP
 COMP_OBJ = $(COMP) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
@@ -102,7 +102,6 @@ define help
 	echo "${DARK_BLUE}re:${RESET} ${LIGHT_GRAY}Rebuild the program${RESET}"
 	echo "${DARK_BLUE}clean:${RESET} ${LIGHT_GRAY}Remove the object files${RESET}"
 	echo "${DARK_BLUE}fclean:${RESET} ${LIGHT_GRAY}Remove the program and the object files${RESET}"
-	echo "${DARK_BLUE}debug:${RESET} ${LIGHT_GRAY}Build the program with debugging information${RESET}"
 	echo "${DARK_BLUE}run:${RESET} ${LIGHT_GRAY}run the program without arguments${RESET}"
 	echo "${DARK_BLUE}tests:${RESET} ${LIGHT_GRAY}build and run tests from test/ (Need format gtests)${RESET}"
 endef
@@ -140,5 +139,7 @@ run:
 	./bin/$(NAME)
 help:
 	$(call help)
+
+both: all bonus
 
 -include $(DEPS)

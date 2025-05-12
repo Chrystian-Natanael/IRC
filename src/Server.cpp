@@ -25,7 +25,7 @@ Server& Server::operator=(const Server& src) {
 }
 
 void	Server::SetNonBlocking(int fd) {
-
+	(void)fd; // ! compile with error unused parameter 'fd'
 }
 
 void	Server::InitSocket() {
@@ -60,7 +60,7 @@ void	Server::AcceptNewClient() {
 }
 
 void	Server::ReceiveData(int fd) {
-
+	(void)fd; // ! compile with error unused parameter 'fd'
 }
 
 void	Server::ServerLoop() {
@@ -68,7 +68,7 @@ void	Server::ServerLoop() {
 
 		this->Poll();
 
-		for (int i = 0; i < fds.size(); i++) {
+		for (size_t i = 0; i < fds.size(); i++) {
 			if (fds[i].revents & POLLIN) {
 				if (fds[i].fd == this->server_socket_fd)
 					this->AcceptNewClient();
