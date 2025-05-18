@@ -44,7 +44,7 @@ void Server::ListenSocket() {
 	if (listen(this->server_socket_fd, 10) < 0)
 		throw std::runtime_error("Listen failed");
 
-	this->SetNonBlocking(this->server_socket_fd);
+	this->SetNonBlocking(this->server_socket_fd); // Precisa ser chamado antes de adicionar o fd no poll. Implementar!
 
 	struct pollfd server_poll_fd;
 	server_poll_fd.fd = this->server_socket_fd;
