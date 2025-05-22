@@ -52,7 +52,24 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
-
+	//Essa verificação se o vetor de fds é válido será feita aqui mesmo.
+	//Definir tratamento de erros aqui ou em uma função auxiliar?
+	if (!this->fds.empty()) {
+		if (poll(&this->fds[0], this->fds.size(), -1) == -1) {
+			switch (errno) {
+				case EINTR: {
+					std::cerr << "Interrupted poll by signal." << std::endl;
+					return;
+				}
+				case ENOMEM:
+					throw std::runtime_error("Insufficient memory.");
+				default: {
+					perror("Unknown error occurred.");
+					throw std::runtime_error("Unknown error.");
+				}
+			}
+		}
+	}
 }
 
 void	Server::AcceptNewClient() {
