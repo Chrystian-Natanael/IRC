@@ -10,8 +10,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <poll.h>
-#include <exception>
-#include <stdexcept>
+
 
 class Server {
 private:
