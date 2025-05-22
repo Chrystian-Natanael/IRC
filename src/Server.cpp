@@ -26,6 +26,16 @@ Server& Server::operator=(const Server& src) {
 
 void	Server::SetNonBlocking(int fd) {
 	(void)fd; // ! compile with error unused parameter 'fd'
+	if (fd < 0)
+	//Avaliar se vamos criar classes de exceção
+		throw std::invalid_argument("Invalid file descriptor");
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (flags == -1)
+		throw std::runtime_error("Fail in getting the flags");
+	flags = (flags | O_NONBLOCK);
+	fcntl(fd, F_SETFL, flags);
+	if (flags == -1)
+		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
 void	Server::InitSocket() {
