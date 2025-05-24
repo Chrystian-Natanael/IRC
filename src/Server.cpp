@@ -52,7 +52,11 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
+	if (!fds.empty())
+		return ;
 
+	if (poll(fds.data(), fds.size(), -1) == -1)
+		throw std::runtime_error("Error: failed to poll.");
 }
 
 void	Server::AcceptNewClient() {
