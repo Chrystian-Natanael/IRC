@@ -56,7 +56,28 @@ void	Server::Poll() {
 }
 
 void	Server::AcceptNewClient() {
+	Client cli;
+	struct sockaddr_in cliadd;
+	struct pollfd NewPoll;
+	socklen_t len = sizeof(cliadd);
 
+	int incofd = accept(SerSocketFd, (sockaddr *)&(cliadd), &len);
+	if (incofd == -1)
+		{std::cout << "accept() failed" << std::endl; return;}
+
+	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
+		{std::cout << RED << "fcntl() failed" << std::endl << RST; return;}
+
+	NewPoll.fd = incofd;
+	NewPoll.events = POLLIN;
+	NewPoll.revents = 0;
+
+	cli.SetFd(incofd);
+	cli.setIpAdd(inet_ntoa((cliadd.sin_addr)));
+	clients.push_back(cli);
+	fds.push_back(NewPoll);
+
+	std::cout << GREEN << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveData(int fd) {

@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <poll.h>
+#include "ColorsTerm.hpp"
 
 class Server {
 private:
