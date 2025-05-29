@@ -25,7 +25,14 @@ Server& Server::operator=(const Server& src) {
 }
 
 void	Server::SetNonBlocking(int fd) {
-	(void)fd; // ! compile with error unused parameter 'fd'
+	if (fd < 0)
+		throw std::invalid_argument("Invalid file descriptor");
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (flags == -1)
+		throw std::runtime_error("Fail in getting the flags");
+	flags = (flags | O_NONBLOCK);
+	if (fcntl(fd, F_SETFL, flags) == -1)
+		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
 void	Server::InitSocket() {
@@ -52,7 +59,11 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
+	if (!fds.empty())
+		return ;
 
+	if (poll(fds.data(), fds.size(), -1) == -1)
+		throw std::runtime_error("Error: failed to poll.");
 }
 
 void	Server::AcceptNewClient() {

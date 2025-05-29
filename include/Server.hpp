@@ -12,6 +12,8 @@
 #include <poll.h>
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include <stdexcept>
+#include <exception>
 
 class Server {
 private:
