@@ -61,7 +61,7 @@ void	Server::AcceptNewClient() {
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
 
-	int incofd = accept(SerSocketFd, (sockaddr *)&(cliadd), &len);
+	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		{std::cout << "accept() failed" << std::endl; return;}
 
@@ -77,7 +77,7 @@ void	Server::AcceptNewClient() {
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
 
-	std::cout << GREEN << "Client <" << incofd << "> Connected" << RST << std::endl;
+	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveData(int fd) {
