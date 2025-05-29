@@ -50,12 +50,13 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
-	std::vector<Client>& GetClients();
-	std::vector<struct pollfd>& GetPollFds();
+	
+	std::vector<Client>&		GetClients();
+	std::vector<struct pollfd>&	GetPollFds();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif

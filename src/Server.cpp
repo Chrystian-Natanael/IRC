@@ -16,7 +16,7 @@ Server::~Server() {
 		close(server_socket_fd);
 }
 
-Server& Server::operator=(const Server& src) {
+Server&	Server::operator=(const Server& src) {
 	if (this != &src) {
 		port = src.port;
 		server_socket_fd = src.server_socket_fd;
@@ -33,6 +33,22 @@ void	Server::SetNonBlocking(int fd) {
 	flags = (flags | O_NONBLOCK);
 	if (fcntl(fd, F_SETFL, flags) == -1)
 		throw std::runtime_error("Fail in setting nonblocking file");
+}
+
+int	Server::GetFd() const {
+	return (this->server_socket_fd);
+}
+
+int	Server::GetPort() const {
+	return (this->port);
+}
+
+std::vector<Client>&	Server::GetClients() {
+	return (this->clients);
+}
+
+std::vector<struct pollfd>&	Server::GetPollFds() {
+	return (this->fds);
 }
 
 void	Server::InitSocket() {
@@ -59,10 +75,10 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
-	if (!fds.empty())
+	if (!this->fds.empty())
 		return ;
 
-	if (poll(fds.data(), fds.size(), -1) == -1)
+	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
 		throw std::runtime_error("Error: failed to poll.");
 }
 
@@ -70,17 +86,17 @@ void	Server::AcceptNewClient() {
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
-	
-	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
+
+	int incofd = accept(server_socket_fd, (sockaddr *) &(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
-	
+
 	this->SetNonBlocking(incofd);
-	
+
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-	
+
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
@@ -109,25 +125,7 @@ void	Server::ServerLoop() {
 	}
 }
 
-
-// ! GETTERS
-int	Server::GetFd() const {
-	return server_socket_fd;
-}
-int	Server::GetPort() const {
-	return port;
-}
-std::vector<Client>& Server::GetClients() {
-	return clients;
-}
-std::vector<struct pollfd>& Server::GetPollFds() {
-	return fds;
-}
-
-
-
-
 // ! FOR TESTS
 void	Server::SetFd(int fd) {
-	server_socket_fd = fd;
+	this->server_socket_fd = fd;
 }
