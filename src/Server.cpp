@@ -67,24 +67,22 @@ void	Server::Poll() {
 }
 
 void	Server::AcceptNewClient() {
-	Client cli;
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
-
+	
 	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
-
+	
 	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("fcntl() failed");
-
+	
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-
-	cli.SetFd(incofd);
-	cli.setIpAdd(inet_ntoa((cliadd.sin_addr)));
+	
+	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
 
@@ -110,4 +108,27 @@ void	Server::ServerLoop() {
 		}
 
 	}
+}
+
+
+// ! GETTERS
+int	Server::GetFd() const {
+	return server_socket_fd;
+}
+int	Server::GetPort() const {
+	return port;
+}
+std::vector<Client>& Server::GetClients() {
+	return clients;
+}
+std::vector<struct pollfd>& Server::GetPollFds() {
+	return fds;
+}
+
+
+
+
+// ! FOR TESTS
+void	Server::SetFd(int fd) {
+	server_socket_fd = fd;
 }
