@@ -11,10 +11,11 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <poll.h>
-#include "ColorsTerm.hpp"
-#include "Client.hpp"
 #include <stdexcept>
 #include <exception>
+
+#include "ColorsTerm.hpp"
+#include "Client.hpp"
 
 class Server {
 private:
@@ -47,12 +48,13 @@ public:
 	void	AcceptNewClient();
 	void	ReceiveData(int fd);
 
+	int		GetFd() const;
+	int		GetPort() const;
+	std::vector<Client>& GetClients();
+	std::vector<struct pollfd>& GetPollFds();
+
 	// ! FOR TESTS
-	void	SetFd(int fd) { server_socket_fd = fd; }
-	int		GetFd() const { return server_socket_fd; }
-	int		GetPort() const { return port; }
-	std::vector<Client>& GetClients() { return clients; }
-	std::vector<struct pollfd>& GetPollFds() { return fds; }
+	void	SetFd(int fd);
 	
 };
 

@@ -17,18 +17,30 @@
 # include <string>
 
 class Client {
-public:
-    std::string _IP;
-	std::string _userName;
-	std::string _nickName;
-	std::string _realName;
-    int _fd;
+private:
 
+    std::string ip;
+	std::string user_name;
+	std::string nick_name;
+	std::string real_name;
+    int         fd;
     Client();
-    Client(std::string ip, std::string userName, std::string nickName);
+
+public:
+
+    Client(int fd, std::string ip);
     virtual ~Client();
-    void SetFd(int fd);
-    void setIpAdd(std::string const &ip_add);
+
+    int GetFd() const;
+    std::string GetIp() const;
+    std::string GetUserName() const;
+    std::string GetNickName() const;
+    std::string GetRealName() const;
+   
+    void SetUserName(const std::string& user);
+    void SetNickName(const std::string& nick);
+    void SetRealName(const std::string& real);
+
 };
 
 #endif
