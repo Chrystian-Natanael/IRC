@@ -26,7 +26,7 @@ private:
 	std::vector<struct pollfd>	fds;
 
 	// void	CloseFds();
-	// void	ClearClients(int fd);
+	void	ClearClients(int fd);
 
 	static void	SetNonBlocking(int fd);
 
@@ -55,7 +55,7 @@ public:
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif

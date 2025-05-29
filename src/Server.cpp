@@ -70,17 +70,17 @@ void	Server::AcceptNewClient() {
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
-	
+
 	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
-	
+
 	this->SetNonBlocking(incofd);
-	
+
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-	
+
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
@@ -109,6 +109,27 @@ void	Server::ServerLoop() {
 	}
 }
 
+
+void	Server::ClearClients(int fd)
+{
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i].GetFd() == fd)
+		{
+			clients.erase(clients.begin() +i);
+			break;
+		}
+	}
+	for (size_t i = 0; this->fds.size(); i++)
+	{
+		if (fds[i].fd == fd)
+		{
+			fds.erase(fds.begin() +i);
+			break;
+		}
+	}
+	close(fd);
+}
 
 // ! GETTERS
 int	Server::GetFd() const {
