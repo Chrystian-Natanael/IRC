@@ -11,13 +11,14 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include "ColorsTerm.hpp"
+#include "Client.hpp"
 
 class Server {
 private:
 	int							port;
 	int							server_socket_fd;
 	struct sockaddr				server_addr;
-	// std::vector<Client>			clients;
+	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
 
 	// void	CloseFds();
@@ -42,6 +43,14 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveData(int fd);
+
+	// ! FOR TESTS
+	void	SetFd(int fd) { server_socket_fd = fd; }
+	int		GetFd() const { return server_socket_fd; }
+	int		GetPort() const { return port; }
+	std::vector<Client>& GetClients() { return clients; }
+	std::vector<struct pollfd>& GetPollFds() { return fds; }
+	
 };
 
 #endif
