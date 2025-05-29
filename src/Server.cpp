@@ -75,8 +75,7 @@ void	Server::AcceptNewClient() {
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
 	
-	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("fcntl() failed");
+	this->SetNonBlocking(incofd);
 	
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
