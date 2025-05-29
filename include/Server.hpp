@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <fcntl.h>
 #include <vector>
 #include <iostream>
 #include <sys/socket.h>
