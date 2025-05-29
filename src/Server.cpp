@@ -63,10 +63,10 @@ void	Server::AcceptNewClient() {
 
 	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
-		{std::cout << "accept() failed" << std::endl; return;}
+		throw std::runtime_error("accept() failed");
 
 	if (fcntl(incofd, F_SETFL, O_NONBLOCK) == -1)
-		{std::cout << RED << "fcntl() failed" << std::endl << RST; return;}
+		throw std::runtime_error("fcntl() failed");
 
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
