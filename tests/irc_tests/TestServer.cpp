@@ -73,7 +73,7 @@ TEST(ServerAcceptNewClientTest, AcceptsClientSuccessfully) {
 
     // Verifica se o cliente foi adicionado
     ASSERT_FALSE(server.GetClients().empty());
-    EXPECT_GE(server.GetClients().back()._fd, 0);
+    EXPECT_GE(server.GetClients().back().GetFd(), 0);
 
     close(client_fd);
     close(listen_fd);
