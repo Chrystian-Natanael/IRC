@@ -42,10 +42,12 @@ void	Server::InitSocket() {
 }
 
 void	Server::SetSocketOptions() {
+	int opt_value = 1;
+
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(port);
-	if (setsockopt(server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+	if (setsockopt(server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
 		throw std::runtime_error("Error: setsockopt failed");
 }
 
