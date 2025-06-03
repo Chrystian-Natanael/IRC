@@ -21,7 +21,7 @@ class Server {
 private:
 	int							port;
 	int							server_socket_fd;
-	struct sockaddr				server_addr;
+	struct sockaddr_in			server_addr;
 	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
 
