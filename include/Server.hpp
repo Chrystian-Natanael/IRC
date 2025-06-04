@@ -13,6 +13,7 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <string.h>
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
@@ -26,7 +27,7 @@ private:
 	std::vector<struct pollfd>	fds;
 
 	// void	CloseFds();
-	// void	ClearClients(int fd);
+	void	ClearClients(int fd);
 
 	static void	SetNonBlocking(int fd);
 
@@ -55,7 +56,7 @@ public:
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif

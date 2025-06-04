@@ -70,17 +70,17 @@ void	Server::AcceptNewClient() {
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
-	
+
 	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
-	
+
 	this->SetNonBlocking(incofd);
-	
+
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-	
+
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
@@ -89,7 +89,16 @@ void	Server::AcceptNewClient() {
 }
 
 void	Server::ReceiveData(int fd) {
-	(void)fd; // ! compile with error unused parameter 'fd'
+	char buff[1024];
+	memset(buff,0, sizeof(buff));
+
+	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
+	if (bytes > 0)
+		buff[bytes] = '\0';
+	else if (bytes == 0)
+		ClearClients(fd); // Função está na branch feature-removing-client.
+	else
+		perror("recv"); // Analisar errno e ver o tipo de erro
 }
 
 void	Server::ServerLoop() {
