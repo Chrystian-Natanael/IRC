@@ -3,7 +3,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip)
-    : fd(fd), ip(ip) {}
+    : ip(ip), fd(fd) {}
 
 Client::~Client() {}
 
@@ -22,6 +22,11 @@ std::string Client::GetNickName() const {
 std::string Client::GetRealName() const {
     return real_name;
 }
+
+std::string Client::GetBufferMessage() const {
+    return buffer_message;
+}
+
 void Client::SetUserName(const std::string& user) {
     user_name = user;
 }
@@ -30,4 +35,22 @@ void Client::SetNickName(const std::string& nick) {
 }
 void Client::SetRealName(const std::string& real) {
     real_name = real;
+}
+
+void Client::SetBufferMessage(const std::string& message) {
+    buffer_message = message;
+}
+
+std::string Client::GetNextMessage() {
+    if (this->buffer_message.empty())
+        return("");
+    size_t pos = this->buffer_message.find("\r\n", 0);
+    if (pos == std::string::npos)
+    {
+        this->buffer_message.erase(0, this->buffer_message.size());
+        return ("");
+    }
+    std::string  result = this->buffer_message.substr(0, pos);
+    this->buffer_message.erase(0, pos + 2);
+    return (result);
 }
