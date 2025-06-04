@@ -36,6 +36,11 @@ private:
 	void		ListenSocket();
 	void		Poll();
 
+	// ! FOR TESTS
+	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
+	friend class ServerPollTest_ThrowsWhenPollFails_Test;
+	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
+
 public:
 	Server();
 	Server(int port);
@@ -55,7 +60,7 @@ public:
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif

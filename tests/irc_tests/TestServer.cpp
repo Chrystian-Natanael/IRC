@@ -130,3 +130,59 @@ TEST(ServerAcceptNewClientTest, AcceptThrowsOnFcntlError) {
 
     close(client_fd);
 }
+
+// Variáveis atômicas usadas para simular e controlar o comportamento da função poll() durante os testes.
+std::atomic<int> fake_poll_return_value{0};
+std::atomic<int> fake_poll_call_count{0};
+
+/**
+ * @resume  Implementa uma função fake para poll() que simula seu comportamento nos testes.
+ * @purpose Controlar e monitorar chamadas para poll() sem usar a função do sistema.
+ * @details Incrementa um contador atômico a cada chamada e retorna um valor controlado
+ *          via variável atômica, permitindo simular diferentes cenários no teste.
+ */
+extern "C" int poll(struct pollfd* fds, nfds_t nfds, int timeout) {
+    fake_poll_call_count++;
+    return fake_poll_return_value;
+}
+
+/**
+ * @resume: Testa se a função Poll retorna imediatamente quando o vetor fds está vazio.
+ * @function: Server::Poll()
+ * @expect: A função poll() não deve ser chamada nenhuma vez.
+ */
+TEST(ServerPollTest, ReturnIfFdsEmpty) {
+    Server server(5000);
+
+    server.GetPollFds().clear();
+    fake_poll_call_count = 0;
+
+    server.Poll();
+    EXPECT_EQ(fake_poll_call_count, 0);
+}
+
+/**
+ * @resume  Testa se a função Poll lança exceção quando a chamada a poll() falha.
+ * @function Server::Poll()
+ * @expect  Lança std::runtime_error ao receber retorno -1 da função poll().
+ */
+TEST(ServerPollTest, ThrowsWhenPollFails) {
+    Server server(5000);
+
+    fake_poll_return_value = -1;
+    server.fds.push_back({});
+    EXPECT_THROW(server.Poll(), std::runtime_error);
+}
+
+/**
+ * @resume  Testa se a função Poll não lança exceção quando poll() retorna sucesso.
+ * @function Server::Poll()
+ * @expect  A função Poll() executa sem lançar nenhuma exceção.
+ */
+TEST(ServerPollTest, DoesNotThrowIfPollSucceeds) {
+    Server server(5000);
+
+    fake_poll_return_value = 1;
+    server.fds.push_back({});
+    EXPECT_NO_THROW(server.Poll());
+}
