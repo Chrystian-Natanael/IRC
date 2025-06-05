@@ -3,10 +3,12 @@
 
 # include <iostream>
 # include <string>
-# include "../ACommands.hpp"
+# include "../ACommand.hpp"
 
 class CommandKick : public ACommand{
     public:
-}
+        CommandKick(const std::string &command, const std::string &args);
+        ~CommandKick();
+};
 
 #endif

@@ -3,10 +3,14 @@
 
 # include <iostream>
 # include <string>
-# include "../ACommands.hpp"
+# include "../ACommand.hpp"
 
-class CommandInvite : public ACommand{
-    public:
-}
+class CommandInvite : public ACommand {
+public:
+    CommandInvite(const std::string &command, const std::string &params);
+
+    virtual ~CommandInvite();
+
+};
 
 #endif
