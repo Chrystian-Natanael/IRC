@@ -36,7 +36,7 @@ RESET = \033[0m
 #* ******************************************************************************#
 
 SRCS_PATH = src/
-INCS_PATH = include/
+INCS_PATH = include/ include/Commands
 BUILD_DIR := build/
 TARGET_DIR = bin/
 GTEST_DIR = tests/googletest
@@ -46,7 +46,9 @@ GTEST_DIR = tests/googletest
 #* ******************************************************************************#
 
 GTEST_REPO = git@github.com:google/googletest.git
-SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION)) # !Do not use wildcard (fix in future, obviously)
+SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION)) $(wildcard $(SRCS_PATH)Commands/*$(FILE_EXTENSION))
+# !Do not use wildcard (fix in future, obviously)
+# SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION))
 OBJS = $(SRCS:%$(FILE_EXTENSION)=$(BUILD_DIR)%.o)
 DEPS = $(OBJS:.o=.d)
 
