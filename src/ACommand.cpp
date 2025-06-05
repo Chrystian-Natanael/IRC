@@ -76,12 +76,12 @@ _rawCommand(rawCommand), _args(args){}
 ACommand::~ACommand(){}
 
 // Forward declarations
-ACommand* MakeKick(const std::string& args);
-ACommand* MakeInvite(const std::string& args);
-ACommand* MakeTopic(const std::string& args);
-ACommand* MakeMode(const std::string& args);
+ACommand* MakeKick(const std::string& command, const std::string& args);
+ACommand* MakeInvite(const std::string& command, const std::string& args);
+ACommand* MakeTopic(const std::string& command, const std::string& args);
+ACommand* MakeMode(const std::string& command, const std::string& args);
 
-typedef ACommand* (*CommandConstructor)(const std::string&);
+typedef ACommand* (*CommandConstructor)(const std::string& command, const std::string& args);
 
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
@@ -100,7 +100,7 @@ ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::stri
     try {
         std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
         if (it != commandFactory.end())
-            return it->second(args);
+            return it->second(upperCommand, args);
         throw std::invalid_argument("Unknown command: " + rawCommand);  
     }
     catch (const std::exception& e) {
