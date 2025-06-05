@@ -1,35 +1,109 @@
-#include "ACommand.h"
+#include "ACommand.hpp"
+#include "../include/Commands/KICK.hpp"
+#include "../include/Commands/INVITE.hpp"
+#include "../include/Commands/TOPIC.hpp"
+#include "../include/Commands/MODE.hpp"
 
+//declaração
+//
+// static const CommandConstructor commandConstructors[4];
 
 // kick/r/n invite Carol/r/n
 
-// - Fazer a string ficar maiusculo OK
-// - verificar se o comando esta no inicio da string: Chrys e barbara
-// - Identificar o comando e chamar o construtor correto OK
+//makers
+ACommand* MakeKick(const std::string &command, const std::string& args) {
+    return new CommandKick(command, args);
+}
+
+ACommand* MakeInvite(const std::string &command, const std::string& args) {
+    return new CommandInvite(command, args);
+}
+
+ACommand* MakeTopic(const std::string &command, const std::string& args) {
+    return new CommandTopic(command, args);
+}
+
+ACommand* MakeMode(const std::string &command, const std::string& args) {
+    return new CommandMode(command, args);
+}
+
+// static const std::string validCommands[4] = { "KICK", "INVITE", "TOPIC", "MODE" };
+
+// typedef ACommand* (*CommandConstructor)(const std::string&);
+
+// static const CommandConstructor commandConstructors[4] = {
+
+//     ACommand* MakeKick(const std::string& args);
+//     ACommand* MakeInvite(const std::string& args);
+//     ACommand* MakeTopic(const std::string& args);
+//     ACommand* MakeMode(const std::string& args);
+
+//     // &MakeKick, &MakeInvite, &MakeTopic, &MakeMode
+
+// };
 
 
-static const std::array<std::string, 4> validCommands = { "KICK", "INVITE", "TOPIC", "MODE" };
-
-static const std::array<std::function<ACommand*(const std::string&, Client&)>, 4> commandConstructors = {
-    &MakeKick, &MakeInvite, &MakeTopic, &MakeMode
-};
 
 
-ACommand *ACommand::CreateCommand(const std::string& rawCommand) {
 
+// ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
+
+//     std::string upperCommand = rawCommand;
+
+//     std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+
+//     try {
+//         for (size_t i = 0; i < validCommands.size(); ++i) {
+//             if (upperCommand.find(validCommands[i]) == 0)
+//                 return commandConstructors[i](upperCommand, args); 
+//         }
+//         throw std::invalid_argument("Unknown command: " + rawCommand);  
+//     }
+//     catch (const std::exception& e) {
+//         return NULL;
+//     }
+// }   
+
+
+
+#include <map>
+#include <algorithm>
+#include "ACommand.hpp"
+
+ACommand::ACommand(const std::string &rawCommand, const std::string& args) : 
+_rawCommand(rawCommand), _args(args){} 
+
+ACommand::~ACommand(){}
+
+// Forward declarations
+ACommand* MakeKick(const std::string& args);
+ACommand* MakeInvite(const std::string& args);
+ACommand* MakeTopic(const std::string& args);
+ACommand* MakeMode(const std::string& args);
+
+typedef ACommand* (*CommandConstructor)(const std::string&);
+
+// O map não pode ser const, pois vamos popular depois
+static std::map<std::string, CommandConstructor> commandFactory;
+
+void InitCommandFactory() {
+    commandFactory["KICK"]   = &MakeKick;
+    commandFactory["INVITE"] = &MakeInvite;
+    commandFactory["TOPIC"]  = &MakeTopic;
+    commandFactory["MODE"]   = &MakeMode;
+}
+
+ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
     std::string upperCommand = rawCommand;
-
     std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
 
     try {
-        for (size_t i = 0; i < validCommands.size(); ++i) {
-            if (upperCommand.find(validCommands[i]) == 0)
-                return commandConstructors[i](upperCommand); 
-        }
+        std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
+        if (it != commandFactory.end())
+            return it->second(args);
         throw std::invalid_argument("Unknown command: " + rawCommand);  
     }
     catch (const std::exception& e) {
-        return nullptr;
+        return NULL;
     }
-}   
-
+}
