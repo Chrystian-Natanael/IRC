@@ -47,8 +47,18 @@ void	Server::BindSocket() {
 
 }
 
-void	Server::ListenSocket() {
+void Server::ListenSocket() {
+	if (listen(this->server_socket_fd, 10) < 0)
+		throw std::runtime_error("Listen failed");
 
+	this->SetNonBlocking(this->server_socket_fd); 
+
+	struct pollfd server_poll_fd;
+	server_poll_fd.fd = this->server_socket_fd;
+	server_poll_fd.events = POLLIN;
+	server_poll_fd.revents = 0;
+
+	this->fds.push_back(server_poll_fd);
 }
 
 void	Server::ServerInit() {
