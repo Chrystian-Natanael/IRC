@@ -6,10 +6,9 @@
 # include "../ACommand.hpp"
 
 class CommandInvite : public ACommand {
-public:
-    CommandInvite(const std::string &command, const std::string &params);
-
-    virtual ~CommandInvite();
+    public:
+        CommandInvite(const std::string &command, const std::string &params);
+        virtual ~CommandInvite();
 
 };
 

@@ -9,25 +9,21 @@ class ACommand {
 protected:
     std::string _rawCommand;
     std::string _args;
-    // ACommand();
-    // ACommand(const ACommand &other);
 
 public:
     explicit ACommand(const std::string& rawCommand, const std::string& args);
-    
     virtual ~ACommand();
-    //virtual void Execute() = 0;
-
-    //virtual bool ValidateCommand() const = 0;
-
-    //static const std::array<std::string, 4> validCommands;
-    // static const std::array<CommandConstructor, 4> commandConstructors;
 
     static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args);
 
 };
 
+
+void InitCommandFactory();
 # endif
 
 
-
+ACommand* MakeKick(const std::string& args);
+ACommand* MakeInvite(const std::string& args);
+ACommand* MakeTopic(const std::string& args);
+ACommand* MakeMode(const std::string& args);

@@ -6,11 +6,9 @@
 # include "../ACommand.hpp"
 
 class CommandTopic: public ACommand {
-public:
-    CommandTopic(const std::string &command, const std::string &params);
-    
-    virtual ~CommandTopic();
-
+    public:
+        CommandTopic(const std::string &command, const std::string &params);
+        virtual ~CommandTopic();
 };
 
 #endif

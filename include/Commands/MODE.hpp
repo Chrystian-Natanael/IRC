@@ -6,11 +6,9 @@
 # include "../ACommand.hpp"
 
 class CommandMode : public ACommand {
-public:
-    CommandMode(const std::string &command, const std::string &params);
-
-    virtual ~CommandMode();
-
+    public:
+        CommandMode(const std::string &command, const std::string &params);
+        virtual ~CommandMode();
 };
 
 #endif

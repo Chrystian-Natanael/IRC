@@ -8,7 +8,7 @@
 class CommandKick : public ACommand{
     public:
         CommandKick(const std::string &command, const std::string &args);
-        ~CommandKick();
+        virtual ~CommandKick();
 };
 
 #endif
