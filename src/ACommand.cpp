@@ -1,53 +1,51 @@
 #include <map>
 #include <algorithm>
 #include "ACommand.hpp"
-#include "../include/Commands/KICK.hpp"
-#include "../include/Commands/INVITE.hpp"
-#include "../include/Commands/TOPIC.hpp"
-#include "../include/Commands/MODE.hpp"
+#include "KICK.hpp"
+#include "INVITE.hpp"
+#include "TOPIC.hpp"
+#include "MODE.hpp"
 
 //Constructors
 
 ACommand::ACommand(const std::string &rawCommand, const std::string& args) : 
-_rawCommand(rawCommand), _args(args){} 
+_rawCommand(rawCommand), _args(args) {}
 
 ACommand::~ACommand(){}
-
-typedef ACommand* (*CommandConstructor)(const std::string& args);
 
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
 
 //makers
 ACommand* MakeKick(const std::string& args) {
-    return new CommandKick("KICK", args);
+	return new CommandKick("KICK", args);
 }
 
 ACommand* MakeInvite(const std::string& args) {
-    return new CommandInvite("INVITE", args);
+	return new CommandInvite("INVITE", args);
 }
 
 ACommand* MakeTopic(const std::string& args) {
-    return new CommandTopic("TOPIC", args);
+	return new CommandTopic("TOPIC", args);
 }
 
 ACommand* MakeMode(const std::string& args) {
-    return new CommandMode("MODE", args);
+	return new CommandMode("MODE", args);
 }
 
 void InitCommandFactory() {
-    commandFactory["KICK"]   = &MakeKick;
-    commandFactory["INVITE"] = &MakeInvite;
-    commandFactory["TOPIC"]  = &MakeTopic;
-    commandFactory["MODE"]   = &MakeMode;
+	commandFactory["KICK"]   = &MakeKick;
+	commandFactory["INVITE"] = &MakeInvite;
+	commandFactory["TOPIC"]  = &MakeTopic;
+	commandFactory["MODE"]   = &MakeMode;
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
-    std::string upperCommand = rawCommand;
-    std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
-    
-    std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
-    if (it != commandFactory.end())
-        return it->second(args);
-    throw std::invalid_argument("Unknown command: " + rawCommand);  
+	std::string upperCommand = rawCommand;
+	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+	
+	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
+	if (it != commandFactory.end())
+		return it->second(args);
+	throw std::invalid_argument("Unknown command: " + rawCommand);
 }

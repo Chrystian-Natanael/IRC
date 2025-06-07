@@ -3,12 +3,13 @@
 
 # include <iostream>
 # include <string>
-# include "../ACommand.hpp"
+# include "ACommand.hpp"
 
 class CommandMode : public ACommand {
     public:
         CommandMode(const std::string &command, const std::string &params);
-        virtual ~CommandMode();
+        ~CommandMode();
+        void Execute() const;
 };
 
 #endif
