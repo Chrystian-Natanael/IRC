@@ -18,12 +18,11 @@ public:
 
 };
 
-
 void InitCommandFactory();
-# endif
-
 
 ACommand* MakeKick(const std::string& args);
 ACommand* MakeInvite(const std::string& args);
 ACommand* MakeTopic(const std::string& args);
 ACommand* MakeMode(const std::string& args);
+
+# endif

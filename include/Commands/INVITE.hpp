@@ -9,7 +9,6 @@ class CommandInvite : public ACommand {
     public:
         CommandInvite(const std::string &command, const std::string &params);
         virtual ~CommandInvite();
-
 };
 
 #endif
