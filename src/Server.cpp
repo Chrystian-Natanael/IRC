@@ -12,14 +12,14 @@ Server::Server(const Server& src) :
 	server_socket_fd(src.server_socket_fd) {}
 
 Server::~Server() {
-	if (server_socket_fd != -1)
-		close(server_socket_fd);
+	if (this->server_socket_fd != -1)
+		close(this->server_socket_fd);
 }
 
 Server& Server::operator=(const Server& src) {
 	if (this != &src) {
-		port = src.port;
-		server_socket_fd = src.server_socket_fd;
+		this->port = src.port;
+		this->server_socket_fd = src.server_socket_fd;
 	}
 	return (*this);
 }
@@ -36,23 +36,23 @@ void	Server::SetNonBlocking(int fd) {
 }
 
 void	Server::InitSocket() {
-	server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (server_socket_fd == -1)
+	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->server_socket_fd == -1)
 		throw std::runtime_error("Error to create server socket");
 }
 
 void	Server::SetSocketOptions() {
 	int opt_value = 1;
 
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-	server_addr.sin_port = htons(port);
-	if (setsockopt(server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
+	this->server_addr.sin_family = AF_INET;
+	this->server_addr.sin_addr.s_addr = INADDR_ANY;
+	this->server_addr.sin_port = htons(port);
+	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
 		throw std::runtime_error("Error: setsockopt failed");
 }
 
 void	Server::BindSocket() {
-	if (bind(server_socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
 		throw std::runtime_error("Error: failed to bind socket");
 }
 
@@ -79,17 +79,17 @@ void	Server::AcceptNewClient() {
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
-	
+
 	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
-	
+
 	this->SetNonBlocking(incofd);
-	
+
 	NewPoll.fd = incofd;
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
-	
+
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	clients.push_back(cli);
 	fds.push_back(NewPoll);
