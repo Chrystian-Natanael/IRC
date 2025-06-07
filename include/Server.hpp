@@ -36,6 +36,11 @@ private:
 	void		ListenSocket();
 	void		Poll();
 
+	// ! FOR TESTS
+	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
+	friend class ServerPollTest_ThrowsWhenPollFails_Test;
+	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
+
 public:
 	Server();
 	Server(int port);
@@ -50,12 +55,13 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
-	std::vector<Client>& GetClients();
-	std::vector<struct pollfd>& GetPollFds();
+
+	std::vector<Client>&		GetClients();
+	std::vector<struct pollfd>&	GetPollFds();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif
