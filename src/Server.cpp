@@ -12,14 +12,14 @@ Server::Server(const Server& src) :
 	server_socket_fd(src.server_socket_fd) {}
 
 Server::~Server() {
-	if (server_socket_fd != -1)
-		close(server_socket_fd);
+	if (this->server_socket_fd != -1)
+		close(this->server_socket_fd);
 }
 
 Server&	Server::operator=(const Server& src) {
 	if (this != &src) {
-		port = src.port;
-		server_socket_fd = src.server_socket_fd;
+		this->port = src.port;
+		this->server_socket_fd = src.server_socket_fd;
 	}
 	return (*this);
 }
@@ -52,19 +52,38 @@ std::vector<struct pollfd>&	Server::GetPollFds() {
 }
 
 void	Server::InitSocket() {
-
+	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->server_socket_fd == -1)
+		throw std::runtime_error("Error to create server socket");
 }
 
 void	Server::SetSocketOptions() {
+	int opt_value = 1;
 
+	this->server_addr.sin_family = AF_INET;
+	this->server_addr.sin_addr.s_addr = INADDR_ANY;
+	this->server_addr.sin_port = htons(port);
+	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
+		throw std::runtime_error("Error: setsockopt failed");
 }
 
 void	Server::BindSocket() {
-
+	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
+		throw std::runtime_error("Error: failed to bind socket");
 }
 
-void	Server::ListenSocket() {
+void Server::ListenSocket() {
+	if (listen(this->server_socket_fd, 10) < 0)
+		throw std::runtime_error("Listen failed");
 
+	this->SetNonBlocking(this->server_socket_fd);
+
+	struct pollfd server_poll_fd;
+	server_poll_fd.fd = this->server_socket_fd;
+	server_poll_fd.events = POLLIN;
+	server_poll_fd.revents = 0;
+
+	this->fds.push_back(server_poll_fd);
 }
 
 void	Server::ServerInit() {
@@ -75,7 +94,7 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
-	if (!this->fds.empty())
+	if (fds.empty())
 		return ;
 
 	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
