@@ -200,7 +200,8 @@ TEST(ServerPollTest, DoesNotThrowIfPollSucceeds) {
  * @function: ACommand::CreateCommand
  * @expect: Retorna ponteiro não nulo para comando KICK com argumentos acentuados.
  */
-TEST_F(CommandFactoryFixture, CreatesKickCommandAccentuationArgs) {
+TEST(CommandFactory, CreatesKickCommandAccentuationArgs) {
+    InitCommandFactory();
     ACommand* cmd = ACommand::CreateCommand("KICK", "LÁR");
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -211,7 +212,7 @@ TEST_F(CommandFactoryFixture, CreatesKickCommandAccentuationArgs) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando desconhecido.
  */
-TEST_F(CommandFactoryFixture, ReturnsNullptrForUnknownCommand) {
+TEST(CommandFactory, ReturnsNullptrForUnknownCommand) {
     EXPECT_THROW(ACommand::CreateCommand("FOOBAR", "args"), std::invalid_argument);
 }
 
@@ -220,7 +221,7 @@ TEST_F(CommandFactoryFixture, ReturnsNullptrForUnknownCommand) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando vazio.
  */
-TEST_F(CommandFactoryFixture, ReturnsNullptrForEmptyCommand) {
+TEST(CommandFactory, ReturnsNullptrForEmptyCommand) {
     EXPECT_THROW(ACommand::CreateCommand("", "args"), std::invalid_argument);
 }
 
@@ -229,7 +230,7 @@ TEST_F(CommandFactoryFixture, ReturnsNullptrForEmptyCommand) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com acentuação.
  */
-TEST_F(CommandFactoryFixture, ReturnsNullptrForAccentuationCommand) {
+TEST(CommandFactory, ReturnsNullptrForAccentuationCommand) {
     EXPECT_THROW(ACommand::CreateCommand("TÓPIC", ""), std::invalid_argument);
 }
 
@@ -238,7 +239,7 @@ TEST_F(CommandFactoryFixture, ReturnsNullptrForAccentuationCommand) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando e argumentos vazios.
  */
-TEST_F(CommandFactoryFixture, ReturnsNullptrForEmptyCommandEmptyArgs) {
+TEST(CommandFactory, ReturnsNullptrForEmptyCommandEmptyArgs) {
     EXPECT_THROW(ACommand::CreateCommand("", ""), std::invalid_argument);
 }
 
@@ -247,7 +248,7 @@ TEST_F(CommandFactoryFixture, ReturnsNullptrForEmptyCommandEmptyArgs) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com espaços extras.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithLeadingAndTrailingSpaces) {
+TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpaces) {
     EXPECT_THROW(ACommand::CreateCommand("  kick  ", "chan user"), std::invalid_argument);
 }
 
@@ -256,7 +257,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithLeadingAndTrailingSpaces) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com espaços à direita.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
+TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
     EXPECT_THROW(ACommand::CreateCommand("kick  ", "chan user"), std::invalid_argument);
 }
 
@@ -265,7 +266,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithLeadingAndTrailingSpacesBehind) 
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com tabs e quebras de linha.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithTabsAndNewlines) {
+TEST(CommandFactory, HandlesCommandWithTabsAndNewlines) {
     EXPECT_THROW(ACommand::CreateCommand("\tkick\n", "chan user"), std::invalid_argument);
 }
 
@@ -274,7 +275,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithTabsAndNewlines) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com caracteres especiais.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithSpecialCharacters) {
+TEST(CommandFactory, HandlesCommandWithSpecialCharacters) {
     EXPECT_THROW(ACommand::CreateCommand("KICK!", "chan user"), std::invalid_argument);
     EXPECT_THROW(ACommand::CreateCommand("KICK#", "chan user"), std::invalid_argument);
 }
@@ -284,7 +285,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithSpecialCharacters) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com espaços internos.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithInternalSpaces) {
+TEST(CommandFactory, HandlesCommandWithInternalSpaces) {
     EXPECT_THROW(ACommand::CreateCommand("K I C K", "chan user"), std::invalid_argument);
 }
 
@@ -293,7 +294,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithInternalSpaces) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com nome muito longo.
  */
-TEST_F(CommandFactoryFixture, HandlesVeryLongCommandName) {
+TEST(CommandFactory, HandlesVeryLongCommandName) {
     std::string longCmd(1000, 'K');
     EXPECT_THROW(ACommand::CreateCommand(longCmd, "chan user"), std::invalid_argument);
 }
@@ -303,7 +304,7 @@ TEST_F(CommandFactoryFixture, HandlesVeryLongCommandName) {
  * @function: ACommand::CreateCommand
  * @expect: Retorna ponteiro não nulo para comando com argumentos longos.
  */
-TEST_F(CommandFactoryFixture, HandlesVeryLongArgs) {
+TEST(CommandFactory, HandlesVeryLongArgs) {
     std::string longArgs(10000, 'a');
     ACommand* cmd = ACommand::CreateCommand("KICK", longArgs);
     EXPECT_NE(cmd, nullptr);
@@ -315,7 +316,7 @@ TEST_F(CommandFactoryFixture, HandlesVeryLongArgs) {
  * @function: ACommand::CreateCommand
  * @expect: Retorna ponteiro não nulo para comando com argumentos especiais.
  */
-TEST_F(CommandFactoryFixture, HandlesArgsWithSpecialCharacters) {
+TEST(CommandFactory, HandlesArgsWithSpecialCharacters) {
     ACommand* cmd = ACommand::CreateCommand("INVITE", "canal!@# usuário$%¨&*()");
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -326,7 +327,7 @@ TEST_F(CommandFactoryFixture, HandlesArgsWithSpecialCharacters) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comandos com prefixo ou sufixo.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithPrefixOrSuffix) {
+TEST(CommandFactory, HandlesCommandWithPrefixOrSuffix) {
     EXPECT_THROW(ACommand::CreateCommand("PREKICK", "chan user"), std::invalid_argument);
     EXPECT_THROW(ACommand::CreateCommand("KICKPOST", "chan user"), std::invalid_argument);
 }
@@ -336,7 +337,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithPrefixOrSuffix) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando com letras mistas e espaços.
  */
-TEST_F(CommandFactoryFixture, HandlesCommandWithMixedCaseAndSpaces) {
+TEST(CommandFactory, HandlesCommandWithMixedCaseAndSpaces) {
     EXPECT_THROW(ACommand::CreateCommand("  KiCk ", "chan user"), std::invalid_argument);
 }
 
@@ -345,7 +346,7 @@ TEST_F(CommandFactoryFixture, HandlesCommandWithMixedCaseAndSpaces) {
  * @function: ACommand::CreateCommand
  * @expect: Lança std::invalid_argument para comando só de espaços.
  */
-TEST_F(CommandFactoryFixture, HandlesWhitespaceOnlyCommand) {
+TEST(CommandFactory, HandlesWhitespaceOnlyCommand) {
     EXPECT_THROW(ACommand::CreateCommand("   ", "chan user"), std::invalid_argument);
 }
 
@@ -354,7 +355,7 @@ TEST_F(CommandFactoryFixture, HandlesWhitespaceOnlyCommand) {
  * @function: ACommand::CreateCommand
  * @expect: Retorna ponteiro não nulo para comando com argumentos unicode.
  */
-TEST_F(CommandFactoryFixture, HandlesArgsWithUnicode) {
+TEST(CommandFactory, HandlesArgsWithUnicode) {
     ACommand* cmd = ACommand::CreateCommand("TOPIC", u8"canal :tópico com çãõé");
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -365,7 +366,7 @@ TEST_F(CommandFactoryFixture, HandlesArgsWithUnicode) {
  * @function: ACommand::CreateCommand
  * @expect: Retorna ponteiro não nulo para comando com argumentos numéricos.
  */
-TEST_F(CommandFactoryFixture, NumbersAsArgs) {
+TEST(CommandFactory, NumbersAsArgs) {
     std::string numericArgs = "12345 67890";
     ACommand* cmd = ACommand::CreateCommand("KICK", numericArgs);
     EXPECT_NE(cmd, nullptr);
