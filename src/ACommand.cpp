@@ -1,5 +1,3 @@
-#include <map>
-#include <algorithm>
 #include "ACommand.hpp"
 #include "KICK.hpp"
 #include "INVITE.hpp"
@@ -8,10 +6,11 @@
 
 //Constructors
 
-ACommand::ACommand(const std::string &rawCommand, const std::string& args) : 
-_rawCommand(rawCommand), _args(args) {}
+ACommand::ACommand(const std::string &rawCommand, const std::string& args) :
+	_rawCommand(rawCommand),
+	_args(args) {}
 
-ACommand::~ACommand(){}
+ACommand::~ACommand() {}
 
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
@@ -43,7 +42,7 @@ void InitCommandFactory() {
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
 	std::string upperCommand = rawCommand;
 	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
-	
+
 	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
 	if (it != commandFactory.end())
 		return it->second(args);
