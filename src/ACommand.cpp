@@ -1,10 +1,10 @@
 #include <map>
 #include <algorithm>
 #include "ACommand.hpp"
-#include "KICK.hpp"
-#include "INVITE.hpp"
-#include "TOPIC.hpp"
-#include "MODE.hpp"
+#include "Commands/KICK.hpp"
+#include "Commands/INVITE.hpp"
+#include "Commands/TOPIC.hpp"
+#include "Commands/MODE.hpp"
 
 //Constructors
 

@@ -36,7 +36,7 @@ RESET = \033[0m
 #* ******************************************************************************#
 
 SRCS_PATH = src/
-INCS_PATH = include/ include/Commands/
+INCS_PATH = include/
 BUILD_DIR := build/
 TARGET_DIR = bin/
 GTEST_DIR = tests/googletest
