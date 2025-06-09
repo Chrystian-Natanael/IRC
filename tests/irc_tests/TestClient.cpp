@@ -33,7 +33,7 @@ TEST(ClientGetNextMessageTest, NoCRLFReturnsWholeBuffer) {
     Client client(1, "127.0.0.1");
     client.SetBufferMessage("incomplete message");
     EXPECT_EQ(client.GetNextMessage(), "");
-    EXPECT_EQ(client.GetBufferMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "incomplete message");
 }
 
 TEST(ClientGetNextMessageTest, CRLFAtStartReturnsEmptyString) {
@@ -43,4 +43,10 @@ TEST(ClientGetNextMessageTest, CRLFAtStartReturnsEmptyString) {
     EXPECT_EQ(client.GetBufferMessage(), "next\r\n");
     EXPECT_EQ(client.GetNextMessage(), "next");
     EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, messagetooLongThrowsException) {
+    Client client(1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n");
+    EXPECT_THROW(client.GetNextMessage(), std::runtime_error);
 }
