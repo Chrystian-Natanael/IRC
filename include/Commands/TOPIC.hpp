@@ -6,10 +6,10 @@
 # include "ACommand.hpp"
 
 class CommandTopic: public ACommand {
-    public:
-        CommandTopic(const std::string &command, const std::string &params);
-        ~CommandTopic();
-        void Execute() const;
+	public:
+		CommandTopic(const std::string &command, const std::string &params);
+		~CommandTopic();
+		void Execute() const;
 };
 
 #endif

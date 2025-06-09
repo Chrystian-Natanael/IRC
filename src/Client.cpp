@@ -3,7 +3,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip) :
-	fd(fd), ip(ip) {}
+	ip(ip), fd(fd) {}
 
 Client::~Client() {}
 
