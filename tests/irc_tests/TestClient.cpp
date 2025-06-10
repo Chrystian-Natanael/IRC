@@ -49,4 +49,14 @@ TEST(ClientGetNextMessageTest, messagetooLongThrowsException) {
     Client client(1, "127.0.0.1");
     client.SetBufferMessage(std::string(513, 'a') + "\r\n");
     EXPECT_THROW(client.GetNextMessage(), std::runtime_error);
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, messageTooLongClearsOnlyThatMessage) {
+    Client client(1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n" + "Algum comando\r\n");
+    EXPECT_THROW(client.GetNextMessage(), std::runtime_error);
+    EXPECT_EQ(client.GetBufferMessage(), "Algum comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "");
 }
