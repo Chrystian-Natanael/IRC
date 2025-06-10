@@ -1,5 +1,5 @@
-#ifndef COMMAND_MODE_HPP
-# define COMMAND_MODE_HPP
+#ifndef MODE_HPP
+# define MODE_HPP
 
 # include <iostream>
 # include <string>

@@ -4,6 +4,13 @@
 #include <iostream>
 #include <string>
 
+enum AuthState {
+    PASSWORD,       // Esperando o comando PASS
+    NICK,           // Esperando o comando NICK
+    USER,           // Esperando o comando USER
+    REGISTERED,     // Autenticação completa
+};
+
 class Client {
 private:
 	std::string	ip;
@@ -12,6 +19,7 @@ private:
 	std::string	real_name;
 	std::string buffer_message;
 	int			fd;
+	int			login_state = PASSWORD;
 	Client();
 
 public:
