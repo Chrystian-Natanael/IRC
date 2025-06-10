@@ -42,15 +42,19 @@ void Client::SetBufferMessage(const std::string& message) {
 }
 
 std::string Client::GetNextMessage() {
-    if (this->buffer_message.empty())
-        return("");
-    size_t pos = this->buffer_message.find("\r\n", 0);
-    if (pos == std::string::npos)
-        return ("");
-    std::string  result = this->buffer_message.substr(0, pos);
-    this->buffer_message.erase(0, pos + 2);
-    if (result.size() > 512) {
-        throw std::runtime_error("Error: message too long");
-    }
-    return (result);
+	if (this->buffer_message.empty())
+		return("");
+
+	size_t pos = this->buffer_message.find("\r\n", 0);
+	if (pos == std::string::npos)
+		return ("");
+
+	std::string result = this->buffer_message.substr(0, pos);
+	this->buffer_message.erase(0, pos + 2);
+
+	if (result.size() > 512) {
+		throw std::runtime_error("Error: message too long");
+	}
+
+	return (result);
 }
