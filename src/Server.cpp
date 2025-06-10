@@ -14,6 +14,9 @@ Server::Server(const Server& src) :
 Server::~Server() {
 	if (this->server_socket_fd != -1)
 		close(this->server_socket_fd);
+
+	this->ClearClients();
+	this->CloseFds();
 }
 
 Server&	Server::operator=(const Server& src) {
@@ -24,25 +27,12 @@ Server&	Server::operator=(const Server& src) {
 	return (*this);
 }
 
-void	Server::ClearClients(int fd)
-{
-	for (size_t i = 0; i < this->clients.size(); i++)
-	{
-		if (clients[i].GetFd() == fd)
-		{
-			clients.erase(clients.begin() +i);
-			break;
-		}
-	}
-	for (size_t i = 0; this->fds.size(); i++)
-	{
-		if (fds[i].fd == fd)
-		{
-			fds.erase(fds.begin() +i);
-			break;
-		}
-	}
-	close(fd);
+void	Server::ClearClients() {
+	this->clients.clear();
+}
+
+void	Server::CloseFds() {
+	this->fds.clear();
 }
 
 void	Server::SetNonBlocking(int fd) {
@@ -120,6 +110,32 @@ void	Server::Poll() {
 
 	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
 		throw std::runtime_error("Error: failed to poll.");
+}
+
+void	Server::DisconnectClient(int fd)
+{
+	if (fd < 0)
+		return ;
+
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i].GetFd() == fd)
+		{
+			clients.erase(clients.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < this->fds.size(); i++)
+	{
+		if (fds[i].fd == fd)
+		{
+			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+
+	close(fd);
 }
 
 void	Server::AcceptNewClient() {

@@ -67,6 +67,14 @@
 		"streambuf": "cpp",
 		"thread": "cpp",
 		"typeinfo": "cpp",
-		"variant": "cpp"
+		"variant": "cpp",
+		"bitset": "cpp",
+		"__bit_reference": "cpp",
+		"__config": "cpp",
+		"__locale": "cpp",
+		"__split_buffer": "cpp",
+		"__verbose_abort": "cpp",
+		"ios": "cpp",
+		"locale": "cpp"
 	}
 }

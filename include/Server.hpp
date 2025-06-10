@@ -25,8 +25,8 @@ private:
 	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
 
-	// void	CloseFds();
-	void	ClearClients(int fd);
+	void		CloseFds();
+	void		ClearClients();
 
 	static void	SetNonBlocking(int fd);
 
@@ -35,6 +35,7 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
+	void		DisconnectClient(int fd);
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
