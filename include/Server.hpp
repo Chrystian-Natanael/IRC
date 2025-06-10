@@ -21,7 +21,7 @@ class Server {
 private:
 	int							port;
 	int							server_socket_fd;
-	struct sockaddr				server_addr;
+	struct sockaddr_in			server_addr;
 	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
 
@@ -35,6 +35,11 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
+
+	// ! FOR TESTS
+	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
+	friend class ServerPollTest_ThrowsWhenPollFails_Test;
+	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
 public:
 	Server();
@@ -50,12 +55,13 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
-	std::vector<Client>& GetClients();
-	std::vector<struct pollfd>& GetPollFds();
+
+	std::vector<Client>&		GetClients();
+	std::vector<struct pollfd>&	GetPollFds();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
-	
+
 };
 
 #endif

@@ -46,7 +46,7 @@ GTEST_DIR = tests/googletest
 #* ******************************************************************************#
 
 GTEST_REPO = git@github.com:google/googletest.git
-SRCS = $(wildcard $(SRCS_PATH)*$(FILE_EXTENSION)) # !Do not use wildcard (fix in future, obviously)
+SRCS = $(shell find $(SRCS_PATH) -type f)
 OBJS = $(SRCS:%$(FILE_EXTENSION)=$(BUILD_DIR)%.o)
 DEPS = $(OBJS:.o=.d)
 
