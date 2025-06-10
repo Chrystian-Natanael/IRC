@@ -10,7 +10,7 @@ private:
 	std::string	user_name;
 	std::string	nick_name;
 	std::string	real_name;
-  std::string buffer_message;
+	std::string buffer_message;
 	int			fd;
 	Client();
 
@@ -25,11 +25,6 @@ public:
 	std::string	GetNickName() const;
 	std::string	GetRealName() const;
 
-	int GetFd() const;
-	std::string GetIp() const;
-	std::string GetUserName() const;
-	std::string GetNickName() const;
-	std::string GetRealName() const;
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
 
