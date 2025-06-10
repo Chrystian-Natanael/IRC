@@ -1,6 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
+#include <unistd.h>
 #include <iostream>
 #include <string>
 

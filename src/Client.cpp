@@ -5,7 +5,10 @@ Client::Client() {}
 Client::Client(int fd, std::string ip) :
 	ip(ip), fd(fd) {}
 
-Client::~Client() {}
+Client::~Client() {
+	if (this->fd != -1)
+		close(this->fd);
+}
 
 int Client::GetFd() const {
 	return (this->fd);
