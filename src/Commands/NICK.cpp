@@ -16,11 +16,14 @@ bool CommandNick::ValidateCommand(server &server, client &client) {
         // client.SendMessage(ERR_ERRONEUSNICKNAME(client.GetNickName())); 
         return false;
     }
-    if (this->_args.alfanum() == false) {
-        std::cerr << "NICK command requires a nickname with alphanumeric characters only." << std::endl;
-        // client.SendMessage(ERR_ERRONEUSNICKNAME(client.GetNickName()));
+    
+    for (std::string::const_iterator it = this->_args.begin(); it != this->_args.end(); ++it) {
+    char c = *it;
+    if (!std::isalnum(c) && c != '-' && c != '_') {
+        std::cerr << "NICK command requires a valid nickname (alphanumeric, '-', or '_')." << std::endl;
         return false;
     }
+}
     for (std::vector<Client>::iterator it = server.clients.begin(); it != server.clients.end(); ++it) {
         if (it->GetNickName() == this->_args) {
             std::cerr << "Nickname já está em uso." << std::endl;
