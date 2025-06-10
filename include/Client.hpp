@@ -6,14 +6,13 @@
 
 class Client {
 private:
-
 	std::string	ip;
 	std::string	user_name;
 	std::string	nick_name;
 	std::string	real_name;
+	std::string buffer_message;
 	int			fd;
 	Client();
-
 
 public:
 
@@ -26,9 +25,14 @@ public:
 	std::string	GetNickName() const;
 	std::string	GetRealName() const;
 
-	void		SetUserName(const std::string& user_name);
-	void		SetNickName(const std::string& nick_name);
-	void		SetRealName(const std::string& real_name);
+	std::string GetBufferMessage() const;
+	std::string GetNextMessage();
+
+	void SetUserName(const std::string& user_name);
+	void SetNickName(const std::string& nick_name);
+	void SetRealName(const std::string& real_name);
+
+	void SetBufferMessage(const std::string& message);
 
 };
 
