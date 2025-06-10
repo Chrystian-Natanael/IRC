@@ -14,6 +14,7 @@ private:
 	int			fd;
 	Client();
 
+
 public:
 
 	Client(int fd, std::string ip);
