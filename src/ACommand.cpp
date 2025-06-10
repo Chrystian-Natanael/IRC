@@ -32,11 +32,31 @@ ACommand* MakeMode(const std::string& args) {
 	return new CommandMode("MODE", args);
 }
 
+ACommand* MakePass(const std::string& args) {
+	return new CommandPass("PASS", args);
+}
+
+ACommand* MakeNick(const std::string& args) {
+	return new CommandNick("NICK", args);
+}
+
+ACommand* MakeUser(const std::string& args) {
+	return new CommandUser("USER", args);
+}
+
+ACommand* MakeQuit(const std::string& args) {
+	return new CommandQuit("QUIT", args);
+}
+
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
 	commandFactory["INVITE"] = &MakeInvite;
 	commandFactory["TOPIC"]  = &MakeTopic;
 	commandFactory["MODE"]   = &MakeMode;
+	commandFactory["PASS"]   = &MakePass;
+	commandFactory["NICK"]	 = &MakeNick;
+	commandFactory["USER"]	 = &MakeUser;
+	commandFactory["QUIT"]	 = &MakeQuit;
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
