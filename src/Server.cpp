@@ -12,16 +12,27 @@ Server::Server(const Server& src) :
 	server_socket_fd(src.server_socket_fd) {}
 
 Server::~Server() {
-	if (server_socket_fd != -1)
-		close(server_socket_fd);
+	if (this->server_socket_fd != -1)
+		close(this->server_socket_fd);
+
+	this->ClearClients();
+	this->CloseFds();
 }
 
-Server& Server::operator=(const Server& src) {
+Server&	Server::operator=(const Server& src) {
 	if (this != &src) {
-		port = src.port;
-		server_socket_fd = src.server_socket_fd;
+		this->port = src.port;
+		this->server_socket_fd = src.server_socket_fd;
 	}
 	return (*this);
+}
+
+void	Server::ClearClients() {
+	this->clients.clear();
+}
+
+void	Server::CloseFds() {
+	this->fds.clear();
 }
 
 void	Server::SetNonBlocking(int fd) {
@@ -35,20 +46,55 @@ void	Server::SetNonBlocking(int fd) {
 		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
-void	Server::InitSocket() {
+int	Server::GetFd() const {
+	return (this->server_socket_fd);
+}
 
+int	Server::GetPort() const {
+	return (this->port);
+}
+
+std::vector<Client>&	Server::GetClients() {
+	return (this->clients);
+}
+
+std::vector<struct pollfd>&	Server::GetPollFds() {
+	return (this->fds);
+}
+
+void	Server::InitSocket() {
+	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->server_socket_fd == -1)
+		throw std::runtime_error("Error to create server socket");
 }
 
 void	Server::SetSocketOptions() {
+	int opt_value = 1;
 
+	this->server_addr.sin_family = AF_INET;
+	this->server_addr.sin_addr.s_addr = INADDR_ANY;
+	this->server_addr.sin_port = htons(port);
+	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
+		throw std::runtime_error("Error: setsockopt failed");
 }
 
 void	Server::BindSocket() {
-
+	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
+		throw std::runtime_error("Error: failed to bind socket");
 }
 
-void	Server::ListenSocket() {
+void Server::ListenSocket() {
+	if (listen(this->server_socket_fd, 10) < 0)
+		throw std::runtime_error("Listen failed");
 
+	this->SetNonBlocking(this->server_socket_fd);
+
+	struct pollfd server_poll_fd;
+	server_poll_fd.fd = this->server_socket_fd;
+	server_poll_fd.events = POLLIN;
+	server_poll_fd.revents = 0;
+
+	this->fds.push_back(server_poll_fd);
 }
 
 void	Server::ServerInit() {
@@ -59,11 +105,37 @@ void	Server::ServerInit() {
 }
 
 void	Server::Poll() {
-	if (!fds.empty())
+	if (this->fds.empty())
 		return ;
 
-	if (poll(fds.data(), fds.size(), -1) == -1)
+	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
 		throw std::runtime_error("Error: failed to poll.");
+}
+
+void	Server::DisconnectClient(int fd)
+{
+	if (fd < 0)
+		return ;
+
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i].GetFd() == fd)
+		{
+			clients.erase(clients.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < this->fds.size(); i++)
+	{
+		if (fds[i].fd == fd)
+		{
+			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+
+	close(fd);
 }
 
 void	Server::AcceptNewClient() {
@@ -71,7 +143,7 @@ void	Server::AcceptNewClient() {
 	struct pollfd NewPoll;
 	socklen_t len = sizeof(cliadd);
 
-	int incofd = accept(server_socket_fd, (sockaddr *)&(cliadd), &len);
+	int incofd = accept(this->server_socket_fd, (sockaddr *) &(cliadd), &len);
 	if (incofd == -1)
 		throw std::runtime_error("accept() failed");
 
@@ -82,8 +154,8 @@ void	Server::AcceptNewClient() {
 	NewPoll.revents = 0;
 
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
-	clients.push_back(cli);
-	fds.push_back(NewPoll);
+	this->clients.push_back(cli);
+	this->fds.push_back(NewPoll);
 
 	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
@@ -106,37 +178,19 @@ void	Server::ServerLoop() {
 
 		this->Poll();
 
-		for (size_t i = 0; i < fds.size(); i++) {
-			if (fds[i].revents & POLLIN) {
-				if (fds[i].fd == this->server_socket_fd)
+		for (size_t i = 0; i < this->fds.size(); i++) {
+			if (this->fds[i].revents & POLLIN) {
+				if (this->fds[i].fd == this->server_socket_fd)
 					this->AcceptNewClient();
 				else
-					this->ReceiveData(fds[i].fd);
+					this->ReceiveData(this->fds[i].fd);
 			}
 		}
 
 	}
 }
 
-
-// ! GETTERS
-int	Server::GetFd() const {
-	return server_socket_fd;
-}
-int	Server::GetPort() const {
-	return port;
-}
-std::vector<Client>& Server::GetClients() {
-	return clients;
-}
-std::vector<struct pollfd>& Server::GetPollFds() {
-	return fds;
-}
-
-
-
-
 // ! FOR TESTS
 void	Server::SetFd(int fd) {
-	server_socket_fd = fd;
+	this->server_socket_fd = fd;
 }
