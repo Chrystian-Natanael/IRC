@@ -6,5 +6,5 @@ CommandInvite::CommandInvite(const std::string &command, const std::string &para
 CommandInvite::~CommandInvite() {}
 
 void CommandInvite::Execute() const {
-    std::cout << "Executing INVITE command with parameters: " << _args << std::endl;
+    std::cout << "Executing INVITE command with parameters: " << args << std::endl;
 }

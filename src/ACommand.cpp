@@ -8,10 +8,10 @@
 
 ACommand::ACommand(const std::string &rawCommand, const std::string& args, 
 				   Server* server, Client& client) :
-	_rawCommand(rawCommand),
-	_args(args),
-	_server(server),
-	_client(client){}
+	rawCommand(rawCommand),
+	args(args),
+	server(server),
+	client(client){}
 
 ACommand::~ACommand() {}
 

@@ -6,5 +6,5 @@ CommandKick::CommandKick(const std::string &command, const std::string &params, 
 CommandKick::~CommandKick() {}
 
 void CommandKick::Execute() const {
-    std::cout << "Executing KICK command with parameters: " << _args << std::endl;
+    std::cout << "Executing KICK command with parameters: " << args << std::endl;
 }

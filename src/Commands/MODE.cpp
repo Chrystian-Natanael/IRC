@@ -6,5 +6,5 @@ CommandMode::CommandMode(const std::string &command, const std::string &params, 
 CommandMode::~CommandMode() {}
 
 void CommandMode::Execute() const {
-    std::cout << "Executing MODE command with parameters: " << _args << std::endl;
+    std::cout << "Executing MODE command with parameters: " << args << std::endl;
 }
