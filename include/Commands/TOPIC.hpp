@@ -7,7 +7,7 @@
 
 class CommandTopic: public ACommand {
 	public:
-		CommandTopic(const std::string &command, const std::string &params);
+		CommandTopic(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandTopic();
 		void Execute() const;
 };

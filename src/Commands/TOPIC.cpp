@@ -1,7 +1,7 @@
 #include "Commands/TOPIC.hpp"
 
-CommandTopic::CommandTopic(const std::string &command, const std::string &params) :
-	ACommand(command, params) {}
+CommandTopic::CommandTopic(const std::string &command, const std::string &params, Server* server, Client& client) :
+	ACommand(command, params, server, client) {}
 
 CommandTopic::~CommandTopic() {}
 

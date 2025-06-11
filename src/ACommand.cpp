@@ -6,9 +6,12 @@
 
 //Constructors
 
-ACommand::ACommand(const std::string &rawCommand, const std::string& args) :
+ACommand::ACommand(const std::string &rawCommand, const std::string& args, 
+				   Server* server, Client& client) :
 	_rawCommand(rawCommand),
-	_args(args) {}
+	_args(args),
+	_server(server),
+	_client(client){}
 
 ACommand::~ACommand() {}
 
@@ -16,20 +19,20 @@ ACommand::~ACommand() {}
 static std::map<std::string, CommandConstructor> commandFactory;
 
 //makers
-ACommand* MakeKick(const std::string& args) {
-	return new CommandKick("KICK", args);
+ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
+	return new CommandKick("KICK", args, server, client);
 }
 
-ACommand* MakeInvite(const std::string& args) {
-	return new CommandInvite("INVITE", args);
+ACommand* MakeInvite(const std::string& args, Server* server, Client& client) {
+	return new CommandInvite("INVITE", args, server, client);
 }
 
-ACommand* MakeTopic(const std::string& args) {
-	return new CommandTopic("TOPIC", args);
+ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
+	return new CommandTopic("TOPIC", args, server, client);
 }
 
-ACommand* MakeMode(const std::string& args) {
-	return new CommandMode("MODE", args);
+ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
+	return new CommandMode("MODE", args, server, client);
 }
 
 void InitCommandFactory() {
@@ -39,12 +42,12 @@ void InitCommandFactory() {
 	commandFactory["MODE"]   = &MakeMode;
 }
 
-ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
+ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
 	std::string upperCommand = rawCommand;
 	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
 
 	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
 	if (it != commandFactory.end())
-		return it->second(args);
+		return it->second(args, server, client);
 	throw std::invalid_argument("Unknown command: " + rawCommand);
 }

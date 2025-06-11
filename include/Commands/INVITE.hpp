@@ -7,7 +7,7 @@
 
 class CommandInvite : public ACommand {
 	public:
-		CommandInvite(const std::string &command, const std::string &params);
+		CommandInvite(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandInvite();
 		void Execute() const;
 };
