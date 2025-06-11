@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 class Client {
 private:
@@ -27,7 +28,9 @@ public:
 	std::string	GetRealName() const;
 
 	std::string GetBufferMessage() const;
+	std::string AppendBuffer(char* buffer);
 	std::string GetNextMessage();
+	void		PerformMessages(char* buff);
 
 	void SetUserName(const std::string& user_name);
 	void SetNickName(const std::string& nick_name);

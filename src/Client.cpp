@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "ACommand.hpp"
 
 Client::Client() {}
 
@@ -66,4 +67,42 @@ std::string Client::GetNextMessage() {
 	}
 
 	return (result);
+}
+
+static std::string	GetArgs(std::istringstream& iss) {
+	std::string args;
+	std::getline(iss, args);
+	return (args);
+}
+
+static std::string	GetRawCommand(std::istringstream& iss) {
+	std::string rawCommand;
+	std::getline(iss, rawCommand, ' ');
+	return (rawCommand);
+}
+
+std::string	Client::AppendBuffer(char* buffer) {
+	buffer_message.append(buffer);
+	return (buffer_message);
+}
+
+void	Client::PerformMessages(char* buff) {
+	std::string rawCommand = "";
+	std::string args = "";
+	this->AppendBuffer(buff);
+	std::string msg = this->GetNextMessage();
+	while (msg != "") {
+		std::istringstream iss(msg);
+		rawCommand = GetRawCommand(iss);
+		args = GetArgs(iss);
+		try {
+			ACommand* cmd = ACommand::CreateCommand(rawCommand, args);
+			cmd->Execute();
+			delete cmd;
+		}
+		catch(const std::exception &e) {
+			std::cerr << "Error creating command: " << e.what() << std::endl;
+		}
+		msg = this->GetNextMessage();
+	}
 }

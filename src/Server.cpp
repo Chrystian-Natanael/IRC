@@ -1,5 +1,4 @@
 #include "Server.hpp"
-#include "ACommand.hpp"
 
 Server::Server() : port(-1), server_socket_fd(-1) {}
 
@@ -161,18 +160,6 @@ void	Server::AcceptNewClient() {
 	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
-static std::string	GetArgs(std::istringstream& iss) {
-	std::string args;
-	std::getline(iss, args);
-	return (args);
-}
-
-static std::string	GetRawCommand(std::istringstream& iss) {
-	std::string rawCommand;
-	std::getline(iss, rawCommand, ' ');
-	return (rawCommand);
-}
-
 void	Server::ReceiveData(int fd) {
 	char buff[1024];
 	memset(buff,0, sizeof(buff));
@@ -183,20 +170,8 @@ void	Server::ReceiveData(int fd) {
 
 		for (size_t i = 0; i < this->GetClients().size(); i++) {
 			Client& client = this->GetClients()[i];
-			if (client.GetFd() == fd) {
-				PerformMessage();
-				// std::istringstream iss(client.GetNextMessage());
-				// std::string rawCommand = GetRawCommand(iss);
-				// std::string args = GetArgs(iss);
-				// try {
-				// 	ACommand* cmd = ACommand::CreateCommand(rawCommand, args);
-				// 	cmd->Execute();
-				// 	delete cmd;
-				// }
-				// catch(const std::exception &e) {
-				// 	std::cerr << "Error creating command: " << e.what() << std::endl;
-				// }
-			}
+			if (client.GetFd() == fd)
+				client.PerformMessages(buff);
 		}
 	}
 	else if (bytes == 0)
@@ -204,21 +179,6 @@ void	Server::ReceiveData(int fd) {
 	else
 		perror("recv");
 }
-
-void	Server::PerformMessage(Server& server, int fd) {
-	std::istringstream iss(client.GetNextMessage());
-	std::string rawCommand = GetRawCommand(iss);
-	std::string args = GetArgs(iss);
-	try {
-		ACommand* cmd = ACommand::CreateCommand(rawCommand, args);
-		cmd->Execute();
-		delete cmd;
-	}
-	catch(const std::exception &e) {
-		std::cerr << "Error creating command: " << e.what() << std::endl;
-	}
-}
-
 
 void	Server::ServerLoop() {
 	while (1) {
