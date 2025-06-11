@@ -120,14 +120,11 @@ void	Server::Poll() {
 		throw std::runtime_error("Error: failed to poll.");
 }
 
-void	Server::DisconnectClient(int fd)
+void	Server::DisconnectClient(Client &client)
 {
-	if (fd < 0)
-		return ;
-
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
-		if (clients[i].GetFd() == fd)
+		if (clients[i].GetFd() == client.GetFd())
 		{
 			clients.erase(clients.begin() + i);
 			break;
@@ -136,14 +133,12 @@ void	Server::DisconnectClient(int fd)
 
 	for (size_t i = 0; i < this->fds.size(); i++)
 	{
-		if (fds[i].fd == fd)
+		if (fds[i].fd == client.GetFd())
 		{
 			fds.erase(fds.begin() + i);
 			break;
 		}
 	}
-
-	close(fd);
 }
 
 void	Server::AcceptNewClient() {
