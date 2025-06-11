@@ -177,7 +177,13 @@ TEST(ServerReceiveTest, ReceiveData_ReadSuccess) {
     ssize_t sent = send(client_fd, msg, strlen(msg), 0);
     ASSERT_GT(sent, 0);
 
-    ASSERT_NO_THROW(server.ReceiveData(accepted_fd)); // Chama a função sob teste.
+    ASSERT_NO_THROW(server.GetClients().back().ReceiveData()); // Chama a função sob teste.
+
+	// Verifica se o servidor leu exatamente a mensagem enviada
+	auto& clients = server.GetClients();
+	ASSERT_FALSE(clients.empty());
+	const std::string& buffer = clients.back().GetBufferMessage();
+	EXPECT_EQ(buffer, "mensagem de teste");
 
     close(client_fd);
     close(listen_fd);
@@ -218,14 +224,11 @@ TEST(ServerReceiveTest, ReceiveData_ClientDisconnected) {
 
     close(client_fd);
 
-    ASSERT_NO_THROW(server.ReceiveData(accepted_fd));
+    ASSERT_THROW(server.GetClients().back().ReceiveData(), std::runtime_error);
 
-    auto& clients = server.GetClients();
-    auto it = std::find_if(clients.begin(), clients.end(), [accepted_fd](const auto& client) {
-            return client.GetFd() == accepted_fd;
-        });
+    server.ReceiveDataAllClients();
 
-    EXPECT_EQ(it, clients.end());
+    EXPECT_TRUE(server.GetClients().empty());
 
     close(listen_fd);
 }
@@ -265,11 +268,13 @@ TEST(ServerReceiveTest, RecvFails_BytesLessThanZero) {
 
     close(accepted_fd);
 
-    ASSERT_NO_THROW(server.ReceiveData(accepted_fd));
+    ASSERT_THROW(server.GetClients().back().ReceiveData(), std::exception);
 
     close(client_fd);
     close(listen_fd);
 }
+
+
 
 // Variáveis atômicas usadas para simular e controlar o comportamento da função poll() durante os testes.
 std::atomic<int> fake_poll_return_value{0};
