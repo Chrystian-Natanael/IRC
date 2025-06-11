@@ -16,7 +16,6 @@
 #include <stdexcept>
 #include <exception>
 #include <string.h>
-
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
 
@@ -55,7 +54,7 @@ public:
 	void	ServerInit();
 	void	ServerLoop();
 	void	AcceptNewClient();
-	void	ReceiveData(int fd);
+	void	ReceiveDataAllClients();
 
 	int		GetFd() const;
 	int		GetPort() const;

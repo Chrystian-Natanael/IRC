@@ -164,48 +164,29 @@ void	Server::AcceptNewClient() {
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
+	cli.PreventFdClose();
 
 	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
-void	Server::ReceiveData(int fd) {
-	char	*buff = new char[RECEIVE_BUFFER_SIZE + 1];
-
-	if (buff == NULL)
-		throw std::runtime_error("Memory allocation failed for buffer");
-
-	ssize_t bytes = recv(fd, buff, RECEIVE_BUFFER_SIZE, 0);
-
-	if (bytes <= 0) {
-		delete[] buff;
-		this->DisconnectClient(fd);
-		return;
+void	Server::ReceiveDataAllClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		try {
+			this->clients[i].ReceiveData();
+		} catch (std::exception &e) {
+			this->DisconnectClient(this->clients[i].GetFd()); // mudar para não precisar do fd
+		}
 	}
-
-	buff[bytes] = '\0';
-
-	Client &client = this->GetClient(fd);
-	client.SetBufferMessage(
-		client.GetBufferMessage() + std::string(buff, bytes)
-	);
-	
-	delete[] buff;
 }
 
 void	Server::ServerLoop() {
 	while (1) {
-
 		this->Poll();
 
-		for (size_t i = 0; i < this->fds.size(); i++) {
-			if (this->fds[i].revents & POLLIN) {
-				if (this->fds[i].fd == this->server_socket_fd)
+		if (this->fds[0].revents & POLLIN)
 					this->AcceptNewClient();
-				else
-					this->ReceiveData(this->fds[i].fd);
-			}
-		}
 
+		this->ReceiveDataAllClients();
 	}
 }
 
