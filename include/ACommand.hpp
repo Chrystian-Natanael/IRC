@@ -5,27 +5,30 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include "Server.hpp"
 
 class ACommand {
 protected:
-	std::string _rawCommand;
-	std::string _args;
+	std::string rawCommand;
+	std::string args;
+	Server* server;
+	Client& client;
 
 public:
-	ACommand(const std::string& rawCommand, const std::string& args);
+	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client&client);
 	virtual ~ACommand();
 	virtual void Execute() const = 0;
-	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args);
+	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 
 };
 
-typedef ACommand* (*CommandConstructor)(const std::string& args);
+typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server, Client& client);
 
 void InitCommandFactory();
 
-ACommand* MakeKick(const std::string& args);
-ACommand* MakeInvite(const std::string& args);
-ACommand* MakeTopic(const std::string& args);
-ACommand* MakeMode(const std::string& args);
+ACommand* MakeKick(const std::string& args, Server* server, Client&client);
+ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
+ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
+ACommand* MakeMode(const std::string& args, Server* server, Client&client);
 
 # endif
