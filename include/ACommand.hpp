@@ -9,10 +9,10 @@
 
 class ACommand {
 protected:
-	std::string _rawCommand;
-	std::string _args;
-	Server* _server;
-	Client& _client;
+	std::string rawCommand;
+	std::string args;
+	Server* server;
+	Client& client;
 
 public:
 	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client&client);
