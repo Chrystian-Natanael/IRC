@@ -202,7 +202,9 @@ TEST(ServerPollTest, DoesNotThrowIfPollSucceeds) {
  */
 TEST(CommandFactory, CreatesKickCommandAccentuationArgs) {
     InitCommandFactory();
-    ACommand* cmd = ACommand::CreateCommand("KICK", "LÁR");
+    Server server;
+    Client client(-1, "123123");
+    ACommand* cmd = ACommand::CreateCommand("KICK", "LÁR", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
 }
@@ -213,7 +215,9 @@ TEST(CommandFactory, CreatesKickCommandAccentuationArgs) {
  * @expect: Lança std::invalid_argument para comando desconhecido.
  */
 TEST(CommandFactory, ReturnsNullptrForUnknownCommand) {
-    EXPECT_THROW(ACommand::CreateCommand("FOOBAR", "args"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("FOOBAR", "args", &server, client), std::invalid_argument);
 }
 
 /**
@@ -222,7 +226,9 @@ TEST(CommandFactory, ReturnsNullptrForUnknownCommand) {
  * @expect: Lança std::invalid_argument para comando vazio.
  */
 TEST(CommandFactory, ReturnsNullptrForEmptyCommand) {
-    EXPECT_THROW(ACommand::CreateCommand("", "args"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("", "args", &server, client), std::invalid_argument);
 }
 
 /**
@@ -231,7 +237,9 @@ TEST(CommandFactory, ReturnsNullptrForEmptyCommand) {
  * @expect: Lança std::invalid_argument para comando com acentuação.
  */
 TEST(CommandFactory, ReturnsNullptrForAccentuationCommand) {
-    EXPECT_THROW(ACommand::CreateCommand("TÓPIC", ""), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("TÓPIC", "", &server, client), std::invalid_argument);
 }
 
 /**
@@ -240,7 +248,9 @@ TEST(CommandFactory, ReturnsNullptrForAccentuationCommand) {
  * @expect: Lança std::invalid_argument para comando e argumentos vazios.
  */
 TEST(CommandFactory, ReturnsNullptrForEmptyCommandEmptyArgs) {
-    EXPECT_THROW(ACommand::CreateCommand("", ""), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("", "", &server, client), std::invalid_argument);
 }
 
 /**
@@ -249,7 +259,9 @@ TEST(CommandFactory, ReturnsNullptrForEmptyCommandEmptyArgs) {
  * @expect: Lança std::invalid_argument para comando com espaços extras.
  */
 TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpaces) {
-    EXPECT_THROW(ACommand::CreateCommand("  kick  ", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("  kick  ", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -258,7 +270,9 @@ TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpaces) {
  * @expect: Lança std::invalid_argument para comando com espaços à direita.
  */
 TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
-    EXPECT_THROW(ACommand::CreateCommand("kick  ", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("kick  ", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -267,7 +281,9 @@ TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
  * @expect: Lança std::invalid_argument para comando com tabs e quebras de linha.
  */
 TEST(CommandFactory, HandlesCommandWithTabsAndNewlines) {
-    EXPECT_THROW(ACommand::CreateCommand("\tkick\n", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("\tkick\n", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -276,8 +292,10 @@ TEST(CommandFactory, HandlesCommandWithTabsAndNewlines) {
  * @expect: Lança std::invalid_argument para comando com caracteres especiais.
  */
 TEST(CommandFactory, HandlesCommandWithSpecialCharacters) {
-    EXPECT_THROW(ACommand::CreateCommand("KICK!", "chan user"), std::invalid_argument);
-    EXPECT_THROW(ACommand::CreateCommand("KICK#", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("KICK!", "chan user", &server, client), std::invalid_argument);
+    EXPECT_THROW(ACommand::CreateCommand("KICK#", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -286,7 +304,9 @@ TEST(CommandFactory, HandlesCommandWithSpecialCharacters) {
  * @expect: Lança std::invalid_argument para comando com espaços internos.
  */
 TEST(CommandFactory, HandlesCommandWithInternalSpaces) {
-    EXPECT_THROW(ACommand::CreateCommand("K I C K", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("K I C K", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -296,7 +316,9 @@ TEST(CommandFactory, HandlesCommandWithInternalSpaces) {
  */
 TEST(CommandFactory, HandlesVeryLongCommandName) {
     std::string longCmd(1000, 'K');
-    EXPECT_THROW(ACommand::CreateCommand(longCmd, "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand(longCmd, "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -306,7 +328,9 @@ TEST(CommandFactory, HandlesVeryLongCommandName) {
  */
 TEST(CommandFactory, HandlesVeryLongArgs) {
     std::string longArgs(10000, 'a');
-    ACommand* cmd = ACommand::CreateCommand("KICK", longArgs);
+    Server server;
+    Client client(-1, "123123");
+    ACommand* cmd = ACommand::CreateCommand("KICK", longArgs, &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
 }
@@ -317,7 +341,9 @@ TEST(CommandFactory, HandlesVeryLongArgs) {
  * @expect: Retorna ponteiro não nulo para comando com argumentos especiais.
  */
 TEST(CommandFactory, HandlesArgsWithSpecialCharacters) {
-    ACommand* cmd = ACommand::CreateCommand("INVITE", "canal!@# usuário$%¨&*()");
+    Server server;
+    Client client(-1, "123123");
+    ACommand* cmd = ACommand::CreateCommand("INVITE", "canal!@# usuário$%¨&*()", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
 }
@@ -328,8 +354,10 @@ TEST(CommandFactory, HandlesArgsWithSpecialCharacters) {
  * @expect: Lança std::invalid_argument para comandos com prefixo ou sufixo.
  */
 TEST(CommandFactory, HandlesCommandWithPrefixOrSuffix) {
-    EXPECT_THROW(ACommand::CreateCommand("PREKICK", "chan user"), std::invalid_argument);
-    EXPECT_THROW(ACommand::CreateCommand("KICKPOST", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("PREKICK", "chan user", &server, client), std::invalid_argument);
+    EXPECT_THROW(ACommand::CreateCommand("KICKPOST", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -338,7 +366,9 @@ TEST(CommandFactory, HandlesCommandWithPrefixOrSuffix) {
  * @expect: Lança std::invalid_argument para comando com letras mistas e espaços.
  */
 TEST(CommandFactory, HandlesCommandWithMixedCaseAndSpaces) {
-    EXPECT_THROW(ACommand::CreateCommand("  KiCk ", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("  KiCk ", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -347,7 +377,9 @@ TEST(CommandFactory, HandlesCommandWithMixedCaseAndSpaces) {
  * @expect: Lança std::invalid_argument para comando só de espaços.
  */
 TEST(CommandFactory, HandlesWhitespaceOnlyCommand) {
-    EXPECT_THROW(ACommand::CreateCommand("   ", "chan user"), std::invalid_argument);
+    Server server;
+    Client client(-1, "123123");
+    EXPECT_THROW(ACommand::CreateCommand("   ", "chan user", &server, client), std::invalid_argument);
 }
 
 /**
@@ -356,7 +388,9 @@ TEST(CommandFactory, HandlesWhitespaceOnlyCommand) {
  * @expect: Retorna ponteiro não nulo para comando com argumentos unicode.
  */
 TEST(CommandFactory, HandlesArgsWithUnicode) {
-    ACommand* cmd = ACommand::CreateCommand("TOPIC", u8"canal :tópico com çãõé");
+    Server server;
+    Client client(-1, "123123");
+    ACommand* cmd = ACommand::CreateCommand("TOPIC", u8"canal :tópico com çãõé", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
 }
@@ -368,7 +402,9 @@ TEST(CommandFactory, HandlesArgsWithUnicode) {
  */
 TEST(CommandFactory, NumbersAsArgs) {
     std::string numericArgs = "12345 67890";
-    ACommand* cmd = ACommand::CreateCommand("KICK", numericArgs);
+    Server server;
+    Client client(-1, "123123");
+    ACommand* cmd = ACommand::CreateCommand("KICK", numericArgs, &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
 }
@@ -382,7 +418,8 @@ TEST(CommandFactory, NumbersAsArgs) {
  */
 TEST(CommandInviteExecuteTest, PrintsCorrectMessage) {
     std::string params = "canal usuario";
-    CommandInvite cmd("INVITE", params);
+    Client client(-1, "1212121");
+    CommandInvite cmd("INVITE", params, nullptr, client);
 
     // Redireciona cout para um stringstream
     std::stringstream buffer;
@@ -403,7 +440,8 @@ TEST(CommandInviteExecuteTest, PrintsCorrectMessage) {
  * @expect: Imprime mensagem com parâmetros vazios.
  */
 TEST(CommandInviteExecuteTest, PrintsWithEmptyArgs) {
-    CommandInvite cmd("INVITE", "");
+    Client client(-1, "1212121");
+    CommandInvite cmd("INVITE", "", nullptr, client);
 
     std::stringstream buffer;
     std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf());
@@ -423,7 +461,8 @@ TEST(CommandInviteExecuteTest, PrintsWithEmptyArgs) {
  */
 TEST(CommandInviteExecuteTest, PrintsWithSpecialCharacters) {
     std::string params = "canal!@# usuário$%¨&*()";
-    CommandInvite cmd("INVITE", params);
+    Client client(-1, "1212121");
+    CommandInvite cmd("INVITE", params, nullptr, client);
 
     std::stringstream buffer;
     std::streambuf* oldCout = std::cout.rdbuf(buffer.rdbuf());

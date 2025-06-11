@@ -8,7 +8,7 @@
 
 class CommandMode : public ACommand {
 	public:
-		CommandMode(const std::string &command, const std::string &params);
+		CommandMode(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandMode();
 		void Execute() const;
 };
