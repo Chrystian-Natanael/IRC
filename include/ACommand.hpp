@@ -16,8 +16,9 @@ public:
 	virtual ~ACommand();
 	virtual void Execute() const = 0;
 	virtual bool ValidateCommand() const = 0;
-	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args);
 
+	static ACommand *CreateCommand(const std::string *rawCommand, const std::string *args);
+	std::string GetArgs() const;
 };
 
 typedef ACommand* (*CommandConstructor)(const std::string& args);

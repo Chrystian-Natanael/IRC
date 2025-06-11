@@ -59,7 +59,8 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveData(int fd);
-
+	
+	std::string GetPassword( void ) const;
 	int		GetFd() const;
 	int		GetPort() const;
 
