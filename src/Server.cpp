@@ -169,8 +169,14 @@ void	Server::ReceiveDataAllClients() {
 		try {
 			this->clients[i].ReceiveData();
 		} catch (std::exception &e) {
-			this->DisconnectClient(this->clients[i].GetFd()); // mudar para não precisar do fd
+			this->DisconnectClient(this->clients[i]);
 		}
+	}
+}
+
+void	Server::PerformMessages() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		this->clients[i].PerformMessages(this);
 	}
 }
 
@@ -179,9 +185,10 @@ void	Server::ServerLoop() {
 		this->Poll();
 
 		if (this->fds[0].revents & POLLIN)
-					this->AcceptNewClient();
+			this->AcceptNewClient();
 
 		this->ReceiveDataAllClients();
+		this->PerformMessages();
 	}
 }
 
