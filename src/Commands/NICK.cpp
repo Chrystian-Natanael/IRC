@@ -6,6 +6,10 @@ CommandPass::CommandNick(const std::string &command, const std::string &params) 
 CommandPass::~CommandNick(){}
 
 bool CommandNick::ValidateCommand(server &server, client &client) {
+    if (client.login_state != NICK){
+        std::cerr << "NICK command can only be used in the NICK state." << std::endl;
+        return false;
+    }
     if (this->_args.empty()) {
         std::cerr << "NICK command requires a nickname." << std::endl;
         // client.SendMessage(ERR_NONICKNAMEGIVEN(client.GetNickName()));

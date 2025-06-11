@@ -24,17 +24,7 @@ Server&	Server::operator=(const Server& src) {
 	return (*this);
 }
 
-void	Server::SetNonBlocking(int fd) {
-	if (fd < 0)
-		throw std::invalid_argument("Invalid file descriptor");
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Fail in getting the flags");
-	flags = (flags | O_NONBLOCK);
-	if (fcntl(fd, F_SETFL, flags) == -1)
-		throw std::runtime_error("Fail in setting nonblocking file");
-}
-
+//Getters :
 int	Server::GetFd() const {
 	return (this->server_socket_fd);
 }
@@ -51,25 +41,30 @@ std::vector<struct pollfd>&	Server::GetPollFds() {
 	return (this->fds);
 }
 
-void	Server::InitSocket() {
-	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->server_socket_fd == -1)
-		throw std::runtime_error("Error to create server socket");
+std::str Server::GetPassword() const {
+	return (this->password);
+}
+
+//Setters :
+void	Server::SetNonBlocking(int fd) {
+	if (fd < 0)
+		throw std::invalid_argument("Invalid file descriptor");
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (flags == -1)
+		throw std::runtime_error("Fail in getting the flags");
+	flags = (flags | O_NONBLOCK);
+	if (fcntl(fd, F_SETFL, flags) == -1)
+		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
 void	Server::SetSocketOptions() {
 	int opt_value = 1;
-
+	
 	this->server_addr.sin_family = AF_INET;
 	this->server_addr.sin_addr.s_addr = INADDR_ANY;
 	this->server_addr.sin_port = htons(port);
 	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
 		throw std::runtime_error("Error: setsockopt failed");
-}
-
-void	Server::BindSocket() {
-	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
-		throw std::runtime_error("Error: failed to bind socket");
 }
 
 void Server::ListenSocket() {
@@ -84,6 +79,20 @@ void Server::ListenSocket() {
 	server_poll_fd.revents = 0;
 
 	this->fds.push_back(server_poll_fd);
+}
+
+
+// Initialize the server socket
+
+void	Server::InitSocket() {
+	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->server_socket_fd == -1)
+		throw std::runtime_error("Error to create server socket");
+}
+
+void	Server::BindSocket() {
+	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
+		throw std::runtime_error("Error: failed to bind socket");
 }
 
 void	Server::ServerInit() {

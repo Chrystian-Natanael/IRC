@@ -59,12 +59,38 @@ void InitCommandFactory() {
 	commandFactory["QUIT"]	 = &MakeQuit;
 }
 
-ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args) {
-	std::string upperCommand = rawCommand;
-	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+// ACommand *ACommand::CreateCommand(const std::string *rawCommand, const std::string *args) {  
 
-	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
-	if (it != commandFactory.end())
-		return it->second(args);
-	throw std::invalid_argument("Unknown command: " + rawCommand);
+// 	if (rawCommand == NULL)
+// 		rawCommand = new std::string("");
+// 	if (args == NULL)
+// 		args = new std::string("");
+// 	std::string upperCommand = rawCommand;
+// 	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+
+// 	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
+// 	if (it != commandFactory.end())
+// 		return it->second(args);
+// 	throw std::invalid_argument("Unknown command: " + rawCommand);
+// }
+
+// std::string& ACommand::GetArgs() const {
+// 	return _args;
+// }
+
+
+ACommand* ACommand::CreateCommand(const std::string* rawCommand, const std::string* args) {
+    static const std::string empty = "";
+
+    const std::string& cmdRef = (rawCommand ? *rawCommand : empty);
+    const std::string& argRef = (args ? *args : empty);
+
+    std::string upperCommand = cmdRef;
+    std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+
+    std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
+    if (it != commandFactory.end())
+        return it->second(argRef);
+
+    throw std::invalid_argument("Unknown command: " + cmdRef);
 }
