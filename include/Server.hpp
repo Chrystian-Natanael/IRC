@@ -53,7 +53,7 @@ public:
 	void	ServerInit();
 	void	ServerLoop();
 	void	AcceptNewClient();
-	void	ReceiveData(int fd);
+	void	ReceiveDataAllClients();
 
 	int		GetFd() const;
 	int		GetPort() const;

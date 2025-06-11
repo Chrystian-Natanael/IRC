@@ -156,44 +156,29 @@ void	Server::AcceptNewClient() {
 	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
+	cli.PreventFdClose();
 
 	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
-void	Server::ReceiveData(int fd) {
-	char buff[1024];
-	memset(buff,0, sizeof(buff));
-
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
-	if (bytes > 0) {
-		buff[bytes] = '\0';
-
-		for (size_t i = 0; i < this->GetClients().size(); i++) {
-			Client& client = this->GetClients()[i];
-			if (client.GetFd() == fd)
-				client.PerformMessages(buff);
+void	Server::ReceiveDataAllClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		try {
+			this->clients[i].ReceiveData();
+		} catch (std::exception &e) {
+			this->DisconnectClient(this->clients[i].GetFd()); // mudar para não precisar do fd
 		}
 	}
-	else if (bytes == 0)
-		DisconnectClient(fd);
-	else
-		perror("recv");
 }
 
 void	Server::ServerLoop() {
 	while (1) {
-
 		this->Poll();
 
-		for (size_t i = 0; i < this->fds.size(); i++) {
-			if (this->fds[i].revents & POLLIN) {
-				if (this->fds[i].fd == this->server_socket_fd)
+		if (this->fds[0].revents & POLLIN)
 					this->AcceptNewClient();
-				else
-					this->ReceiveData(this->fds[i].fd);
-			}
-		}
 
+		this->ReceiveDataAllClients();
 	}
 }
 

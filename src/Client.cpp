@@ -47,6 +47,10 @@ void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
 }
 
+void Client::PreventFdClose() {
+	this->fd = -1;
+}
+
 void Client::SetBufferMessage(const std::string& message) {
 	this->buffer_message = message;
 }
@@ -69,40 +73,26 @@ std::string Client::GetNextMessage() {
 	return (result);
 }
 
-static std::string	GetArgs(std::istringstream& iss) {
-	std::string args;
-	std::getline(iss, args);
-	return (args);
+void	Client::AppendBuffer(std::string buffer) {
+	this->buffer_message.append(buffer);
 }
 
-static std::string	GetRawCommand(std::istringstream& iss) {
-	std::string rawCommand;
-	std::getline(iss, rawCommand, ' ');
-	return (rawCommand);
-}
+void	Client::ReceiveData() {
+	char	*buff = new char[RECEIVE_BUFFER_SIZE + 1];
 
-std::string	Client::AppendBuffer(char* buffer) {
-	buffer_message.append(buffer);
-	return (buffer_message);
-}
+	if (buff == NULL)
+		throw std::runtime_error("Memory allocation failed for buffer");
 
-void	Client::PerformMessages(char* buff) {
-	std::string rawCommand = "";
-	std::string args = "";
-	this->AppendBuffer(buff);
-	std::string msg = this->GetNextMessage();
-	while (msg != "") {
-		std::istringstream iss(msg);
-		rawCommand = GetRawCommand(iss);
-		args = GetArgs(iss);
-		try {
-			ACommand* cmd = ACommand::CreateCommand(rawCommand, args);
-			cmd->Execute();
-			delete cmd;
-		}
-		catch(const std::exception &e) {
-			std::cerr << "Error creating command: " << e.what() << std::endl;
-		}
-		msg = this->GetNextMessage();
+	ssize_t bytes = recv(this->fd, buff, RECEIVE_BUFFER_SIZE, 0);
+
+	if (bytes <= 0) {
+		delete[] buff;
+		throw std::runtime_error("Desconectar cliente");
 	}
+
+	buff[bytes] = '\0';
+
+	this->AppendBuffer(buff);
+
+	delete[] buff;
 }
