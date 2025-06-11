@@ -13,6 +13,8 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <string.h>
+#include <sstream>
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
@@ -53,6 +55,7 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveData(int fd);
+	void	PerformMessage(Server& server, int fd);
 
 	int		GetFd() const;
 	int		GetPort() const;
