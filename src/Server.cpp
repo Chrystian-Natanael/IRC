@@ -181,6 +181,10 @@ void	Server::ServerLoop() {
 	}
 }
 
+std::map<std::string, Channel *> Server::GetChannel() const {
+	return (this->channel);
+}
+
 // ! FOR TESTS
 void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;

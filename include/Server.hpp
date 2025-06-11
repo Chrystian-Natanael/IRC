@@ -13,9 +13,13 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <algorithm>
+#include <map>
+
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class Server {
 private:
@@ -24,6 +28,7 @@ private:
 	struct sockaddr_in			server_addr;
 	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
+	std::map<std::string, Channel*>  channel;
 
 	void		CloseFds();
 	void		ClearClients();
@@ -56,6 +61,7 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
+	std::map<std::string, Channel*> GetChannel() const;
 
 	std::vector<Client>&		GetClients();
 	std::vector<struct pollfd>&	GetPollFds();

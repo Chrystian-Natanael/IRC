@@ -20,9 +20,15 @@ class Channel{
         Channel &operator=(const Channel &other);
 
     /*TOPIC*/
-    std::set<Client> getTopic(void);
-    void    setTopic(std::string &topic);
+    void    SetTopic(std::string &topic);
+    void    SetBlockTopic(bool choice);
 
+    std::string GetTopic(void);
+    bool    GetBlockTopic(void);
+    std::set<Client> GetOperators(void);
+
+    void    AddOperator(Client user);
+    void    RemoveOperator(Client user);
 };
 
 #endif

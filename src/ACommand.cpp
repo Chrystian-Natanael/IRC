@@ -6,7 +6,7 @@
 
 //Constructors
 
-ACommand::ACommand(const std::string &rawCommand, const std::string& args, 
+ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 				   Server* server, Client& client) :
 	rawCommand(rawCommand),
 	args(args),

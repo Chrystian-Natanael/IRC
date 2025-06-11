@@ -11,7 +11,8 @@ class CommandTopic: public ACommand {
 		CommandTopic(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandTopic();
 		void Execute() const;
-		bool userPermission() const;
+		std::pair<std::string, std::string> ParseTopic(const std::string& params)const;
+		//bool userPermission() const;
 };
 
 #endif
