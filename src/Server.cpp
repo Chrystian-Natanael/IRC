@@ -54,6 +54,14 @@ int	Server::GetPort() const {
 	return (this->port);
 }
 
+Client&	Server::GetClient(int fd) {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		if (this->clients[i].GetFd() == fd)
+			return (this->clients[i]);
+	}
+	throw std::runtime_error("Client not found");
+}
+
 std::vector<Client>&	Server::GetClients() {
 	return (this->clients);
 }
@@ -161,16 +169,27 @@ void	Server::AcceptNewClient() {
 }
 
 void	Server::ReceiveData(int fd) {
-	char buff[1024];
-	memset(buff,0, sizeof(buff));
+	char	*buff = new char[RECEIVE_BUFFER_SIZE + 1];
 
-	ssize_t bytes = recv(fd, buff, sizeof(buff) - 1, 0);
-	if (bytes > 0)
-		buff[bytes] = '\0';
-	else if (bytes == 0)
-		ClearClients(fd); // Função está na branch feature-removing-client.
-	else
-		perror("recv"); // Analisar errno e ver o tipo de erro
+	if (buff == NULL)
+		throw std::runtime_error("Memory allocation failed for buffer");
+
+	ssize_t bytes = recv(fd, buff, RECEIVE_BUFFER_SIZE, 0);
+
+	if (bytes <= 0) {
+		delete[] buff;
+		this->DisconnectClient(fd);
+		return;
+	}
+
+	buff[bytes] = '\0';
+
+	Client &client = this->GetClient(fd);
+	client.SetBufferMessage(
+		client.GetBufferMessage() + std::string(buff, bytes)
+	);
+	
+	delete[] buff;
 }
 
 void	Server::ServerLoop() {

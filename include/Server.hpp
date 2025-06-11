@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define RECEIVE_BUFFER_SIZE 1024
+
 #include <fcntl.h>
 #include <vector>
 #include <iostream>
@@ -57,6 +59,7 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
+	Client&	GetClient(int fd);
 
 	std::vector<Client>&		GetClients();
 	std::vector<struct pollfd>&	GetPollFds();
