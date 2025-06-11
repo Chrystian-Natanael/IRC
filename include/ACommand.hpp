@@ -10,13 +10,14 @@ class ACommand {
 protected:
 	std::string _rawCommand;
 	std::string _args;
+	Server	*server;
+	Client  &client;
 
 public:
 	ACommand(const std::string& rawCommand, const std::string& args);
 	virtual ~ACommand();
 	virtual void Execute() const = 0;
 	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args);
-
 };
 
 typedef ACommand* (*CommandConstructor)(const std::string& args);

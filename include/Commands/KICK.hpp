@@ -1,6 +1,7 @@
 #ifndef KICK_HPP
 # define KICK_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "ACommand.hpp"
