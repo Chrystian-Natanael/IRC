@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define RECEIVE_BUFFER_SIZE 1024
+
 #include <fcntl.h>
 #include <vector>
 #include <iostream>
@@ -13,7 +15,7 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
-
+#include <string.h>
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
 
@@ -52,10 +54,11 @@ public:
 	void	ServerInit();
 	void	ServerLoop();
 	void	AcceptNewClient();
-	void	ReceiveData(int fd);
+	void	ReceiveDataAllClients();
 
 	int		GetFd() const;
 	int		GetPort() const;
+	Client&	GetClient(int fd);
 
 	std::vector<Client>&		GetClients();
 	std::vector<struct pollfd>&	GetPollFds();

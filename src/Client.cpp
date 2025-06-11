@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "ACommand.hpp"
 
 Client::Client() {}
 
@@ -46,6 +47,10 @@ void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
 }
 
+void Client::PreventFdClose() {
+	this->fd = -1;
+}
+
 void Client::SetBufferMessage(const std::string& message) {
 	this->buffer_message = message;
 }
@@ -66,4 +71,28 @@ std::string Client::GetNextMessage() {
 	}
 
 	return (result);
+}
+
+void	Client::AppendBuffer(std::string buffer) {
+	this->buffer_message.append(buffer);
+}
+
+void	Client::ReceiveData() {
+	char	*buff = new char[RECEIVE_BUFFER_SIZE + 1];
+
+	if (buff == NULL)
+		throw std::runtime_error("Memory allocation failed for buffer");
+
+	ssize_t bytes = recv(this->fd, buff, RECEIVE_BUFFER_SIZE, 0);
+
+	if (bytes <= 0) {
+		delete[] buff;
+		throw std::runtime_error("Desconectar cliente");
+	}
+
+	buff[bytes] = '\0';
+
+	this->AppendBuffer(buff);
+
+	delete[] buff;
 }
