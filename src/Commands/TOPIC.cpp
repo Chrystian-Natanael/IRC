@@ -1,4 +1,5 @@
 #include "Commands/TOPIC.hpp"
+#include "Channel.hpp"
 #include <sstream>
 
 CommandTopic::CommandTopic(const std::string &command, const std::string &params, Server* server, Client& client) :

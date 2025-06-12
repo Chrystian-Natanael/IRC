@@ -19,7 +19,8 @@
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
-#include "Channel.hpp"
+
+class Channel;
 
 class Server {
 private:
@@ -68,6 +69,7 @@ public:
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
+	void	AddChannel(const std::string& name, Channel* channel);
 
 };
 

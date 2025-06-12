@@ -189,3 +189,11 @@ std::map<std::string, Channel *> Server::GetChannel() const {
 void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;
 }
+
+void	Server::AddChannel(const std::string& name, Channel* channel){
+	if (this->channel.find(name) != this->channel.end())
+		throw std::runtime_error("Channel already exists");
+	if (channel == NULL)
+		throw std::runtime_error("Channel pointer is null");
+	this->channel.insert(std::make_pair(name, channel));
+}

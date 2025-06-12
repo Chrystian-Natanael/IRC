@@ -67,3 +67,8 @@ std::string Client::GetNextMessage() {
 
 	return (result);
 }
+
+
+ bool Client::operator<(const Client& other) const {
+        return this->fd < other.fd;
+    }
