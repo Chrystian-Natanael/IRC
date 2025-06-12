@@ -115,3 +115,65 @@ TEST(testTopic, testPrintAfterChangeTopic)
 
     EXPECT_EQ(channel.GetTopic(), "vim é o pior editor de texto");
 }
+
+
+TEST(testList, testListOneChannel)
+{
+    Server server;
+
+    Client client(-1, "192.168");
+
+    InitCommandFactory();
+
+    Channel channel("amantes_do_vim");
+
+    std::string topic("vim é o melhor editor de texto");
+    channel.SetTopic(topic);
+
+    server.AddChannel("amantes_do_vim", &channel);
+
+    ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
+
+    EXPECT_NO_THROW(command->Execute());
+}
+
+
+TEST(testList, testListMultipleChannels)
+{
+    Server server;
+
+    Client client(-1, "192.168");
+
+    InitCommandFactory();
+
+    Channel channel("amantes_do_vim");
+    std::string topic("vim é o melhor editor de texto");
+    channel.SetTopic(topic);
+    server.AddChannel("amantes_do_vim", &channel);
+    channel.AddUser(&client);
+
+    Channel channel2("Odeio_frio");
+    std::string topic2("frio é horrível");
+    channel.SetTopic(topic2);
+    server.AddChannel("Odeio_frio", &channel2);
+
+    Channel channel3("Jogadores_de_CandyCrush");
+    std::string topic3("Esse jogo é viciante");
+    channel3.SetTopic(topic3);
+    server.AddChannel("Jogadores_de_CandyCrush", &channel3);
+
+    Channel channel4("Linux_eh_melhor");
+    std::string topic4("Quem usa Windows não sabe o que é bom");
+    channel3.SetTopic(topic4);
+    server.AddChannel("Linux_eh_melhor", &channel4);
+    channel4.AddUser(&client);
+
+    Channel channel5("MAC_falso_com_linux");
+    std::string topic5("contra mac falso com linux horroroso");
+    channel3.SetTopic(topic5);
+    server.AddChannel("MAC_falso_com_linux", &channel5);
+
+    ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
+
+    EXPECT_NO_THROW(command->Execute());
+}

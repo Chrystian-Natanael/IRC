@@ -3,6 +3,7 @@
 #include "Commands/INVITE.hpp"
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
+#include "Commands/LIST.hpp"
 
 //Constructors
 
@@ -35,11 +36,18 @@ ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
 	return new CommandMode("MODE", args, server, client);
 }
 
+ACommand* MakeList(const std::string& args, Server* server, Client& client) {
+	return new CommandList("LIST", args, server, client);
+}
+
+
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
 	commandFactory["INVITE"] = &MakeInvite;
 	commandFactory["TOPIC"]  = &MakeTopic;
 	commandFactory["MODE"]   = &MakeMode;
+	commandFactory["LIST"]   = &MakeList;
+
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
