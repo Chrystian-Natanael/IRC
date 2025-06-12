@@ -75,13 +75,7 @@ std::string Client::GetNextMessage() {
 
 std::string	Client::GetArgs(std::istringstream& iss) {
 	std::string args;
-	std::getline(iss, args);
-
-	// Arrumar isso aqui
-	// "Mensagem \n outra \r\n"
-	// pra ficar
-	// "Mensagem \n outra \r\n"
-
+	std::getline(iss >> std::ws, args);
 	return (args);
 }
 
