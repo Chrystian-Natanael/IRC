@@ -38,14 +38,14 @@ bool    Channel::GetBlockTopic(void){
     return (this->blockTopic);
 }
 
-std::set<Client> Channel::GetOperators(void){
-    return(this->operators);
+const std::set<Client *> &Channel::GetOperators(void) const{
+    return (this->operators);
 }
 
-void    Channel::AddOperator(Client user){
+void    Channel::AddOperator(Client *user){
     this->operators.insert(user);
 }
 
-void    Channel::RemoveOperator(Client user){
+void    Channel::RemoveOperator(Client *user){
     this->operators.erase(user);
 }

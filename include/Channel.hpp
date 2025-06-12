@@ -8,8 +8,8 @@ class Channel{
     private:
         std::string name;
         std::string topic;
-        std::set<Client> operators;
-        std::vector<Client> users;
+        std::set<Client *> operators;
+        std::vector<Client *> users;
         bool    blockTopic;
 
     public:
@@ -25,10 +25,10 @@ class Channel{
 
     std::string GetTopic(void);
     bool    GetBlockTopic(void);
-    std::set<Client> GetOperators(void);
+    const std::set<Client *> &GetOperators(void) const;
 
-    void    AddOperator(Client user);
-    void    RemoveOperator(Client user);
+    void    AddOperator(Client *user);
+    void    RemoveOperator(Client *user);
 };
 
 #endif

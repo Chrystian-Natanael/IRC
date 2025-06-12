@@ -54,7 +54,7 @@ int	Server::GetPort() const {
 	return (this->port);
 }
 
-std::vector<Client>&	Server::GetClients() {
+const std::vector<Client *>&	Server::GetClients() const{
 	return (this->clients);
 }
 
@@ -119,8 +119,9 @@ void	Server::DisconnectClient(int fd)
 
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
-		if (clients[i].GetFd() == fd)
+		if (clients[i]->GetFd() == fd)
 		{
+			delete(clients[i]);
 			clients.erase(clients.begin() + i);
 			break;
 		}
@@ -153,11 +154,11 @@ void	Server::AcceptNewClient() {
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
 
-	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
+	Client* cli = new Client(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
 
-	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
+	std::cout << G << "Client <" << incofd << "> Connecte?" << RST << std::endl;
 }
 
 void	Server::ReceiveData(int fd) {
@@ -181,7 +182,7 @@ void	Server::ServerLoop() {
 	}
 }
 
-std::map<std::string, Channel *> Server::GetChannel() const {
+const std::map<std::string, Channel *>& Server::GetChannel() const {
 	return (this->channel);
 }
 

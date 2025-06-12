@@ -27,7 +27,7 @@ private:
 	int							port;
 	int							server_socket_fd;
 	struct sockaddr_in			server_addr;
-	std::vector<Client>			clients;
+	std::vector<Client *>		clients;
 	std::vector<struct pollfd>	fds;
 	std::map<std::string, Channel*>  channel;
 
@@ -62,9 +62,9 @@ public:
 
 	int		GetFd() const;
 	int		GetPort() const;
-	std::map<std::string, Channel*> GetChannel() const;
+	const std::map<std::string, Channel*> &GetChannel() const;
 
-	std::vector<Client>&		GetClients();
+	const std::vector<Client *>& GetClients() const;
 	std::vector<struct pollfd>&	GetPollFds();
 
 	// ! FOR TESTS
