@@ -40,6 +40,10 @@ ACommand* MakeList(const std::string& args, Server* server, Client& client) {
 	return new CommandList("LIST", args, server, client);
 }
 
+ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
+	return new CommandList("JOIN", args, server, client);
+}
+
 
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
@@ -47,6 +51,7 @@ void InitCommandFactory() {
 	commandFactory["TOPIC"]  = &MakeTopic;
 	commandFactory["MODE"]   = &MakeMode;
 	commandFactory["LIST"]   = &MakeList;
+	commandFactory["JOIN"]   = &MakeJoin;
 
 }
 

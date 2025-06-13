@@ -42,6 +42,11 @@ void    Channel::SetBlockChannel(bool choice){
     this->blockChannel = choice;
 }
 
+void    Channel::SetPassword(std::string password){
+    this->password = password;
+}
+
+
 bool    Channel::isBlock(void) const{
     return (this->blockChannel);
 }
@@ -55,6 +60,11 @@ const std::set<Client *> &Channel::GetOperators(void) const{
     return (this->operators);
 }
 
+std::string Channel::GetPassword(void) const{
+    return (this->password);
+}
+
+
 void    Channel::AddOperator(Client *user){
     this->operators.insert(user);
 }
@@ -62,8 +72,6 @@ void    Channel::AddOperator(Client *user){
 void    Channel::AddUser(Client *user){
     this->users.push_back(user);
 }
-
-
 
 Client  *Channel::findUserByNickname(const std::string& nickname) const{
     for (std::vector<Client *>::const_iterator it = this->users.begin(); it != users.end(); it++)
@@ -74,7 +82,6 @@ Client  *Channel::findUserByNickname(const std::string& nickname) const{
     return (NULL);
 }
 
-
 void    Channel::RemoveOperator(Client *user){
     this->operators.erase(user);
 }
@@ -83,5 +90,9 @@ void    Channel::RemoveUser(Client *user){
     std::vector<Client *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
     if (it != this->users.end())
         this->users.erase(it);
+}
 
+
+bool    Channel::ValidatePassword(const std::string& password) const{
+    return (this->password == password);
 }
