@@ -154,7 +154,7 @@ TEST(testList, testListMultipleChannels)
 
     Channel channel2("Odeio_frio");
     std::string topic2("frio é horrível");
-    channel.SetTopic(topic2);
+    channel2.SetTopic(topic2);
     server.AddChannel("Odeio_frio", &channel2);
 
     Channel channel3("Jogadores_de_CandyCrush");
@@ -164,13 +164,15 @@ TEST(testList, testListMultipleChannels)
 
     Channel channel4("Linux_eh_melhor");
     std::string topic4("Quem usa Windows não sabe o que é bom");
-    channel3.SetTopic(topic4);
+    channel4.SetTopic(topic4);
+    channel4.SetBlockChannel(true);
     server.AddChannel("Linux_eh_melhor", &channel4);
     channel4.AddUser(&client);
-
+    
     Channel channel5("MAC_falso_com_linux");
     std::string topic5("contra mac falso com linux horroroso");
-    channel3.SetTopic(topic5);
+    channel5.SetTopic(topic5);
+    channel5.SetBlockChannel(true);
     server.AddChannel("MAC_falso_com_linux", &channel5);
 
     ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);

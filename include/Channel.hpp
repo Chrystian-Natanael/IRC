@@ -10,7 +10,8 @@ class Channel{
         std::string topic;
         std::set<Client *> operators;
         std::vector<Client *> users;
-        bool    blockTopic;
+        bool    blockTopic; // praq serve?
+        bool    blockChannel;
 
     public:
         Channel(void);
@@ -27,6 +28,9 @@ class Channel{
     bool    GetBlockTopic(void);
     const std::set<Client *> &GetOperators(void) const;
     const std::vector<Client *> &GetUsers(void) const;
+
+    void    SetBlockChannel(bool choice);
+    bool    isBlock(void) const;
 
     void    AddOperator(Client *user);
     void    AddUser(Client *user);

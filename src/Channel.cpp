@@ -1,8 +1,8 @@
 #include "Channel.hpp"
 
-Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false){}
+Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false){}
 
-Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false){}
+Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false){}
 
 Channel::~Channel(void){}
 
@@ -36,6 +36,14 @@ std::string Channel::GetTopic(void){
 
 bool    Channel::GetBlockTopic(void){
     return (this->blockTopic);
+}
+
+void    Channel::SetBlockChannel(bool choice){
+    this->blockChannel = choice;
+}
+
+bool    Channel::isBlock(void) const{
+    return (this->blockChannel);
 }
 
 const std::vector<Client *> &Channel::GetUsers(void) const{
