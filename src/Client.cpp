@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "ACommand.hpp"
+#include "Server.hpp"
 
 Client::Client() {}
 
@@ -95,4 +96,13 @@ void	Client::ReceiveData() {
 	this->AppendBuffer(buff);
 
 	delete[] buff;
+}
+
+void	Client::SendMessage(const std::string& msg, Server& server) {
+	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
+
+	if (bytesSent <= 0) {
+		server.DisconnectClient(this->fd);
+		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+	}
 }

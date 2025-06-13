@@ -37,14 +37,13 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
-	void		DisconnectClient(int fd);
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
 	friend class ServerPollTest_ThrowsWhenPollFails_Test;
 	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
-public:
+	public:
 	Server();
 	Server(int port);
 	Server(const Server& src);
@@ -55,6 +54,7 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
+	void	DisconnectClient(int fd); // Virou pública para que Client::SendMessage possa desconectar o cliente em caso de erro
 
 	int		GetFd() const;
 	int		GetPort() const;
