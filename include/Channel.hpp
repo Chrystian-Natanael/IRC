@@ -35,7 +35,11 @@ class Channel{
     void    AddOperator(Client *user);
     void    AddUser(Client *user);
 
+    Client  *findUserByNickname(const std::string& nickname) const;
+
     void    RemoveOperator(Client *user);
+    void    RemoveUser(Client *user);
+
 };
 
 #endif

@@ -63,6 +63,25 @@ void    Channel::AddUser(Client *user){
     this->users.push_back(user);
 }
 
+
+
+Client  *Channel::findUserByNickname(const std::string& nickname) const{
+    for (std::vector<Client *>::const_iterator it = this->users.begin(); it != users.end(); it++)
+    {
+        if ((*it)->GetNickName() == nickname)
+            return(*it);
+    }
+    return (NULL);
+}
+
+
 void    Channel::RemoveOperator(Client *user){
     this->operators.erase(user);
+}
+
+void    Channel::RemoveUser(Client *user){
+    std::vector<Client *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
+    if (it != this->users.end())
+        this->users.erase(it);
+
 }
