@@ -166,10 +166,12 @@ void	Server::AcceptNewClient() {
 
 void	Server::ReceiveDataAllClients() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		try {
-			this->clients[i].ReceiveData();
-		} catch (std::exception &e) {
-			this->DisconnectClient(this->clients[i]);
+		if (this->fds[i + 1].revents & POLLIN) {
+			try {
+				this->clients[i].ReceiveData();
+			} catch (std::exception &e) {
+				this->DisconnectClient(this->clients[i]);
+			}
 		}
 	}
 }
