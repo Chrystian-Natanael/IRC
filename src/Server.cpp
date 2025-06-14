@@ -120,14 +120,11 @@ void	Server::Poll() {
 		throw std::runtime_error("Error: failed to poll.");
 }
 
-void	Server::DisconnectClient(int fd)
+void	Server::DisconnectClient(Client &client)
 {
-	if (fd < 0)
-		return ;
-
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
-		if (clients[i].GetFd() == fd)
+		if (clients[i].GetFd() == client.GetFd())
 		{
 			clients.erase(clients.begin() + i);
 			break;
@@ -136,14 +133,12 @@ void	Server::DisconnectClient(int fd)
 
 	for (size_t i = 0; i < this->fds.size(); i++)
 	{
-		if (fds[i].fd == fd)
+		if (fds[i].fd == client.GetFd())
 		{
 			fds.erase(fds.begin() + i);
 			break;
 		}
 	}
-
-	close(fd);
 }
 
 void	Server::AcceptNewClient() {
@@ -171,11 +166,19 @@ void	Server::AcceptNewClient() {
 
 void	Server::ReceiveDataAllClients() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		try {
-			this->clients[i].ReceiveData();
-		} catch (std::exception &e) {
-			this->DisconnectClient(this->clients[i].GetFd()); // mudar para não precisar do fd
+		if (this->fds[i + 1].revents & POLLIN) {
+			try {
+				this->clients[i].ReceiveData();
+			} catch (std::exception &e) {
+				this->DisconnectClient(this->clients[i]);
+			}
 		}
+	}
+}
+
+void	Server::PerformMessages() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		this->clients[i].PerformMessages(this);
 	}
 }
 
@@ -184,9 +187,10 @@ void	Server::ServerLoop() {
 		this->Poll();
 
 		if (this->fds[0].revents & POLLIN)
-					this->AcceptNewClient();
+			this->AcceptNewClient();
 
 		this->ReceiveDataAllClients();
+		this->PerformMessages();
 	}
 }
 

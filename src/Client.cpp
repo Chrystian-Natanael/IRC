@@ -74,6 +74,18 @@ std::string Client::GetNextMessage() {
 	return (result);
 }
 
+std::string	Client::GetArgs(std::istringstream& iss) {
+	std::string args;
+	std::getline(iss >> std::ws, args);
+	return (args);
+}
+
+std::string	Client::GetRawCommand(std::istringstream& iss) {
+	std::string rawCommand;
+	std::getline(iss, rawCommand, ' ');
+	return (rawCommand);
+}
+
 void	Client::AppendBuffer(std::string buffer) {
 	this->buffer_message.append(buffer);
 }
@@ -104,7 +116,28 @@ void	Client::SendMessage(const std::string& msg, Server& server) {
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
-		server.DisconnectClient(this->fd);
+		server.DisconnectClient(*this);
 		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+	}
+}
+
+void	Client::PerformMessages(Server *server) {
+	std::string rawCommand = "";
+	std::string args = "";
+
+	std::string msg = this->GetNextMessage();
+	while (!msg.empty()) {
+		std::istringstream iss(msg);
+		rawCommand = GetRawCommand(iss);
+		args = GetArgs(iss);
+		try {
+			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
+			cmd->Execute();
+			delete cmd;
+		}
+		catch(const std::exception &e) {
+			std::cerr << "Error creating command: " << e.what() << std::endl;
+		}
+		msg = this->GetNextMessage();
 	}
 }

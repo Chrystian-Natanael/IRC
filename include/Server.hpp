@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <exception>
 #include <string.h>
+
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
 
@@ -54,8 +55,8 @@ private:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
-	void	DisconnectClient(int fd); // Virou pública para que Client::SendMessage possa desconectar o cliente em caso de erro
-
+	void	DisconnectClient(Client &client);
+	void	PerformMessages();
 	int		GetFd() const;
 	int		GetPort() const;
 	Client&	GetClient(int fd);

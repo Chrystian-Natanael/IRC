@@ -21,6 +21,9 @@ private:
 	int			fd;
 	Client();
 
+	static std::string	GetRawCommand(std::istringstream& iss);
+	static std::string	GetArgs(std::istringstream& iss);
+
 public:
 
 	Client(int fd, std::string ip);
@@ -38,6 +41,7 @@ public:
 	void		AppendBuffer(std::string buffer);
 	void		ReceiveData();
 	void		SendMessage(const std::string& msg, Server& server);
+	void		PerformMessages(Server *server);
 
 	void SetUserName(const std::string& user_name);
 	void SetNickName(const std::string& nick_name);
