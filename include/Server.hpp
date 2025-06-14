@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define RECEIVE_BUFFER_SIZE 1024
+
 #include <fcntl.h>
 #include <vector>
 #include <iostream>
@@ -15,7 +17,7 @@
 #include <exception>
 #include <algorithm>
 #include <map>
-
+#include <string.h>
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
@@ -24,12 +26,12 @@ class Channel;
 
 class Server {
 private:
-	int							port;
-	int							server_socket_fd;
-	struct sockaddr_in			server_addr;
-	std::vector<Client *>		clients;
-	std::vector<struct pollfd>	fds;
-	std::map<std::string, Channel*>  channel;
+	int									port;
+	int									server_socket_fd;
+	struct sockaddr_in					server_addr;
+	std::vector<Client *>				clients;
+	std::vector<struct pollfd>			fds;
+	std::map<std::string, Channel*>		channel;
 
 	void		CloseFds();
 	void		ClearClients();
@@ -41,14 +43,13 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
-	void		DisconnectClient(int fd);
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
 	friend class ServerPollTest_ThrowsWhenPollFails_Test;
 	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
-public:
+	public:
 	Server();
 	Server(int port);
 	Server(const Server& src);
@@ -58,11 +59,13 @@ public:
 	void	ServerInit();
 	void	ServerLoop();
 	void	AcceptNewClient();
-	void	ReceiveData(int fd);
-
+	void	ReceiveDataAllClients();
+	void	DisconnectClient(Client &client);
+	void	PerformMessages();
 	int		GetFd() const;
 	int		GetPort() const;
 	const std::map<std::string, Channel*> &GetChannel() const;
+	Client&	GetClient(int fd);
 
 	const std::vector<Client *>& GetClients() const;
 	std::vector<struct pollfd>&	GetPollFds();

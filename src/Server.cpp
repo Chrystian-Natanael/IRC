@@ -54,7 +54,15 @@ int	Server::GetPort() const {
 	return (this->port);
 }
 
-const std::vector<Client *>&	Server::GetClients() const{
+Client&	Server::GetClient(int fd) {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		if (this->clients[i]->GetFd() == fd)
+			return (*(this->clients[i]));
+	}
+	throw std::runtime_error("Client not found");
+}
+
+const std::vector<Client *>& Server::GetClients() const {
 	return (this->clients);
 }
 
@@ -112,14 +120,11 @@ void	Server::Poll() {
 		throw std::runtime_error("Error: failed to poll.");
 }
 
-void	Server::DisconnectClient(int fd)
+void	Server::DisconnectClient(Client &client)
 {
-	if (fd < 0)
-		return ;
-
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
-		if (clients[i]->GetFd() == fd)
+		if (clients[i]->GetFd() == client.GetFd())
 		{
 			delete(clients[i]);
 			clients.erase(clients.begin() + i);
@@ -129,14 +134,12 @@ void	Server::DisconnectClient(int fd)
 
 	for (size_t i = 0; i < this->fds.size(); i++)
 	{
-		if (fds[i].fd == fd)
+		if (fds[i].fd == client.GetFd())
 		{
 			fds.erase(fds.begin() + i);
 			break;
 		}
 	}
-
-	close(fd);
 }
 
 void	Server::AcceptNewClient() {
@@ -161,24 +164,33 @@ void	Server::AcceptNewClient() {
 	std::cout << G << "Client <" << incofd << "> Connecte?" << RST << std::endl;
 }
 
-void	Server::ReceiveData(int fd) {
-	(void)fd; // ! compile with error unused parameter 'fd'
+void	Server::ReceiveDataAllClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		if (this->fds[i + 1].revents & POLLIN) {
+			try {
+				this->clients[i]->ReceiveData();
+			} catch (std::exception &e) {
+				this->DisconnectClient(*(this->clients[i]));
+			}
+		}
+	}
+}
+
+void	Server::PerformMessages() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		this->clients[i]->PerformMessages(this);
+	}
 }
 
 void	Server::ServerLoop() {
 	while (1) {
-
 		this->Poll();
 
-		for (size_t i = 0; i < this->fds.size(); i++) {
-			if (this->fds[i].revents & POLLIN) {
-				if (this->fds[i].fd == this->server_socket_fd)
-					this->AcceptNewClient();
-				else
-					this->ReceiveData(this->fds[i].fd);
-			}
-		}
+		if (this->fds[0].revents & POLLIN)
+			this->AcceptNewClient();
 
+		this->ReceiveDataAllClients();
+		this->PerformMessages();
 	}
 }
 

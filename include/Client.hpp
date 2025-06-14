@@ -1,9 +1,15 @@
 #ifndef CLIENT_HPP
-#define CLIENT_HPP
+# define CLIENT_HPP
+
+#define RECEIVE_BUFFER_SIZE 1024
 
 #include <unistd.h>
+#include <sys/socket.h>
 #include <iostream>
 #include <string>
+#include <sstream>
+
+class Server;
 
 class Client {
 private:
@@ -14,6 +20,9 @@ private:
 	std::string buffer_message;
 	int			fd;
 	Client();
+
+	static std::string	GetRawCommand(std::istringstream& iss);
+	static std::string	GetArgs(std::istringstream& iss);
 
 public:
 
@@ -28,6 +37,10 @@ public:
 
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
+	void		AppendBuffer(std::string buffer);
+	void		ReceiveData();
+	void		SendMessage(const std::string& msg, Server& server);
+	void		PerformMessages(Server *server);
 
 	void SetUserName(const std::string& user_name);
 	void SetNickName(const std::string& nick_name);

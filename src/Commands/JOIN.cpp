@@ -12,7 +12,7 @@ std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& pa
     std::istringstream iss(params);
     std::string channel, password;
     iss >> channel >> password;
-    return {channel, password};
+    return std::make_pair(channel, password);
 }
 
 
