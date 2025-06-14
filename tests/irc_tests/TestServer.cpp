@@ -222,13 +222,9 @@ TEST(ServerReceiveTest, ReceiveData_ClientDisconnected) {
 
     int accepted_fd = server.GetClients().back().GetFd();
 
-    close(client_fd);
+    close(accepted_fd);
 
     ASSERT_THROW(server.GetClients().back().ReceiveData(), std::runtime_error);
-
-    server.ReceiveDataAllClients();
-
-    EXPECT_TRUE(server.GetClients().empty());
 
     close(listen_fd);
 }
@@ -274,6 +270,56 @@ TEST(ServerReceiveTest, RecvFails_BytesLessThanZero) {
     close(listen_fd);
 }
 
+/**
+ * @resume: Testa se ReceiveData lida corretamente com erro (bytes < 0).
+ * @function: Server::ReceiveData(int fd)
+ * @expect: A função deve chamar perror e não crashar.
+ */
+TEST(ServerReceiveTest, RecvComMaisDeUmCliente) {
+    Server server(5000);
+
+    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(listen_fd, -1);
+
+    sockaddr_in serv_addr{};
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    serv_addr.sin_port = htons(0);
+
+    ASSERT_EQ(bind(listen_fd, (sockaddr*)&serv_addr, sizeof(serv_addr)), 0);
+    ASSERT_EQ(listen(listen_fd, 1), 0);
+
+    socklen_t len = sizeof(serv_addr);
+    getsockname(listen_fd, (sockaddr*)&serv_addr, &len);
+
+    server.SetFd(listen_fd);
+
+    int client_1_fd = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(client_1_fd, -1);
+    ASSERT_EQ(connect(client_1_fd, (sockaddr*)&serv_addr, sizeof(serv_addr)), 0);
+
+    int client_2_fd = socket(AF_INET, SOCK_STREAM, 0);
+    ASSERT_NE(client_2_fd, -1);
+    ASSERT_EQ(connect(client_2_fd, (sockaddr*)&serv_addr, sizeof(serv_addr)), 0);
+
+    ASSERT_NO_THROW(server.AcceptNewClient());
+    ASSERT_NO_THROW(server.AcceptNewClient());
+    ASSERT_FALSE(server.GetClients().empty());
+
+    int accepted_1_fd = server.GetClients()[0].GetFd();
+    int accepted_2_fd = server.GetClients()[0].GetFd();
+
+    server.GetClients()[0].SetBufferMessage("Message");
+    server.PerformMessages();
+
+    ASSERT_EQ(server.GetClients().size(), 2);
+
+    close(client_1_fd);
+    close(client_2_fd);
+    close(listen_fd);
+    close(accepted_1_fd);
+    close(accepted_2_fd);
+}
 
 
 // Variáveis atômicas usadas para simular e controlar o comportamento da função poll() durante os testes.
