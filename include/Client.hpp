@@ -9,6 +9,8 @@
 #include <string>
 #include <sstream>
 
+class Server;
+
 class Client {
 private:
 	std::string	ip;
@@ -18,6 +20,9 @@ private:
 	std::string buffer_message;
 	int			fd;
 	Client();
+
+	static std::string	GetRawCommand(std::istringstream& iss);
+	static std::string	GetArgs(std::istringstream& iss);
 
 public:
 
@@ -35,6 +40,7 @@ public:
 	std::string GetNextMessage();
 	void		AppendBuffer(std::string buffer);
 	void		ReceiveData();
+	void		PerformMessages(Server *server);
 
 	void SetUserName(const std::string& user_name);
 	void SetNickName(const std::string& nick_name);
