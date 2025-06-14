@@ -38,14 +38,13 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
-	void		DisconnectClient(Client &client);
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
 	friend class ServerPollTest_ThrowsWhenPollFails_Test;
 	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
-public:
+	public:
 	Server();
 	Server(int port);
 	Server(const Server& src);
@@ -56,8 +55,8 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
+	void	DisconnectClient(Client &client);
 	void	PerformMessages();
-
 	int		GetFd() const;
 	int		GetPort() const;
 	Client&	GetClient(int fd);

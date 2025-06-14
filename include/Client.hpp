@@ -1,5 +1,5 @@
 #ifndef CLIENT_HPP
-#define CLIENT_HPP
+# define CLIENT_HPP
 
 #define RECEIVE_BUFFER_SIZE 1024
 
@@ -40,6 +40,7 @@ public:
 	std::string GetNextMessage();
 	void		AppendBuffer(std::string buffer);
 	void		ReceiveData();
+	void		SendMessage(const std::string& msg, Server& server);
 	void		PerformMessages(Server *server);
 
 	void SetUserName(const std::string& user_name);
