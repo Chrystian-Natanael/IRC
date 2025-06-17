@@ -1,4 +1,4 @@
-#include "Commands/Part.hpp"
+#include "Commands/PART.hpp"
 #include "Channel.hpp"
 #include <sstream>
 
