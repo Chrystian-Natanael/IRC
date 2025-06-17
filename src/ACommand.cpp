@@ -4,6 +4,7 @@
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
 #include "Commands/LIST.hpp"
+#include "Commands/PART.hpp"
 
 //Constructors
 
@@ -44,6 +45,9 @@ ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
 	return new CommandList("JOIN", args, server, client);
 }
 
+ACommand* MakePart(const std::string& args, Server* server, Client& client) {
+	return new CommandPart("PART", args, server, client);
+}
 
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
@@ -52,7 +56,7 @@ void InitCommandFactory() {
 	commandFactory["MODE"]   = &MakeMode;
 	commandFactory["LIST"]   = &MakeList;
 	commandFactory["JOIN"]   = &MakeJoin;
-
+	commandFactory["PART"]   = &MakePart;
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
