@@ -3,10 +3,11 @@
 #include "Commands/INVITE.hpp"
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
+#include "Commands/PRIVMSG.hpp"
 
 //Constructors
 
-ACommand::ACommand(const std::string &rawCommand, const std::string& args, 
+ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 				   Server* server, Client& client) :
 	rawCommand(rawCommand),
 	args(args),
@@ -35,11 +36,16 @@ ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
 	return new CommandMode("MODE", args, server, client);
 }
 
+ACommand* MakePrivMsg(const std::string& args, Server* server, Client& client) {
+	return new CommandPrivMsg("PRIVMSG", args, server, client);
+}
+
 void InitCommandFactory() {
-	commandFactory["KICK"]   = &MakeKick;
-	commandFactory["INVITE"] = &MakeInvite;
-	commandFactory["TOPIC"]  = &MakeTopic;
-	commandFactory["MODE"]   = &MakeMode;
+	commandFactory["KICK"]    = &MakeKick;
+	commandFactory["INVITE"]  = &MakeInvite;
+	commandFactory["TOPIC"]   = &MakeTopic;
+	commandFactory["MODE"]    = &MakeMode;
+	commandFactory["PRIVMSG"] = &MakePrivMsg;
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
