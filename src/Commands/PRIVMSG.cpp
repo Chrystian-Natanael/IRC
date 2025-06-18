@@ -5,7 +5,7 @@ CommandPrivMsg::CommandPrivMsg(const std::string &command, const std::string& pa
 
 CommandPrivMsg::~CommandPrivMsg() {}
 
-void CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
+std::pair<std::string, std::string> CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
 	if (!HasTextDelimiter(params))
 		throw std::runtime_error("Missing ':' delimiter in PRIVMSG command.");
 	if (!HasTextBeforeDelimiter(params))
@@ -19,6 +19,8 @@ void CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
 		ValidateChannelTarget(destination);
 	else
 		ValidateNickTarget(destination);
+	std::string msg = ExtractMsg(params);
+	return (std::make_pair(destination, msg));
 }
 
 /*
@@ -70,13 +72,43 @@ bool CommandPrivMsg::IsChannelTarget(const std::string& destination) {
 	return (destination.find('#') == 0);
 }
 
-bool CommandPrivMsg::ValidateChannelTarget(const std::string& name) {
+void CommandPrivMsg::ValidateChannelTarget(const std::string& name) {
 	if (name.length() == 1)
-		throw std::runtime_error("msg");
+		throw std::runtime_error("Channel name too short: must have characters after '#'");
 	for (std::string::const_iterator it = name.begin(); it != name.end(); it++) {
 		char c = *it;
 		if (c == ' ' || c == ',' || c == '\a')
-			return (false);
+			throw std::runtime_error("Channel name contains invalid character (space, comma, or BELL)");
 	}
-	return (true);
+}
+
+/*
+ Com base na documentação disponível em:
+https://modern.ircdocs.horse/#clients
+*/
+void CommandPrivMsg::ValidateNickTarget(const std::string& name) {
+	if (StartsWithInvalidPrefix(name[0]))
+		throw std::runtime_error("Nickname starts with forbbiden character");
+	if (ContainsDotCharacter(name))
+		throw std::runtime_error("Nickname has forbbiden '.' character");
+}
+
+bool CommandPrivMsg::StartsWithInvalidPrefix(char c) {
+	return (c == ':' || c == '$' || c == '#' || c == '&' ||
+			c == '+' || c == '@' || c == '~' || c == '%' ||
+			c == '!' || c == '*');
+}
+
+bool CommandPrivMsg::ContainsDotCharacter(const std::string& name) {
+	return (name.find('.') != std::string::npos);
+}
+
+std::string CommandPrivMsg::ExtractMsg(const std::string& params) {
+	size_t pos = params.find(':');
+	std::string msg = params.substr(pos + 1);
+	return (Trim(msg));
+}
+
+void CommandPrivMsg::Execute() const {
+	
 }
