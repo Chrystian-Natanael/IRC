@@ -15,4 +15,5 @@ class CommandPass : public ACommand {
         bool ValidateCommand() const;
 };
 
+std::vector<std::string> SplitArguments(const std::string& input);
 # endif

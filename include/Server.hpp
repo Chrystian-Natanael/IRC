@@ -59,6 +59,7 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveData(int fd);
+	void	DisconnectClient(Client &client);
 	
 	std::string GetPassword( void ) const;
 	int		GetFd() const;
