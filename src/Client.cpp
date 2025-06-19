@@ -27,6 +27,10 @@ std::string Client::GetRealName() const {
 	return (this->real_name);
 }
 
+int Client::GetLoginState() const {
+	return (this->login_state);
+}
+
 std::string Client::GetBufferMessage() const {
 	return (this->buffer_message);
 }
@@ -41,6 +45,10 @@ void Client::SetNickName(const std::string& nick_name) {
 
 void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
+}
+
+void Client::SetLoginState(int state) {
+	this->login_state = state;
 }
 
 void Client::SetBufferMessage(const std::string& message) {
@@ -63,4 +71,15 @@ std::string Client::GetNextMessage() {
 	}
 
 	return (result);
+}
+
+void	Client::SendMessage(const std::string& msg, Server& server) {
+	if (msg.empty())
+		return;
+	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
+
+	if (bytesSent <= 0) {
+		server.DisconnectClient(*this);
+		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+	}
 }

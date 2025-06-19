@@ -110,6 +110,27 @@ void	Server::Poll() {
 		throw std::runtime_error("Error: failed to poll.");
 }
 
+void	Server::DisconnectClient(Client &client)
+{
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i].GetFd() == client.GetFd())
+		{
+			clients.erase(clients.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < this->fds.size(); i++)
+	{
+		if (fds[i].fd == client.GetFd())
+		{
+			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+}
+
 void	Server::AcceptNewClient() {
 	struct sockaddr_in cliadd;
 	struct pollfd NewPoll;
@@ -157,3 +178,4 @@ void	Server::ServerLoop() {
 void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;
 }
+
