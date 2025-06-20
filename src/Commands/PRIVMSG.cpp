@@ -1,9 +1,18 @@
 #include "Commands/PRIVMSG.hpp"
 
 CommandPrivMsg::CommandPrivMsg(const std::string &command, const std::string& params, Server* server, Client& client) :
-	ACommand(command, params, server, client) {}
+	ACommand(command, params, server, client) {
+
+	// this->alguma_coisa = this->ValidatePrivMsg(params);
+}
 
 CommandPrivMsg::~CommandPrivMsg() {}
+
+// Implementação da validate, só para compilar
+// Isso vai sair depois
+// bool	CommandPrivMsg::ValidateCommand(const std::string& params) {
+// 	return (true);
+// }
 
 std::pair<std::string, std::string> CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
 	if (!HasTextDelimiter(params))
@@ -110,5 +119,5 @@ std::string CommandPrivMsg::ExtractMsg(const std::string& params) {
 }
 
 void CommandPrivMsg::Execute() const {
-	
+
 }

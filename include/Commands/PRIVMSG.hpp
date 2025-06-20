@@ -10,6 +10,8 @@ class	CommandPrivMsg : public ACommand {
 		CommandPrivMsg(const std::string &command, const std::string& params, Server* server, Client& client);
 		~CommandPrivMsg();
 
+		// bool ValidateCommand() const;
+
 		std::pair<std::string, std::string> ValidatePrivMsg(const std::string& params);
 
 		bool HasTextDelimiter(const std::string& params);
