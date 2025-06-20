@@ -12,6 +12,10 @@ Client::~Client() {
 		close(this->fd);
 }
 
+bool Client::operator<(const Client& other) const {
+	return (this->fd < other.fd);
+}
+
 int Client::GetFd() const {
 	return (this->fd);
 }
@@ -46,10 +50,6 @@ void Client::SetNickName(const std::string& nick_name) {
 
 void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
-}
-
-void Client::PreventFdClose() {
-	this->fd = -1;
 }
 
 void Client::SetBufferMessage(const std::string& message) {

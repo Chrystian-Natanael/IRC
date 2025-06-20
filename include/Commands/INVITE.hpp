@@ -1,6 +1,7 @@
 #ifndef INVITE_HPP
 # define INVITE_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "ACommand.hpp"
