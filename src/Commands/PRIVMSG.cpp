@@ -1,9 +1,11 @@
 #include "Commands/PRIVMSG.hpp"
+#include "Channel.hpp"
+#include <algorithm>
 
 CommandPrivMsg::CommandPrivMsg(const std::string &command, const std::string& params, Server* server, Client& client) :
 	ACommand(command, params, server, client) {
 
-	// this->alguma_coisa = this->ValidatePrivMsg(params);
+	this->msgToDest = this->ValidatePrivMsg(params);
 }
 
 CommandPrivMsg::~CommandPrivMsg() {}
@@ -77,7 +79,7 @@ bool CommandPrivMsg::HasMultipleTargets(const std::string& destination) {
 	return (destination.find(',') != std::string::npos);
 }
 
-bool CommandPrivMsg::IsChannelTarget(const std::string& destination) {
+bool CommandPrivMsg::IsChannelTarget(const std::string& destination) const {
 	return (destination.find('#') == 0);
 }
 
@@ -118,6 +120,51 @@ std::string CommandPrivMsg::ExtractMsg(const std::string& params) {
 	return (Trim(msg));
 }
 
-void CommandPrivMsg::Execute() const {
+void CommandPrivMsg::Execute() const { // Checar se vamos mandar a msg no formato IRC
+	if (IsChannelTarget(this->msgToDest.first))
+		SendToChannel();
+	else
+		SendToUser();
+}
 
+void CommandPrivMsg::SendToChannel() const {
+	Channel *channel = GetChannelIfExists();
+
+	if (!channel)
+		throw std::runtime_error("Destination doesn't exist.");
+
+	std::vector<Client *> users = channel->GetUsers();
+	for (size_t i = 0; i < users.size(); i++) {
+		if (users[i]->GetFd() != this->client.GetFd())
+			users[i]->SendMessage(this->msgToDest.second, *this->server);
+	}
+}
+
+Channel* CommandPrivMsg::GetChannelIfExists() const {
+	const std::map<std::string, Channel*>& channels = this->server->GetChannel();
+	std::map<std::string, Channel*>::const_iterator it = channels.find(this->msgToDest.first);
+
+	if (it != channels.end())
+		return it->second;
+	return (NULL);
+}
+
+void CommandPrivMsg::SendToUser() const {
+	Client* recipient = GetUserIfExists();
+
+	if (!recipient)
+		throw std::runtime_error("Destination doesn't exist.");
+
+	if (recipient->GetFd() != this->client.GetFd())
+		recipient->SendMessage(this->msgToDest.second, *this->server);
+}
+
+Client* CommandPrivMsg::GetUserIfExists() const {
+	const std::vector<Client*>& users = this->server->GetClients();
+
+	for (size_t i = 0; i < users.size(); i++) {
+		if (users[i]->GetNickName() == this->msgToDest.first)
+			return (users[i]);
+	}
+	return (NULL);
 }

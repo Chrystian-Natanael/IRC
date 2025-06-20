@@ -6,6 +6,8 @@
 # include "ACommand.hpp"
 
 class	CommandPrivMsg : public ACommand {
+	private:
+		std::pair<std::string, std::string> msgToDest;
 	public:
 		CommandPrivMsg(const std::string &command, const std::string& params, Server* server, Client& client);
 		~CommandPrivMsg();
@@ -18,7 +20,7 @@ class	CommandPrivMsg : public ACommand {
 		bool HasTextBeforeDelimiter(const std::string& params);
 		bool HasTextAfterDelimiter(const std::string& params);
 		bool HasMultipleTargets(const std::string& destination);
-		bool IsChannelTarget(const std::string& destination);
+		bool IsChannelTarget(const std::string& destination) const;
 		bool StartsWithInvalidPrefix(char c);
 		bool ContainsDotCharacter(const std::string& name);
 		void ValidateChannelTarget(const std::string& name);
@@ -29,6 +31,10 @@ class	CommandPrivMsg : public ACommand {
 		std::string Trim(const std::string& destination);
 
 		void Execute() const;
-};
+		void SendToChannel() const;
+		Channel* GetChannelIfExists() const;
+		void SendToUser() const;
+		Client* GetUserIfExists() const;
+	};
 
 #endif
