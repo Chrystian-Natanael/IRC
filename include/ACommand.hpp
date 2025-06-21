@@ -1,11 +1,14 @@
 # ifndef ACOMMAND_HPP
-# define ACOMMAND_HP
+# define ACOMMAND_HPP
 
 #include <iostream>
 #include <string>
 #include <map>
+#include <sstream>
+#include <vector>
 #include <algorithm>
 #include "Server.hpp"
+#include "Client.hpp"
 
 // PASS ERRORS
 #define ERR_ERROPASSSTATE "PASS command can only be used in the PASS state."
@@ -25,6 +28,9 @@
 #define ERR_ERROUSERNAMESIZE "Realname can't be longer than 15 characters."
 
 
+class Server;
+class Client;
+
 class ACommand {
 protected:
 	std::string rawCommand;
@@ -35,8 +41,8 @@ protected:
 public:
 	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client&client);
 	virtual ~ACommand();
-	virtual void Execute() const = 0;
-	virtual bool ValidateCommand() const = 0;
+	virtual void Execute() = 0;
+	virtual bool ValidateCommand(const std::string &params) = 0;
 	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 
 };
@@ -45,13 +51,16 @@ typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server,
 
 void InitCommandFactory();
 
-ACommand* MakeKick(const std::string& args, Server* server, Client&client);
-ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
-ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
-ACommand* MakeMode(const std::string& args, Server* server, Client&client);
+// ACommand* MakeKick(const std::string& args, Server* server, Client&client);
+// ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
+// ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
+// ACommand* MakeMode(const std::string& args, Server* server, Client&client);
+ACommand* MakePass(const std::string& args, Server* server, Client&client);
+ACommand* MakeNick(const std::string& args, Server* server, Client&client);
+ACommand* MakeUser(const std::string& args, Server* server, Client&client);
 
 std::vector<std::string> SplitArguments(const std::string& input);
 
-# endif
+#endif
 
 

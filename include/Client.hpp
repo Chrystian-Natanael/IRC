@@ -1,8 +1,11 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
+#include <unistd.h>
+#include <sys/socket.h>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 enum AuthState {
     PASSWORD,       // Esperando o comando PASS
@@ -12,6 +15,7 @@ enum AuthState {
 };
 
 class Channel;
+class Server;
 
 class Client {
 private:

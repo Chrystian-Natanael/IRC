@@ -1,16 +1,16 @@
-#include "USER.hpp"
+#include "../include/Commands/USER.hpp"
 
 // USER carol  0 * :
 
 CommandUser::CommandUser(const std::string &command, const std::string &params, Server* server, Client& client) :
 	ACommand(command, params, server, client) {
-    if (this->ValidateCommand->(params) == 0)
+        if (this->ValidateCommand(params) == 0)
         throw std::runtime_error("Error: validation of the command USER.");
-}
-
-CommandUser::~CommandUser(){}
-
-bool CommandUser::ValidateCommand (std::string& params) {
+    }
+    
+    CommandUser::~CommandUser(){}
+    
+bool CommandUser::ValidateCommand (const std::string& params) {
     this->userName = "";
     this->realName = "";
     if (params.empty())
@@ -23,29 +23,41 @@ bool CommandUser::ValidateCommand (std::string& params) {
 
 void CommandUser::Execute () {
     // validar se username contem apenas numeros e letras
-    if (this->client.GetLoginState != USER)
-        throw std::runtime_error(SendMessage(ERR_ERROUSERSTATE, this->(*server)));
-    if (!std::all_of(this->userName.begin(), this->userName.end(), ::isalnum))
-        throw std::runtime_error(SendMessage(ERR_ERROUSERNAME, this->(*server)));
+    if (this->client.GetLoginState() != USER){
+        this->client.SendMessage(ERR_ERROUSERSTATE, *this->server);
+        throw std::runtime_error("Invalid user state");
+    }
+    if (!std::all_of(this->userName.begin(), this->userName.end(), ::isalnum)){
+        this->client.SendMessage(ERR_ERROUSERNAME, *this->server);
+        throw std::runtime_error(ERR_ERROUSERNAME);
+    }
     // validar se realname contém apenas espaços
-    if (std::all_of(this->realName.begin(), this->realName.end(), ::isspace))
-            throw std::runtime_error(SendMessage(ERR_ERROUREALNAME, this->(*server)));
+    if (std::all_of(this->realName.begin(), this->realName.end(), ::isspace)) {
+        this->client.SendMessage(ERR_ERROUSERREALNAME, *this->server);
+        throw std::runtime_error(ERR_ERROUSERREALNAME);
+    }
     // validar se realname contém apenas letras e espaços
     if (!std::all_of(this->realName.begin(), this->realName.end(),
         [](unsigned char c){ return std::isalpha(c) || std::isspace(c); })) {
-        throw std::runtime_error(SendMessage(ERR_ERROUREALNAME, this->(*server)));
+        this->client.SendMessage(ERR_ERROUSERREALNAME, *this->server);
+        throw std::runtime_error(ERR_ERROUSERREALNAME);
     }
-    if (this->realName.legth() > 25)
-        throw std::runtime_error(SendMessage(ERR_ERROUREALNAMESIZE, this->(*server)));
-    if (this->userName.length() > 15)
-        throw std::runtime_error(SendMessage(ERR_ERROUUSERNAMESIZE, this->(*server)));
+    if (this->realName.length() > 25) {
+        this->client.SendMessage(ERR_ERROUSERREALNAMESIZE, *this->server);
+        throw std::runtime_error(ERR_ERROUSERREALNAMESIZE);
+    }
+    if (this->userName.length() > 15) {
+        this->client.SendMessage(ERR_ERROUSERNAMESIZE, *this->server);
+        throw std::runtime_error(ERR_ERROUSERNAMESIZE);
+    }
+        
     this->client.SetUserName(this->userName);
     this->client.SetLoginState(REGISTERED);
     std::cout << "User " << this->client.GetUserName() << " registered with real name: " << this->client.GetRealName() << std::endl;
 }
 
 
-void CommmandUser::ParseUserCommand(const std::string& str) {
+void CommandUser::ParseUserCommand(const std::string& str) {
     const std::string delimiter = " 0 * :";
     size_t pos = str.find(delimiter);
     if (pos == std::string::npos) {

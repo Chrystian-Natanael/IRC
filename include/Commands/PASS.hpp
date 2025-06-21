@@ -9,10 +9,10 @@ class ACommand;
 
 class CommandPass : public ACommand {
 	public:
-		CommandPass(const std::string &command, const std::string &args);
+		CommandPass(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandPass();
-		void Execute(client &clien) const;
-        bool ValidateCommand() const;
+		void Execute();
+		bool ValidateCommand(const std::string &params);
 };
 
 std::vector<std::string> SplitArguments(const std::string& input);

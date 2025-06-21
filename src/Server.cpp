@@ -41,7 +41,7 @@ std::vector<struct pollfd>&	Server::GetPollFds() {
 	return (this->fds);
 }
 
-std::str Server::GetPassword() const {
+std::string Server::GetPassword() const {
 	return (this->password);
 }
 

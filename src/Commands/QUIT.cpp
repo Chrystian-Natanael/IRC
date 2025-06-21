@@ -1,4 +1,4 @@
-#include "QUIT.hpp"
+#include "../include/Commands/QUIT.hpp"
 
 CommandQuit::CommandQuit(const std::string &command, const std::string &params, Server* server, Client& client) :
 	ACommand(command, params, server, client) {
@@ -7,7 +7,7 @@ CommandQuit::CommandQuit(const std::string &command, const std::string &params, 
 
 CommandQuit::~CommandQuit(){}
 
-bool CommandQuit::ValidateCommand(std::string& params) {
+bool CommandQuit::ValidateCommand(const std::string& params) {
     return true;
 }
 
@@ -19,8 +19,8 @@ void CommandQuit::Execute() {
     // percorrer vetor de canais e verificar em quais o client está conectado
     // mandar mensagem para todos os clientes desses canais
     // remover o client do vector de user de cada canal
-    this->client.SendMessage(quitMsg, this->(*server));
-    this->server.DisconnectClient(this->client);
+    this->client.SendMessage(quitMsg, *this->server);
+    this->server->DisconnectClient(this->client);
     
 
 }

@@ -17,11 +17,11 @@
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
 
-validateComand(server &server, client &client)
+// validateComand(server &server, client &client)
 
-validateComand(){
-	this.server.password = password;
-}
+// validateComand(){
+// 	this.server.password = password;
+// }
 
 class Server {
 private:

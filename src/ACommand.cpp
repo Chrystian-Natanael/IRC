@@ -1,8 +1,13 @@
 #include "ACommand.hpp"
-#include "Commands/KICK.hpp"
-#include "Commands/INVITE.hpp"
-#include "Commands/TOPIC.hpp"
-#include "Commands/MODE.hpp"
+// #include "Commands/KICK.hpp"
+// #include "Commands/INVITE.hpp"
+// #include "Commands/TOPIC.hpp"
+// #include "Commands/MODE.hpp"
+#include "Server.hpp"
+#include "Commands/PASS.hpp"
+#include "Commands/NICK.hpp"
+#include "Commands/USER.hpp"
+#include "Commands/QUIT.hpp"
 
 //Constructors
 
@@ -19,59 +24,66 @@ ACommand::~ACommand() {}
 static std::map<std::string, CommandConstructor> commandFactory;
 
 //makers
-ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
-	return new CommandKick("KICK", args, server, client);
-}
+// ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
+// 	return new CommandKick("KICK", args, server, client);
+// }
 
-ACommand* MakeInvite(const std::string& args, Server* server, Client& client) {
-	return new CommandInvite("INVITE", args, server, client);
-}
+// ACommand* MakeInvite(const std::string& args, Server* server, Client& client) {
+// 	return new CommandInvite("INVITE", args, server, client);
+// }
 
-ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
-	return new CommandTopic("TOPIC", args, server, client);
-}
+// ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
+// 	return new CommandTopic("TOPIC", args, server, client);
+// }
 
-ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
-	return new CommandMode("MODE", args, server, client);
-}
+// ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
+// 	return new CommandMode("MODE", args, server, client);
+// }
 
 ACommand* MakePass(const std::string& args, Server* server, Client& client) {
 	return new CommandPass("PASS", args, server, client);
 }
 
 ACommand* MakeNick(const std::string& args, Server* server, Client& client) {
-	return new CommandNick("NICK", args, server, client);
+    return new CommandNick("NICK", args, server, client);
 }
 
 ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
 	return new CommandUser("USER", args, server, client);
 }
 
+ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
+	return new CommandQuit("QUIT", args, server, client);
+}
+
 void InitCommandFactory() {
-	commandFactory["KICK"]   = &MakeKick;
-	commandFactory["INVITE"] = &MakeInvite;
-	commandFactory["TOPIC"]  = &MakeTopic;
-	commandFactory["MODE"]   = &MakeMode;
+	// commandFactory["KICK"]   = &MakeKick;
+	// commandFactory["INVITE"] = &MakeInvite;
+	// commandFactory["TOPIC"]  = &MakeTopic;
+	// commandFactory["MODE"]   = &MakeMode;
 	commandFactory["PASS"]   = &MakePass;
 	commandFactory["NICK"]   = &MakeNick;
 	commandFactory["USER"]   = &MakeUser;
+    commandFactory["QUIT"]   = &MakeQuit;
+
 }
 
 
-ACommand* ACommand::CreateCommand(const std::string* rawCommand, const std::string* args) {
-    static const std::string empty = "";
+ACommand* ACommand::CreateCommand(const std::string &rawCommand, const std::string& args, 
+				   Server* server, Client& client) {
+    // static const std::string empty = "";
 
-    const std::string& cmdRef = (rawCommand ? *rawCommand : empty);
-    const std::string& argRef = (args ? *args : empty);
+    // const std::string& cmdRef = (rawCommand ? *rawCommand : empty);
+    // const std::string& argRef = (args ? *args : empty);
 
-    std::string upperCommand = cmdRef;
+    std::string upperCommand = rawCommand;
     std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
 
     std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
     if (it != commandFactory.end())
-        return it->second(argRef);
+        return it->second(args, server, client);
 
-    throw std::invalid_argument("Unknown command: " + cmdRef);
+    throw std::invalid_argument("Unknown command: " + rawCommand);
 }
 
 

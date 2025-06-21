@@ -13,11 +13,11 @@ class CommandUser : public ACommand {
 		std::string realName;
 
 	public:
-		CommandUser(const std::string &command, const std::string &args);
+		CommandUser(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandUser();
-		void Execute() const;
-        bool ValidateCommand() const;
-		void ParseUserCommand(const std::string &str)
+		void Execute();
+        bool ValidateCommand(const std::string &params);
+		void ParseUserCommand(const std::string &str);
 
 		const std::string &GetUserName() const;
 		const std::string &GetRealName() const;
