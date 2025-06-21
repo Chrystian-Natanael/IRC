@@ -5,6 +5,8 @@ Server::Server() : port(-1), server_socket_fd(-1) {}
 Server::Server(int port) : port(port), server_socket_fd(-1) {
 	if (port < 1024 || port > 65535)
 		throw std::invalid_argument("Port number must be between 1024 and 65535");
+
+	InitCommandFactory();
 }
 
 Server::Server(const Server& src) :
@@ -17,6 +19,8 @@ Server::~Server() {
 
 	this->ClearClients();
 	this->CloseFds();
+
+	ClearCommandFactory();
 }
 
 Server&	Server::operator=(const Server& src) {
@@ -116,27 +120,27 @@ void	Server::Poll() {
 	if (this->fds.empty())
 		return ;
 
-	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
+	if (poll(this->fds.data(), this->fds.size(), -1) == -1 && g_server)
 		throw std::runtime_error("Error: failed to poll.");
 }
 
 void	Server::DisconnectClient(Client &client)
 {
+	for (size_t i = 0; i < this->fds.size(); i++)
+	{
+		if (fds[i].fd == client.GetFd())
+		{
+			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
 		if (clients[i]->GetFd() == client.GetFd())
 		{
 			delete clients[i];
 			clients.erase(clients.begin() + i);
-			break;
-		}
-	}
-
-	for (size_t i = 0; i < this->fds.size(); i++)
-	{
-		if (fds[i].fd == client.GetFd())
-		{
-			fds.erase(fds.begin() + i);
 			break;
 		}
 	}
@@ -183,7 +187,7 @@ void	Server::PerformMessages() {
 }
 
 void	Server::ServerLoop() {
-	while (1) {
+	while (g_server) {
 		this->Poll();
 
 		if (this->fds[0].revents & POLLIN)

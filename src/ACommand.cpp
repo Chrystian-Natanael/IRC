@@ -6,7 +6,7 @@
 
 //Constructors
 
-ACommand::ACommand(const std::string &rawCommand, const std::string& args, 
+ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 				   Server* server, Client& client) :
 	rawCommand(rawCommand),
 	args(args),
@@ -40,6 +40,10 @@ void InitCommandFactory() {
 	commandFactory["INVITE"] = &MakeInvite;
 	commandFactory["TOPIC"]  = &MakeTopic;
 	commandFactory["MODE"]   = &MakeMode;
+}
+
+void ClearCommandFactory() {
+	commandFactory.clear();
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {

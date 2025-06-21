@@ -19,6 +19,9 @@
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "ACommand.hpp"
+
+extern int volatile g_server;
 
 class Server {
 private:

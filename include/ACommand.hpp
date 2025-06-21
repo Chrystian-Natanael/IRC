@@ -25,6 +25,7 @@ public:
 typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server, Client& client);
 
 void InitCommandFactory();
+void ClearCommandFactory();
 
 ACommand* MakeKick(const std::string& args, Server* server, Client&client);
 ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
