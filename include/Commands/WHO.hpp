@@ -6,11 +6,20 @@
 class CommandWho : public ACommand {
 	private:
 		CommandWho(); // Verificar se precisamos manter esse construtor aqui.
+
+		bool search_all;		// Se true, busca todos os usuários conectados
+		bool is_channel;		// Se true, busca usuários em um canal específico
+		std::string channel;	// Canal a ser pesquisado, se is_channel for true
+		std::string nick;		// Nick a ser pesquisado, se não for um canal
+
 	public:
-		CommandWho(const std::string &args, Server* server, Client& client);
+		CommandWho(const std::string &command, const std::string &args, Server* server, Client& client);
 		CommandWho(const CommandWho& other);
 		~CommandWho();
 		CommandWho& operator=(const CommandWho& other);
+
+		bool ValidateCommand(std::string args) const;
+		void Execute() const;
 };
 
 /*
