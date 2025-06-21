@@ -10,6 +10,8 @@ Client::Client(int fd, std::string ip) :
 Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
+
+	std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
 }
 
 int Client::GetFd() const {
@@ -46,10 +48,6 @@ void Client::SetNickName(const std::string& nick_name) {
 
 void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
-}
-
-void Client::PreventFdClose() {
-	this->fd = -1;
 }
 
 void Client::SetBufferMessage(const std::string& message) {

@@ -56,13 +56,13 @@ int	Server::GetPort() const {
 
 Client&	Server::GetClient(int fd) {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		if (this->clients[i].GetFd() == fd)
-			return (this->clients[i]);
+		if (this->clients[i]->GetFd() == fd)
+			return (*(this->clients[i]));
 	}
 	throw std::runtime_error("Client not found");
 }
 
-std::vector<Client>&	Server::GetClients() {
+const std::vector<Client *>&	Server::GetClients() const {
 	return (this->clients);
 }
 
@@ -124,8 +124,9 @@ void	Server::DisconnectClient(Client &client)
 {
 	for (size_t i = 0; i < this->clients.size(); i++)
 	{
-		if (clients[i].GetFd() == client.GetFd())
+		if (clients[i]->GetFd() == client.GetFd())
 		{
+			delete clients[i];
 			clients.erase(clients.begin() + i);
 			break;
 		}
@@ -156,10 +157,9 @@ void	Server::AcceptNewClient() {
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
 
-	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
+	Client* cli = new Client(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
-	cli.PreventFdClose();
 
 	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
@@ -168,9 +168,9 @@ void	Server::ReceiveDataAllClients() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
 		if (this->fds[i + 1].revents & POLLIN) {
 			try {
-				this->clients[i].ReceiveData();
+				this->clients[i]->ReceiveData();
 			} catch (std::exception &e) {
-				this->DisconnectClient(this->clients[i]);
+				this->DisconnectClient(*(this->clients[i]));
 			}
 		}
 	}
@@ -178,7 +178,7 @@ void	Server::ReceiveDataAllClients() {
 
 void	Server::PerformMessages() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		this->clients[i].PerformMessages(this);
+		this->clients[i]->PerformMessages(this);
 	}
 }
 

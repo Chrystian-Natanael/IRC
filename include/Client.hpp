@@ -35,7 +35,6 @@ public:
 	std::string	GetNickName() const;
 	std::string	GetRealName() const;
 
-	void		PreventFdClose();
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
 	void		AppendBuffer(std::string buffer);
