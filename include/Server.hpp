@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <exception>
 #include <string.h>
+
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
 
@@ -37,14 +38,13 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 	void		Poll();
-	void		DisconnectClient(int fd);
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
 	friend class ServerPollTest_ThrowsWhenPollFails_Test;
 	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
-public:
+	public:
 	Server();
 	Server(int port);
 	Server(const Server& src);
@@ -55,7 +55,8 @@ public:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
-
+	void	DisconnectClient(Client &client);
+	void	PerformMessages();
 	int		GetFd() const;
 	int		GetPort() const;
 	Client&	GetClient(int fd);
