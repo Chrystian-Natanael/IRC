@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "../include/Server.hpp"
 
-
 TEST(ClientGetNextMessageTest, ReturnsEmptyOnEmptyBuffer) {
     Client client(-1, "127.0.0.1");
     client.SetBufferMessage("");
