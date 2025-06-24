@@ -21,6 +21,31 @@ ACommand::~ACommand() {}
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
 
+void InitCommandFactory() {
+	commandFactory["KICK"]		= &MakeKick;
+	commandFactory["INVITE"]	= &MakeInvite;
+	commandFactory["TOPIC"]		= &MakeTopic;
+	commandFactory["MODE"]		= &MakeMode;
+	commandFactory["LIST"]		= &MakeList;
+	commandFactory["JOIN"]		= &MakeJoin;
+	commandFactory["PART"]		= &MakePart;
+	commandFactory["PRIVMSG"]	= &MakePrivMsg;
+}
+
+void ClearCommandFactory() {
+	commandFactory.clear();
+}
+
+ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
+	std::string upperCommand = rawCommand;
+	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
+
+	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
+	if (it != commandFactory.end())
+		return it->second(args, server, client);
+	throw std::invalid_argument("Unknown command: " + rawCommand);
+}
+
 //makers
 ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
 	return new CommandKick("KICK", args, server, client);
@@ -42,14 +67,6 @@ ACommand* MakePrivMsg(const std::string& args, Server* server, Client& client) {
 	return new CommandPrivMsg("PRIVMSG", args, server, client);
 }
 
-void InitCommandFactory() {
-	commandFactory["KICK"]    = &MakeKick;
-	commandFactory["INVITE"]  = &MakeInvite;
-	commandFactory["TOPIC"]   = &MakeTopic;
-	commandFactory["MODE"]    = &MakeMode;
-	commandFactory["PRIVMSG"] = &MakePrivMsg;
-}
-
 ACommand* MakeList(const std::string& args, Server* server, Client& client) {
 	return new CommandList("LIST", args, server, client);
 }
@@ -60,28 +77,4 @@ ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
 
 ACommand* MakePart(const std::string& args, Server* server, Client& client) {
 	return new CommandPart("PART", args, server, client);
-}
-
-void InitCommandFactory() {
-	commandFactory["KICK"]   = &MakeKick;
-	commandFactory["INVITE"] = &MakeInvite;
-	commandFactory["TOPIC"]  = &MakeTopic;
-	commandFactory["MODE"]   = &MakeMode;
-	commandFactory["LIST"]   = &MakeList;
-	commandFactory["JOIN"]   = &MakeJoin;
-	commandFactory["PART"]   = &MakePart;
-}
-
-void ClearCommandFactory() {
-	commandFactory.clear();
-}
-
-ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
-	std::string upperCommand = rawCommand;
-	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);
-
-	std::map<std::string, CommandConstructor>::iterator it = commandFactory.find(upperCommand);
-	if (it != commandFactory.end())
-		return it->second(args, server, client);
-	throw std::invalid_argument("Unknown command: " + rawCommand);
 }

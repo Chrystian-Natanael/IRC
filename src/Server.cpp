@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+int volatile g_server = 1;
+
 Server::Server() : port(-1), server_socket_fd(-1) {}
 
 Server::Server(int port) : port(port), server_socket_fd(-1) {

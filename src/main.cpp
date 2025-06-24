@@ -1,8 +1,6 @@
 #include "Server.hpp"
 #include <signal.h>
 
-int volatile g_server = 1;
-
 void sig_handler(int signum) {
 	if (signum == SIGINT) {
 		g_server = 0;
