@@ -170,19 +170,19 @@ TEST(ServerReceiveTest, ReceiveData_ReadSuccess) {
 
     ASSERT_NO_THROW(server.AcceptNewClient()); // O servidor aceita uma nova conexão
 
-    int accepted_fd = server.GetClients().back().GetFd(); // Recupera o fd do cliente que o servidor aceitou.
+    int accepted_fd = server.GetClients().back()->GetFd(); // Recupera o fd do cliente que o servidor aceitou.
     ASSERT_GE(accepted_fd, 0);
 
     const char* msg = "mensagem de teste"; // O cliente envia uma string para o servidor.
     ssize_t sent = send(client_fd, msg, strlen(msg), 0);
     ASSERT_GT(sent, 0);
 
-    ASSERT_NO_THROW(server.GetClients().back().ReceiveData()); // Chama a função sob teste.
+    ASSERT_NO_THROW(server.GetClients().back()->ReceiveData()); // Chama a função sob teste.
 
 	// Verifica se o servidor leu exatamente a mensagem enviada
 	auto& clients = server.GetClients();
 	ASSERT_FALSE(clients.empty());
-	const std::string& buffer = clients.back().GetBufferMessage();
+	const std::string& buffer = clients.back()->GetBufferMessage();
 	EXPECT_EQ(buffer, "mensagem de teste");
 
     close(client_fd);
@@ -220,11 +220,11 @@ TEST(ServerReceiveTest, ReceiveData_ClientDisconnected) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    int accepted_fd = server.GetClients().back().GetFd();
+    int accepted_fd = server.GetClients().back()->GetFd();
 
     close(accepted_fd);
 
-    ASSERT_THROW(server.GetClients().back().ReceiveData(), std::runtime_error);
+    ASSERT_THROW(server.GetClients().back()->ReceiveData(), std::runtime_error);
 
     close(listen_fd);
 }
@@ -260,11 +260,11 @@ TEST(ServerReceiveTest, RecvFails_BytesLessThanZero) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    int accepted_fd = server.GetClients().back().GetFd();
+    int accepted_fd = server.GetClients().back()->GetFd();
 
     close(accepted_fd);
 
-    ASSERT_THROW(server.GetClients().back().ReceiveData(), std::exception);
+    ASSERT_THROW(server.GetClients().back()->ReceiveData(), std::exception);
 
     close(client_fd);
     close(listen_fd);
@@ -306,10 +306,10 @@ TEST(ServerReceiveTest, RecvComMaisDeUmCliente) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    int accepted_1_fd = server.GetClients()[0].GetFd();
-    int accepted_2_fd = server.GetClients()[0].GetFd();
+    int accepted_1_fd = server.GetClients()[0]->GetFd();
+    int accepted_2_fd = server.GetClients()[0]->GetFd();
 
-    server.GetClients()[0].SetBufferMessage("Message");
+    server.GetClients()[0]->SetBufferMessage("Message");
     server.PerformMessages();
 
     ASSERT_EQ(server.GetClients().size(), 2);

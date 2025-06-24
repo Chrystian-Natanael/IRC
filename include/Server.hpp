@@ -21,6 +21,9 @@
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "ACommand.hpp"
+
+extern int volatile g_server;
 
 class Channel;
 
@@ -67,8 +70,8 @@ private:
 	const std::map<std::string, Channel*> &GetChannel() const;
 	Client&	GetClient(int fd);
 
-	const std::vector<Client *>& GetClients() const;
-	std::vector<struct pollfd>&	GetPollFds();
+	const std::vector<Client *>&	GetClients() const;
+	std::vector<struct pollfd>&		GetPollFds();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);

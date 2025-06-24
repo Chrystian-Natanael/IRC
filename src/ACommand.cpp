@@ -72,6 +72,10 @@ void InitCommandFactory() {
 	commandFactory["PART"]   = &MakePart;
 }
 
+void ClearCommandFactory() {
+	commandFactory.clear();
+}
+
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
 	std::string upperCommand = rawCommand;
 	std::transform(upperCommand.begin(), upperCommand.end(), upperCommand.begin(), ::toupper);

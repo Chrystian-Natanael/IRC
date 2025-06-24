@@ -15,7 +15,7 @@ protected:
 	Client& client;
 
 public:
-	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client&client);
+	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 	virtual ~ACommand();
 	virtual void Execute() const = 0;
 	// virtual bool ValidateCommand() const = 0;
@@ -26,6 +26,7 @@ public:
 typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server, Client& client);
 
 void InitCommandFactory();
+void ClearCommandFactory();
 
 ACommand* MakeKick(const std::string& args, Server* server, Client&client);
 ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
