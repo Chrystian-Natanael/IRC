@@ -18,23 +18,6 @@ ACommand::~ACommand() {}
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
 
-//makers
-ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
-	return new CommandKick("KICK", args, server, client);
-}
-
-ACommand* MakeInvite(const std::string& args, Server* server, Client& client) {
-	return new CommandInvite("INVITE", args, server, client);
-}
-
-ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
-	return new CommandTopic("TOPIC", args, server, client);
-}
-
-ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
-	return new CommandMode("MODE", args, server, client);
-}
-
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
 	commandFactory["INVITE"] = &MakeInvite;
@@ -54,4 +37,21 @@ ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::stri
 	if (it != commandFactory.end())
 		return it->second(args, server, client);
 	throw std::invalid_argument("Unknown command: " + rawCommand);
+}
+
+//makers
+ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
+	return new CommandKick("KICK", args, server, client);
+}
+
+ACommand* MakeInvite(const std::string& args, Server* server, Client& client) {
+	return new CommandInvite("INVITE", args, server, client);
+}
+
+ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
+	return new CommandTopic("TOPIC", args, server, client);
+}
+
+ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
+	return new CommandMode("MODE", args, server, client);
 }
