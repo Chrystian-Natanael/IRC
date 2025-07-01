@@ -43,12 +43,8 @@ void	Server::CloseFds() {
 
 void	Server::SetNonBlocking(int fd) {
 	if (fd < 0)
-		throw std::invalid_argument("Invalid file descriptor");
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Fail in getting the flags");
-	flags = (flags | O_NONBLOCK);
-	if (fcntl(fd, F_SETFL, flags) == -1)
+		return ;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
