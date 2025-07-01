@@ -179,3 +179,11 @@ void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;
 }
 
+std::map<std::string, Channel*>& Server::GetChannel() {
+	return this->channel;
+}
+
+void Server::AddChannel(const std::string& name, Channel* channel) {
+	this->channel[name] = channel;
+}
+

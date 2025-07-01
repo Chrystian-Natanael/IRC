@@ -13,9 +13,13 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <map>
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+
+// Forward declaration
+class Channel;
 
 // validateComand(server &server, client &client)
 
@@ -31,6 +35,7 @@ private:
 	std::string					password;
 	std::vector<Client>			clients;
 	std::vector<struct pollfd>	fds;
+	std::map<std::string, Channel*>		channel;
 
 	// void	CloseFds();
 	// void	ClearClients(int fd);
@@ -67,6 +72,8 @@ public:
 
 	std::vector<Client>&		GetClients();
 	std::vector<struct pollfd>&	GetPollFds();
+	std::map<std::string, Channel*>& GetChannel();
+	void	AddChannel(const std::string& name, Channel* channel);
 
 	// ! FOR TESTS
 	void	SetFd(int fd);

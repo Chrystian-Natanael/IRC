@@ -6,6 +6,9 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <vector>
+#include <algorithm>
+#include <algorithm>
 
 enum AuthState {
     PASSWORD,       // Esperando o comando PASS
@@ -24,7 +27,7 @@ private:
 	std::string	nick_name;
 	std::string	real_name;
 	std::string buffer_message;
-	// std::vector<Channel *> 	channels;
+	std::vector<Channel *> 	channels;
 	int			fd;
 	int			login_state = PASSWORD;
 	Client();
@@ -44,6 +47,8 @@ public:
 
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
+	
+	std::vector<Channel*>& GetChannels();
 
 	void SendMessage(const std::string& msg, Server& server);
 
@@ -53,6 +58,8 @@ public:
 	void SetLoginState(int state);
 
 	void SetBufferMessage(const std::string& message);
+
+	void AddChannel(Channel *channel);
 
 };
 

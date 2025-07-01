@@ -36,6 +36,10 @@ std::string Client::GetBufferMessage() const {
 	return (this->buffer_message);
 }
 
+std::vector<Channel*>& Client::GetChannels() {
+	return this->channels;
+}
+
 void Client::SetUserName(const std::string& user_name) {
 	this->user_name = user_name;
 }
@@ -54,6 +58,16 @@ void Client::SetLoginState(int state) {
 
 void Client::SetBufferMessage(const std::string& message) {
 	this->buffer_message = message;
+}
+
+void Client::AddChannel(Channel *channel) {
+    // Verifica se o canal já está no vetor usando std::find
+    if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
+        // Canal já existe
+        return;
+    }
+    // Se não encontrado, adiciona o canal
+    this->channels.push_back(channel);
 }
 
 std::string Client::GetNextMessage() {
