@@ -5,7 +5,6 @@
 # include <iostream>
 # include <string>
 # include "ACommand.hpp"
-# include <tuple>
 
 struct KickParams {
     std::string channel;

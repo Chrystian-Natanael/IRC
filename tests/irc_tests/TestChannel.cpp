@@ -295,3 +295,106 @@ TEST(testChannel, testJoinFullChannel) {
     // Tentativa de adicionar um terceiro usuário ao canal cheio
     EXPECT_THROW(channel.AddUser(&user3), std::runtime_error);
 }
+
+
+// ! TESTES INVITE
+
+TEST(CommandInviteTest, InviteSuccess) {
+    Server server;
+    Client operatorClient(-1, "1234");
+    Client invitedClient(-2, "12345");
+    invitedClient.SetNickName("invitee");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(&operatorClient);
+    server.addClient(&invitedClient);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, operatorClient);
+
+    ASSERT_NO_THROW(command->Execute());
+    const std::vector<Client*>& pendings = channel->GetPendentInvites();
+    std::cout << "PENDENTES:" << pendings.size() << std::endl;
+    EXPECT_NE(std::find(pendings.begin(), pendings.end(), &invitedClient), pendings.end());
+}
+
+TEST(CommandInviteTest, InviteFailsIfNotOperator) {
+    Server server;
+    Client notOP(-1, "1234");
+    Client invitedClient(-2, "12345");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    server.addClient(&invitedClient);
+    channel->AddUser(&notOP);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, notOP);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+}
+
+TEST(CommandInviteTest, InviteFailsIfUserAlreadyInChannel) {
+    Server server;
+    Client oper(-1, "1234");
+    oper.SetNickName("oper");
+    Client invited(-2, "12345");
+    invited.SetNickName("invitee");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(&oper);
+    channel->AddUser(&oper);
+    channel->AddUser(&invited);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, oper);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+}
+
+TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
+    Server server;
+    Client oper(-1, "1234");
+    oper.SetNickName("oper");
+    Client invited(-2, "12345");
+    invited.SetNickName("invitee");
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, oper);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+
+}
+
+TEST(CommandInviteTest, InviteFailsIfUserDoesNotExist) {
+    Server server;
+    Client oper(-1, "1234");
+    oper.SetNickName("oper");
+    Channel* channel = new Channel("testchan");
+    channel->AddOperator(&oper);
+    channel->AddUser(&oper);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "ghost #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, oper);
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+}
+
+TEST(CommandInviteTest, InviteFailsIfParamsEmpty) {
+    Server server;
+    Client operatorClient(-1, "1234");
+    Client invitedClient(-2, "12345");
+    invitedClient.SetNickName("invitee");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(&operatorClient);
+    server.addClient(&invitedClient);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, operatorClient);
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+}

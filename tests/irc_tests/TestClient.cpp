@@ -108,6 +108,59 @@ TEST(ClientSendMessage, SendsSuccessfullyToConnectedClient) {
     std::cout << buffer << std::endl;
 }
 
+
+TEST(ClientGetNextMessageTest, messagetooLongThrowsException) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest2, messageTooLongClearsOnlyThatMessage) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n" + "Algum comando\r\n" + "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, mensagem_muito_Longa_com_varios_comandos_invalidos) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
+        "Algum comando\r\n" + "Outro comando\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands_NãoSeiQueNomeDar) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
+        "Algum comando\r\n" + "Outro comando\r\n" +
+        std::string(513, 'a') + "\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n" + std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
 /**
  * @resume: Testa se SendMessage lança exceção ao enviar para um socket desconectado.
  * @function: Client::SendMessage

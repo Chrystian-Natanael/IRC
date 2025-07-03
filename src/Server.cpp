@@ -218,3 +218,9 @@ void	Server::AddChannel(const std::string& name, Channel* channel){
 		throw std::runtime_error("Channel pointer is null");
 	this->channel.insert(std::make_pair(name, channel));
 }
+
+void	Server::addClient(Client* client) {
+	if (client == NULL)
+		throw std::runtime_error("Client pointer is null");
+	this->clients.push_back(client);
+}

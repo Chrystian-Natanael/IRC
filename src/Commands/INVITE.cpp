@@ -26,15 +26,16 @@ bool CommandInvite::ValidateCommand(std::string& nickname, std::string& channelN
     std::map<std::string, Channel *>::const_iterator it = this->server->GetChannel().find(channelName);
     if (it == this->server->GetChannel().end())
         return false;
-
     Channel* channel = it->second;
 
     if (channel->GetOperators().find(&this->client) == channel->GetOperators().end())
         return false;
 
+
     Client* invited = this->server->FindClientByNick(nickname);
     if (!invited)
         return false;
+
 
     const std::vector<Client*>& users = channel->GetUsers();
     if (std::find(users.begin(), users.end(), invited) != users.end())
@@ -46,20 +47,16 @@ bool CommandInvite::ValidateCommand(std::string& nickname, std::string& channelN
 void CommandInvite::Execute() const {
     std::string nickname, channelName;
     if (!ValidateCommand(nickname, channelName)) {
-        std::cerr << "INVITE: Comando inválido ou permissão negada." << std::endl;
-        return;
+        throw std::runtime_error("Invalid command or permission denied");
     }
 
+    
     Channel* channel = this->server->GetChannel().at(channelName);
     Client* invited = this->server->FindClientByNick(nickname);
-
-    // Nn sei como prosseguir aqui.
-    // Adicionar o cliente convidado ao canal?
-    // Enviar uma mensagem de convite?
-    // O convidado aceita com um comando JOIN?
-    // Se sim, como saber que tal cliente foi convidado?
-    // Talvez com uma lista de convites pendentes no canal?
-
-
-    // Ficaremos sem teste para essa feature por enquanto
+    
+    channel->AddPendentInvite(invited);
+    std::string message = ":" + this->client.GetNickName() + " INVITE " + invited->GetNickName() + " :" + channelName + "\r\n";
+    
+    invited->SendMessage(message, *this->server);
+    std::cout << "EXECUTOU" << std::endl;
 }

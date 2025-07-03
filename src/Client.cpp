@@ -111,7 +111,7 @@ void	Client::ReceiveData() {
 }
 
 void	Client::SendMessage(const std::string& msg, Server& server) {
-	if (msg.empty())
+	if (msg.empty() || this->fd < 0)
 		return;
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 

@@ -75,6 +75,7 @@ private:
 	// ! FOR TESTS
 	void	SetFd(int fd);
 	void	AddChannel(const std::string& name, Channel* channel);
+	void	addClient(Client* client);
 
 };
 

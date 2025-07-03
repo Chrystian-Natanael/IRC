@@ -105,3 +105,18 @@ void Channel::SetMaxUsers(int maxUsers){
 bool    Channel::ValidatePassword(const std::string& password) const{
     return (this->password == password);
 }
+
+void Channel::AddPendentInvite(Client *user){
+    this->pendent_invites.push_back(user);
+}
+
+const std::vector<Client *> &Channel::GetPendentInvites(void) const {
+    return this->pendent_invites;
+}
+
+void Channel::RemovePendentInvite(Client *user) {
+    std::vector<Client *>::iterator it = std::find(this->pendent_invites.begin(), this->pendent_invites.end(), user);
+    if (it != this->pendent_invites.end()) {
+        this->pendent_invites.erase(it);
+    }
+}
