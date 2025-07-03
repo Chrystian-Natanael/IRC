@@ -1,6 +1,7 @@
 #ifndef COMMAND_MODE_HPP
 # define COMMAND_MODE_HPP
 
+# include "Server.hpp"
 # include <iostream>
 # include <string>
 # include "ACommand.hpp"

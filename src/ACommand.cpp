@@ -4,6 +4,8 @@
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
 #include "Commands/WHO.hpp"
+#include "Commands/LIST.hpp"
+#include "Commands/PART.hpp"
 
 //Constructors
 
@@ -40,12 +42,27 @@ ACommand* MakeWho(const std::string& args, Server* server, Client& client) {
 	return new CommandWho("WHO", args, server, client);
 }
 
+ACommand* MakeList(const std::string& args, Server* server, Client& client) {
+	return new CommandList("LIST", args, server, client);
+}
+
+ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
+	return new CommandList("JOIN", args, server, client);
+}
+
+ACommand* MakePart(const std::string& args, Server* server, Client& client) {
+	return new CommandPart("PART", args, server, client);
+}
+
 void InitCommandFactory() {
 	commandFactory["KICK"]   = &MakeKick;
 	commandFactory["INVITE"] = &MakeInvite;
 	commandFactory["TOPIC"]  = &MakeTopic;
 	commandFactory["MODE"]   = &MakeMode;
 	commandFactory["WHO"]    = &MakeWho;
+	commandFactory["LIST"]   = &MakeList;
+	commandFactory["JOIN"]   = &MakeJoin;
+	commandFactory["PART"]   = &MakePart;
 }
 
 ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client) {
