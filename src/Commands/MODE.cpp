@@ -1,4 +1,5 @@
 #include "Commands/MODE.hpp"
+#include "Channel.hpp"
 
 CommandMode::CommandMode(const std::string &command, const std::string &params, Server* server, Client& client) :
 	ACommand(command, params, server, client){
@@ -97,21 +98,77 @@ void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 }
 
 void CommandMode::Execute() const {
-	std::cout << "Executing MODE command with parameters: " << args << std::endl;
+	Channel *channel = GetChannelIfExists();
+
+	if (!channel)
+		throw std::runtime_error("Channel doesn't exist.");
 	if (this->tokens[1][1] == 'i')
-		ExecuteInvite();
+		ExecuteInvite(channel);
+	if (this->tokens[1][1] == 't')
+		ExecuteTopic(channel);
+	if (this->tokens[1][1] == 'k')
+		ExecuteKey(channel);
+	if (this->tokens[1][1] == 'o')
+		ExecuteOperator(channel);
+	if (this->tokens[1][1] == 'l')
+		ExecuteLimit(channel);
 }
 
-void CommandMode::ExecuteInvite() const {
-	if (this->tokens[])
-}
-/*
 Channel* CommandMode::GetChannelIfExists() const {
 	const std::map<std::string, Channel*>& channels = this->server->GetChannel();
-	std::map<std::string, Channel*>::const_iterator it = channels.find(this->msgToDest.first);
+	std::map<std::string, Channel*>::const_iterator it = channels.find(this->tokens[0]);
 
 	if (it != channels.end())
-	return it->second;
+		return it->second;
 	return (NULL);
 }
-*/
+
+void CommandMode::ExecuteInvite(Channel *channel) const {
+	if (this->tokens[1][0] == '+')
+		channel->SetBlockChannel(true);
+	if (this->tokens[1][0] == '-')
+		channel->SetBlockChannel(false);
+}
+
+void CommandMode::ExecuteTopic(Channel *channel) const {
+	if (this->tokens[1][0] == '+')
+		channel->SetBlockTopic(true);
+	if (this->tokens[1][0] == '-')
+		channel->SetBlockTopic(false);
+}
+
+void CommandMode::ExecuteKey(Channel *channel) const {
+	if (this->tokens[1][0] == '+') {
+		if (!channel->ValidatePassword("")) {
+			std::cout << "Error: a password is already set for this channel." << std::endl;
+			return;
+		}
+		channel->SetPassword(this->tokens[2]);
+	}
+	else if (this->tokens[1][0] == '-') {
+		if (!channel->ValidatePassword(this->tokens[2])) {
+			std::cout << "Error: incorrect password for removal." << std::endl;
+			return;
+		}
+		channel->SetPassword("");
+	}
+}
+
+// void CommandMode::ExecuteOperator(Channel *channel) const {
+// 	/* checar se o cliente que está executando é operador do canal.
+// 	Se não for, lançar exceção ou enviar msg de erro.*/
+// 	if (this->tokens[1][0] == '+') {
+// 		const std::vector<Client *>& clients = this->server->GetClients();
+// 		std::vector<Client *>::const_iterator it = clients.find(this->tokens[2]);
+
+// 	if (it != channels.end())
+// 		return it->second;
+// 	return (NULL);
+// 	}
+// 	if (this->tokens[1][0] == '-')
+// 		channel->SetBlockTopic(false);
+// }
+
+void CommandMode::ExecuteLimit(Channel *channel) const {
+	
+}
