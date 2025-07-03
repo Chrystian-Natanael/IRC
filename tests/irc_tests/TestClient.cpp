@@ -168,7 +168,6 @@ TEST(ClientSendMessageTest, ThrowsOnDisconnectedClient) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
     EXPECT_TRUE(server.GetClients().empty());
 }
 
