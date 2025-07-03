@@ -124,7 +124,7 @@ void	Client::SendMessage(const std::string& msg, Server& server) {
 
 	if (bytesSent <= 0) {
 		server.DisconnectClient(*this);
-		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+		// throw std::runtime_error("Client disconnected: send() failed or returned 0.");
 	}
 }
 

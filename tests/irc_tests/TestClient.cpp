@@ -158,10 +158,7 @@ TEST(ClientSendMessageTest, ThrowsOnDisconnectedClient) {
     close(client.GetFd());
 
     // Agora o SendMessage deve falhar e lançar
-    EXPECT_THROW({
-        client.SendMessage("Message after disconnect\r\n", server);
-        }, std::runtime_error
-    );
+    EXPECT_NO_THROW(client.SendMessage("Message after disconnect\r\n", server));
 
     // Verifica se o cliente foi desconectado
     EXPECT_TRUE(server.GetClients().empty());
