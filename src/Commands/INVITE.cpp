@@ -12,7 +12,7 @@ std::pair<std::string, std::string> CommandInvite::ParseInvite(const std::string
     iss >> nickname >> channel;
     if (!channel.empty() && channel[0] == '#')
         channel = channel.substr(1);
-    return {nickname, channel};
+    return std::make_pair(nickname, channel);
 }
 
 bool CommandInvite::ValidateCommand(std::string& nickname, std::string& channelName) const {

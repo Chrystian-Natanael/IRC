@@ -18,7 +18,7 @@ std::pair<std::string, std::string> CommandPart::ParsePart(const std::string& pa
         part = part.substr(1);
     if (!channel.empty() && channel[0] == '#')
         channel = channel.substr(1);
-    return {channel, part};
+    return std::make_pair(channel, part);
 }
 
 void CommandPart::Execute() const {
