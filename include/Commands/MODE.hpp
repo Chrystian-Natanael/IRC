@@ -26,7 +26,9 @@ class CommandMode : public ACommand {
 		bool IsLimitFlag(const std::string& modeToken);
 		void ValidateFlagParameters(const std::vector<std::string>& tokens,
 			size_t expectedSize, const std::string& flagName);
+
 		void Execute() const;
+		void ExecuteInvite() const;
 };
 
 #endif

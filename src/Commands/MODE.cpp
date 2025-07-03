@@ -98,4 +98,20 @@ void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 
 void CommandMode::Execute() const {
 	std::cout << "Executing MODE command with parameters: " << args << std::endl;
+	if (this->tokens[1][1] == 'i')
+		ExecuteInvite();
 }
+
+void CommandMode::ExecuteInvite() const {
+	if (this->tokens[])
+}
+/*
+Channel* CommandMode::GetChannelIfExists() const {
+	const std::map<std::string, Channel*>& channels = this->server->GetChannel();
+	std::map<std::string, Channel*>::const_iterator it = channels.find(this->msgToDest.first);
+
+	if (it != channels.end())
+	return it->second;
+	return (NULL);
+}
+*/
