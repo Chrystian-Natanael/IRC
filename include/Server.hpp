@@ -67,6 +67,8 @@ private:
 	const std::map<std::string, Channel*> &GetChannel() const;
 	Client&	GetClient(int fd);
 
+	Client* FindClientByNick(const std::string& nickname);
+
 	const std::vector<Client *>& GetClients() const;
 	std::vector<struct pollfd>&	GetPollFds();
 

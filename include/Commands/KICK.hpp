@@ -7,12 +7,17 @@
 # include "ACommand.hpp"
 # include <tuple>
 
+struct KickParams {
+    std::string channel;
+    std::string nick;
+    std::string reason;
+};
 class CommandKick : public ACommand {
 	public:
 		CommandKick(const std::string &command, const std::string &args, Server* server, Client& client);
 		~CommandKick();
 		void Execute() const;
-		std::tuple<std::string, std::string, std::string> ParseKick(const std::string& params)const;
+		KickParams ParseKick(const std::string& params)const;
 
 };
 

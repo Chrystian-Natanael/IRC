@@ -198,6 +198,14 @@ const std::map<std::string, Channel *>& Server::GetChannel() const {
 	return (this->channel);
 }
 
+Client* Server::FindClientByNick(const std::string& nickname) {
+    for (std::vector<Client *>::iterator it = this->clients.begin(); it != this->clients.end(); ++it) {
+        if ((*it)->GetNickName() == nickname)
+            return *it;
+    }
+    return NULL;
+}
+
 // ! FOR TESTS
 void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;
