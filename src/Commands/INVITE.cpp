@@ -50,13 +50,13 @@ void CommandInvite::Execute() const {
         throw std::runtime_error("Invalid command or permission denied");
     }
 
-    
+
     Channel* channel = this->server->GetChannel().at(channelName);
     Client* invited = this->server->FindClientByNick(nickname);
-    
+
     channel->AddPendentInvite(invited);
     std::string message = ":" + this->client.GetNickName() + " INVITE " + invited->GetNickName() + " :" + channelName + "\r\n";
-    
+
     invited->SendMessage(message, *this->server);
     std::cout << "EXECUTOU" << std::endl;
 }

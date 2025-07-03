@@ -10,6 +10,8 @@ Client::Client(int fd, std::string ip) :
 Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
+
+	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
 }
 
 bool Client::operator<(const Client& other) const {

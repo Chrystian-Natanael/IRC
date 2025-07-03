@@ -7,7 +7,7 @@
 #include "../include/Channel.hpp"
 
 TEST(testTopic, testChangeTopic){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -34,7 +34,7 @@ TEST(testTopic, testChangeTopic){
 }
 
 TEST(testTopic, testNoPermissionChangeTopic){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -55,7 +55,7 @@ TEST(testTopic, testNoPermissionChangeTopic){
 }
 
 TEST(testTopic, testNoChannel){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -67,7 +67,7 @@ TEST(testTopic, testNoChannel){
 
 TEST(testTopic, testPrintTopicChannel)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -87,7 +87,7 @@ TEST(testTopic, testPrintTopicChannel)
 
 TEST(testTopic, testPrintAfterChangeTopic)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -119,7 +119,7 @@ TEST(testTopic, testPrintAfterChangeTopic)
 
 TEST(testList, testListOneChannel)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -140,7 +140,7 @@ TEST(testList, testListOneChannel)
 
 TEST(testList, testListMultipleChannels)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
@@ -182,7 +182,7 @@ TEST(testList, testListMultipleChannels)
 
 
 TEST(testKick, testKickSuccess) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     targetClient.SetNickName("target_user");
@@ -205,7 +205,7 @@ TEST(testKick, testKickSuccess) {
 }
 
 TEST(testKick, testKickNoPermission) {
-    Server server;
+    Server server(5000);
     Client notOperator(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     InitCommandFactory();
@@ -223,7 +223,7 @@ TEST(testKick, testKickNoPermission) {
 }
 
 TEST(testKick, testKickChannelNotFound) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     InitCommandFactory();
@@ -237,7 +237,7 @@ TEST(testKick, testKickChannelNotFound) {
 }
 
 TEST(testKick, testKickUserNotFound) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     InitCommandFactory();
 
@@ -253,7 +253,7 @@ TEST(testKick, testKickUserNotFound) {
 }
 
 TEST(testKick, testKickDefaultReason) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     InitCommandFactory();
@@ -273,7 +273,7 @@ TEST(testKick, testKickDefaultReason) {
 }
 
 TEST(testChannel, testJoinFullChannel) {
-    Server server;
+    Server server(5000);
     Client user1(-1, "192.168.0.1");
     Client user2(-2, "192.168.0.2");
     Client user3(-3, "192.168.0.3");
@@ -300,7 +300,7 @@ TEST(testChannel, testJoinFullChannel) {
 // ! TESTES INVITE
 
 TEST(CommandInviteTest, InviteSuccess) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "1234");
     Client invitedClient(-2, "12345");
     invitedClient.SetNickName("invitee");
@@ -320,7 +320,7 @@ TEST(CommandInviteTest, InviteSuccess) {
 }
 
 TEST(CommandInviteTest, InviteFailsIfNotOperator) {
-    Server server;
+    Server server(5000);
     Client notOP(-1, "1234");
     Client invitedClient(-2, "12345");
     Channel* channel = new Channel("testchan");
@@ -336,7 +336,7 @@ TEST(CommandInviteTest, InviteFailsIfNotOperator) {
 }
 
 TEST(CommandInviteTest, InviteFailsIfUserAlreadyInChannel) {
-    Server server;
+    Server server(5000);
     Client oper(-1, "1234");
     oper.SetNickName("oper");
     Client invited(-2, "12345");
@@ -355,7 +355,7 @@ TEST(CommandInviteTest, InviteFailsIfUserAlreadyInChannel) {
 }
 
 TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
-    Server server;
+    Server server(5000);
     Client oper(-1, "1234");
     oper.SetNickName("oper");
     Client invited(-2, "12345");
@@ -368,7 +368,7 @@ TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
 }
 
 TEST(CommandInviteTest, InviteFailsIfUserDoesNotExist) {
-    Server server;
+    Server server(5000);
     Client oper(-1, "1234");
     oper.SetNickName("oper");
     Channel* channel = new Channel("testchan");
@@ -383,7 +383,7 @@ TEST(CommandInviteTest, InviteFailsIfUserDoesNotExist) {
 }
 
 TEST(CommandInviteTest, InviteFailsIfParamsEmpty) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "1234");
     Client invitedClient(-2, "12345");
     invitedClient.SetNickName("invitee");
