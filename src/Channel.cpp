@@ -70,6 +70,8 @@ void    Channel::AddOperator(Client *user){
 }
 
 void    Channel::AddUser(Client *user){
+    if (this->maxUsers > 0 && this->users.size() >= static_cast<size_t>(this->maxUsers))
+        throw std::runtime_error("Channel is full!");
     this->users.push_back(user);
 }
 
@@ -92,6 +94,13 @@ void    Channel::RemoveUser(Client *user){
         this->users.erase(it);
 }
 
+int Channel::GetMaxUsers(void) const{
+    return this->maxUsers;
+}
+
+void Channel::SetMaxUsers(int maxUsers){
+    this->maxUsers = maxUsers;
+}
 
 bool    Channel::ValidatePassword(const std::string& password) const{
     return (this->password == password);

@@ -68,7 +68,7 @@ std::string Client::GetNextMessage() {
     this->buffer_message.erase(0, pos + 2);
 
     if (result.size() > 512) {
-        return "";
+        return GetNextMessage();
     }
 
     return result;

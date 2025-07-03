@@ -48,17 +48,19 @@ TEST(ClientGetNextMessageTest, CRLFAtStartReturnsEmptyString) {
 TEST(ClientGetNextMessageTest, messagetooLongIsIgnoredAndBufferCleared) {
     Client client(-1, "127.0.0.1");
     client.SetBufferMessage(std::string(513, 'a') + "\r\n");
-    client.GetNextMessage(); // Processa e remove a mensagem longa
+    EXPECT_EQ(client.GetNextMessage(), "");
     EXPECT_EQ(client.GetBufferMessage(), "");
 }
 
 TEST(ClientGetNextMessageTest, messageTooLongClearsOnlyThatMessage) {
     Client client(-1, "127.0.0.1");
-    client.SetBufferMessage(std::string(513, 'a') + "\r\n" + "Algum comando\r\n");
-    client.GetNextMessage(); // Remove a mensagem longa
-    EXPECT_EQ(client.GetBufferMessage(), "Algum comando\r\n");
+    client.SetBufferMessage(std::string(513, 'a') + std::string(513, 'a') + "\r\n" + "Algum comando\r\n" + "Algum outro comando\r\n");
     EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Algum outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum outro comando");
+    EXPECT_EQ(client.GetNextMessage(), "");
     EXPECT_EQ(client.GetBufferMessage(), "");
+
 }
 
 /**

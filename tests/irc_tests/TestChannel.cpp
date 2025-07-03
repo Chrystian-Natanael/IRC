@@ -271,3 +271,27 @@ TEST(testKick, testKickDefaultReason) {
     EXPECT_NO_THROW(command->Execute());
     EXPECT_EQ(channel.findUserByNickname(targetClient.GetNickName()), nullptr);
 }
+
+TEST(testChannel, testJoinFullChannel) {
+    Server server;
+    Client user1(-1, "192.168.0.1");
+    Client user2(-2, "192.168.0.2");
+    Client user3(-3, "192.168.0.3");
+    InitCommandFactory();
+
+    Channel channel("canal_cheio");
+    // Supondo que exista esse método para limitar usuários
+    channel.SetMaxUsers(2);
+
+    user1.SetNickName("user1");
+    user2.SetNickName("user2");
+    user3.SetNickName("user3");
+
+    channel.AddUser(&user1);
+    channel.AddUser(&user2);
+
+    server.AddChannel("canal_cheio", &channel);
+
+    // Tentativa de adicionar um terceiro usuário ao canal cheio
+    EXPECT_THROW(channel.AddUser(&user3), std::runtime_error);
+}
