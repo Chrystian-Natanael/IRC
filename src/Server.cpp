@@ -34,6 +34,10 @@ Server&	Server::operator=(const Server& src) {
 }
 
 void	Server::ClearClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		delete this->clients[i];
+	}
+
 	this->clients.clear();
 }
 

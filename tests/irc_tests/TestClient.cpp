@@ -231,7 +231,7 @@ TEST(ClientPerformMessagesTest, PerformHandlesInvalidCommand) {
     send(client_fd, command.c_str(), command.length(), 0);
 
     server.Poll();
-    EXPECT_EQ(server.GetPollFds()[1].revents, POLLIN);
+    ASSERT_EQ(server.GetPollFds()[1].revents, POLLIN);
 
     // Forçar o servidor a receber os dados
     server.ReceiveDataAllClients();
@@ -282,7 +282,7 @@ TEST(ClientPerformMessagesTest, HandlesMultipleInvalidCommands) {
     send(client_fd, commands.c_str(), commands.length(), 0);
 
     server.Poll();
-    EXPECT_EQ(server.GetPollFds()[1].revents, POLLIN);
+    ASSERT_EQ(server.GetPollFds()[1].revents, POLLIN);
 
     server.ReceiveDataAllClients();
 
@@ -326,7 +326,7 @@ TEST(ClientPerformMessagesTest, HandlesEmptyCommand) {
     send(client_fd, emptyCommand.c_str(), emptyCommand.length(), 0);
 
     server.Poll();
-    EXPECT_EQ(server.GetPollFds()[1].revents, POLLIN);
+    ASSERT_EQ(server.GetPollFds()[1].revents, POLLIN);
 
     server.ReceiveDataAllClients();
 

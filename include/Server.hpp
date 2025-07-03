@@ -31,6 +31,8 @@ private:
 	std::vector<Client *>		clients;
 	std::vector<struct pollfd>	fds;
 
+	Server();
+
 	void		CloseFds();
 	void		ClearClients();
 
@@ -41,13 +43,7 @@ private:
 	void		BindSocket();
 	void		ListenSocket();
 
-	// ! FOR TESTS
-	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
-	friend class ServerPollTest_ThrowsWhenPollFails_Test;
-	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
-
 	public:
-	Server();
 	Server(int port);
 	Server(const Server& src);
 	~Server();
