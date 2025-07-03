@@ -1,10 +1,14 @@
 #include "Server.hpp"
 
+int volatile g_server = 1;
+
 Server::Server() : port(-1), server_socket_fd(-1) {}
 
 Server::Server(int port) : port(port), server_socket_fd(-1) {
 	if (port < 1024 || port > 65535)
 		throw std::invalid_argument("Port number must be between 1024 and 65535");
+
+	InitCommandFactory();
 }
 
 Server::Server(const Server& src) :
@@ -17,6 +21,8 @@ Server::~Server() {
 
 	this->ClearClients();
 	this->CloseFds();
+
+	ClearCommandFactory();
 }
 
 Server&	Server::operator=(const Server& src) {
@@ -56,13 +62,13 @@ int	Server::GetPort() const {
 
 Client&	Server::GetClient(int fd) {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		if (this->clients[i].GetFd() == fd)
-			return (this->clients[i]);
+		if (this->clients[i]->GetFd() == fd)
+			return (*(this->clients[i]));
 	}
 	throw std::runtime_error("Client not found");
 }
 
-std::vector<Client>&	Server::GetClients() {
+const std::vector<Client *>&	Server::GetClients() const {
 	return (this->clients);
 }
 
@@ -116,26 +122,27 @@ void	Server::Poll() {
 	if (this->fds.empty())
 		return ;
 
-	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
+	if (poll(this->fds.data(), this->fds.size(), -1) == -1 && g_server)
 		throw std::runtime_error("Error: failed to poll.");
 }
 
 void	Server::DisconnectClient(Client &client)
 {
-	for (size_t i = 0; i < this->clients.size(); i++)
-	{
-		if (clients[i].GetFd() == client.GetFd())
-		{
-			clients.erase(clients.begin() + i);
-			break;
-		}
-	}
-
 	for (size_t i = 0; i < this->fds.size(); i++)
 	{
 		if (fds[i].fd == client.GetFd())
 		{
 			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i]->GetFd() == client.GetFd())
+		{
+			delete clients[i];
+			clients.erase(clients.begin() + i);
 			break;
 		}
 	}
@@ -156,21 +163,20 @@ void	Server::AcceptNewClient() {
 	NewPoll.events = POLLIN;
 	NewPoll.revents = 0;
 
-	Client cli(incofd, inet_ntoa((cliadd.sin_addr)));
+	Client* cli = new Client(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
-	cli.PreventFdClose();
 
-	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
+	std::cout << G << "Client <" << incofd << "> Connecte?" << RST << std::endl;
 }
 
 void	Server::ReceiveDataAllClients() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
 		if (this->fds[i + 1].revents & POLLIN) {
 			try {
-				this->clients[i].ReceiveData();
+				this->clients[i]->ReceiveData();
 			} catch (std::exception &e) {
-				this->DisconnectClient(this->clients[i]);
+				this->DisconnectClient(*(this->clients[i]));
 			}
 		}
 	}
@@ -178,12 +184,12 @@ void	Server::ReceiveDataAllClients() {
 
 void	Server::PerformMessages() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
-		this->clients[i].PerformMessages(this);
+		this->clients[i]->PerformMessages(this);
 	}
 }
 
 void	Server::ServerLoop() {
-	while (1) {
+	while (g_server) {
 		this->Poll();
 
 		if (this->fds[0].revents & POLLIN)
@@ -194,7 +200,19 @@ void	Server::ServerLoop() {
 	}
 }
 
+const std::map<std::string, Channel *>& Server::GetChannel() const {
+	return (this->channel);
+}
+
 // ! FOR TESTS
 void	Server::SetFd(int fd) {
 	this->server_socket_fd = fd;
+}
+
+void	Server::AddChannel(const std::string& name, Channel* channel){
+	if (this->channel.find(name) != this->channel.end())
+		throw std::runtime_error("Channel already exists");
+	if (channel == NULL)
+		throw std::runtime_error("Channel pointer is null");
+	this->channel.insert(std::make_pair(name, channel));
 }

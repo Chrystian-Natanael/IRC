@@ -130,12 +130,12 @@ fclean: clean
 re: fclean all
 
 $(GTEST_DIR):
-	git clone $(GTEST_REPO) $(GTEST_DIR)
+	git clone $(GTEST_REPO) $(GTEST_DIR) || git clone https://github.com/google/googletest.git $(GTEST_DIR)
 
 tests: $(GTEST_DIR)
 	cd tests && cmake -B build && $(MAKE) -C build && ./build/run_tests
 
-run:
+run: all
 	./bin/$(NAME)
 help:
 	$(call help)

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "../include/Server.hpp"
 
-
 TEST(ClientGetNextMessageTest, ReturnsEmptyOnEmptyBuffer) {
     Client client(-1, "127.0.0.1");
     client.SetBufferMessage("");
@@ -92,7 +91,7 @@ TEST(ClientSendMessage, SendsSuccessfullyToConnectedClient) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     ASSERT_NO_THROW({
         client.SendMessage("Hello, client! Yey! We've mande it!\r\n", server);
@@ -137,7 +136,7 @@ TEST(ClientSendMessageTest, ThrowsOnDisconnectedClient) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     // Simula desconexão do lado do cliente
     close(client.GetFd());
@@ -181,7 +180,7 @@ TEST(ClientSendMessageTest, SendsEmptyMessageSuccessfully) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     // Enviar mensagem vazia - deve funcionar sem lançar exceção
     ASSERT_NO_THROW({
@@ -223,7 +222,7 @@ TEST(ClientSendMessageTest, SendsEmptyMessageSuccessfully) {
         ASSERT_NO_THROW(server.AcceptNewClient());
         ASSERT_FALSE(server.GetClients().empty());
 
-        Client& client = server.GetClients().back();
+        Client& client = *(server.GetClients().back());
 
         // Enviar comando que causará falha na criação do comando (CreateCommand)
         std::string command = "INVALIDCMD some args\r\n";
@@ -272,7 +271,7 @@ TEST(ClientPerformMessagesTest, HandlesMultipleInvalidCommands) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     // Enviar vários comandos que causarão falha na criação do comando (CreateCommand)
     std::string commands =
@@ -324,7 +323,7 @@ TEST(ClientPerformMessagesTest, HandlesEmptyCommand) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     std::string emptyCommand = "\r\n";
     send(client.GetFd(), emptyCommand.c_str(), emptyCommand.length(), 0);
@@ -370,7 +369,7 @@ TEST(ClientPerformMessagesTest, NoMessagesDoesNothing) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = server.GetClients().back();
+    Client& client = *(server.GetClients().back());
 
     // Nenhuma mensagem enviada
     ASSERT_NO_THROW({
