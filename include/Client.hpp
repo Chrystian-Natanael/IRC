@@ -28,6 +28,7 @@ public:
 
 	Client(int fd, std::string ip);
 	virtual ~Client();
+	bool operator==(const Client& other) const;
 
 	int			GetFd() const;
 	std::string	GetIp() const;

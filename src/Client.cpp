@@ -11,7 +11,16 @@ Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
 
-	std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
+	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
+}
+
+bool Client::operator==(const Client& other) const {
+	return (this->fd == other.fd &&
+			this->ip == other.ip &&
+			this->user_name == other.user_name &&
+			this->nick_name == other.nick_name &&
+			this->real_name == other.real_name &&
+			this->buffer_message == other.buffer_message);
 }
 
 int Client::GetFd() const {
@@ -134,7 +143,7 @@ void	Client::PerformMessages(Server *server) {
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-			std::cerr << "Error creating command: " << e.what() << std::endl;
+			std::cerr << "Error - " << e.what() << std::endl;
 		}
 		msg = this->GetNextMessage();
 	}

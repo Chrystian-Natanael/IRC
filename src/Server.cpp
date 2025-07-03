@@ -72,6 +72,10 @@ std::vector<struct pollfd>&	Server::GetPollFds() {
 	return (this->fds);
 }
 
+struct sockaddr_in&	Server::GetServerAddr() {
+	return (this->server_addr);
+}
+
 void	Server::InitSocket() {
 	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->server_socket_fd == -1)
@@ -163,7 +167,7 @@ void	Server::AcceptNewClient() {
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
 
-	std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
+	// std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveDataAllClients() {

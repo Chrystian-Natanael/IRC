@@ -40,7 +40,6 @@ private:
 	void		SetSocketOptions();
 	void		BindSocket();
 	void		ListenSocket();
-	void		Poll();
 
 	// ! FOR TESTS
 	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
@@ -60,12 +59,16 @@ private:
 	void	ReceiveDataAllClients();
 	void	DisconnectClient(Client &client);
 	void	PerformMessages();
+	void	Poll();
+
+
 	int		GetFd() const;
 	int		GetPort() const;
 	Client&	GetClient(int fd);
 
 	const std::vector<Client *>&	GetClients() const;
 	std::vector<struct pollfd>&		GetPollFds();
+	struct sockaddr_in&				GetServerAddr();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
