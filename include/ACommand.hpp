@@ -30,5 +30,7 @@ ACommand* MakeKick(const std::string& args, Server* server, Client&client);
 ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
 ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
 ACommand* MakeMode(const std::string& args, Server* server, Client&client);
+ACommand* MakeList(const std::string& args, Server* server, Client&client);
+ACommand* MakeJoin(const std::string& args, Server* server, Client&client);
 
 # endif
