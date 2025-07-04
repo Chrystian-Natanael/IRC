@@ -11,6 +11,7 @@ struct KickParams {
     std::string nick;
     std::string reason;
 };
+
 class CommandKick : public ACommand {
 	public:
 		CommandKick(const std::string &command, const std::string &args, Server* server, Client& client);

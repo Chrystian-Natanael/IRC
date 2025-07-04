@@ -33,6 +33,7 @@ private:
 	int									port;
 	int									server_socket_fd;
 	struct sockaddr_in					server_addr;
+	std::string							password;
 	std::vector<Client *>				clients;
 	std::vector<struct pollfd>			fds;
 	std::map<std::string, Channel*>		channel;
@@ -64,6 +65,7 @@ private:
 	void	PerformMessages();
 	void	Poll();
 
+	std::string GetPassword( void ) const;
 
 	int		GetFd() const;
 	int		GetPort() const;

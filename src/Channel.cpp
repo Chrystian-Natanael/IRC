@@ -135,3 +135,9 @@ void Channel::RemovePendentInvite(Client *user) {
         this->pendent_invites.erase(it);
     }
 }
+
+void Channel::BroadcastMessage(const std::string &message, Server *server) {
+    for (size_t i = 0; i < this->users.size(); ++i) {
+        this->users[i]->SendMessage(message, *server);
+    }
+}

@@ -5,7 +5,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip) :
-	ip(ip), fd(fd) {}
+	ip(ip), fd(fd), login_state(PASSWORD) {}
 
 Client::~Client() {
 	if (this->fd != -1)
@@ -47,8 +47,16 @@ std::string Client::GetRealName() const {
 	return (this->real_name);
 }
 
+int Client::GetLoginState() const {
+	return (this->login_state);
+}
+
 std::string Client::GetBufferMessage() const {
 	return (this->buffer_message);
+}
+
+std::vector<Channel*>& Client::GetChannels() {
+	return this->channels;
 }
 
 void Client::SetUserName(const std::string& user_name) {
@@ -63,8 +71,22 @@ void Client::SetRealName(const std::string& real_name) {
 	this->real_name = real_name;
 }
 
+void Client::SetLoginState(int state) {
+	this->login_state = state;
+}
+
 void Client::SetBufferMessage(const std::string& message) {
 	this->buffer_message = message;
+}
+
+void Client::AddChannel(Channel *channel) {
+    // Verifica se o canal já está no vetor usando std::find
+    if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
+        // Canal já existe
+        return;
+    }
+    // Se não encontrado, adiciona o canal
+    this->channels.push_back(channel);
 }
 
 std::string Client::GetNextMessage() {

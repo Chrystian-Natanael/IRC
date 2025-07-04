@@ -1,14 +1,18 @@
 #include "ACommand.hpp"
+#include "Server.hpp"
+#include "Commands/WHO.hpp"
 #include "Commands/KICK.hpp"
 #include "Commands/INVITE.hpp"
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
-#include "Commands/WHO.hpp"
 #include "Commands/PRIVMSG.hpp"
 #include "Commands/LIST.hpp"
 #include "Commands/PART.hpp"
 #include "Commands/JOIN.hpp"
-#include "Commands/WHO.hpp"
+#include "Commands/PASS.hpp"
+#include "Commands/NICK.hpp"
+#include "Commands/USER.hpp"
+#include "Commands/QUIT.hpp"
 
 //Constructors
 
@@ -34,6 +38,10 @@ void InitCommandFactory() {
 	commandFactory["PART"]		= &MakePart;
 	commandFactory["PRIVMSG"]	= &MakePrivMsg;
 	commandFactory["WHO"]		= &MakeWho;
+	commandFactory["PASS"]   = &MakePass;
+	commandFactory["NICK"]   = &MakeNick;
+	commandFactory["USER"]   = &MakeUser;
+    commandFactory["QUIT"]   = &MakeQuit;
 }
 
 void ClearCommandFactory() {
@@ -85,4 +93,40 @@ ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
 
 ACommand* MakePart(const std::string& args, Server* server, Client& client) {
 	return new CommandPart("PART", args, server, client);
+}
+
+ACommand* MakePass(const std::string& args, Server* server, Client& client) {
+	return new CommandPass("PASS", args, server, client);
+}
+
+ACommand* MakeNick(const std::string& args, Server* server, Client& client) {
+    return new CommandNick("NICK", args, server, client);
+}
+
+ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
+	return new CommandUser("USER", args, server, client);
+}
+
+ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
+	return new CommandQuit("QUIT", args, server, client);
+}
+
+std::vector<std::string> SplitArguments(const std::string& input) {
+    std::vector<std::string> args;
+    std::istringstream iss(input);
+    std::string token;
+    std::string current;
+
+    while (iss >> std::ws) {
+        char c = iss.peek();
+        if (c == '"') {
+            iss.get(); // remove the quote
+            std::getline(iss, current, '"');
+            args.push_back(current);
+        } else {
+            iss >> token;
+            args.push_back(token);
+        }
+    }
+    return args;
 }

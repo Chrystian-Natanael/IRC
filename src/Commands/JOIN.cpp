@@ -25,6 +25,7 @@ void CommandJoin::Execute() const {
 		if (user != channel->GetPendentInvites().end()) {
 			channel->RemovePendentInvite(&this->client);
 			channel->AddUser(&this->client);
+			this->client.AddChannel(channel);
 			return ;
 		}
 		else if (channel->GetInviteOnly() == true) {
@@ -46,5 +47,6 @@ void CommandJoin::Execute() const {
 		newChannel->AddOperator(&this->client);
 		newChannel->AddUser(&this->client);
 		this->server->AddChannel(result.first, newChannel);
+		this->client.AddChannel(newChannel);
 	}
 }

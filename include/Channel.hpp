@@ -58,6 +58,7 @@ class Channel {
     void    RemovePendentInvite(Client *user);
 
     void    AddPendentInvite(Client *user);
+    void    BroadcastMessage(const std::string &message, Server *server);
 
 };
 
