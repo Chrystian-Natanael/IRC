@@ -8,10 +8,13 @@ CommandJoin::CommandJoin(const std::string &command, const std::string &params, 
 CommandJoin::~CommandJoin() {}
 
 
-std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& params)const{
+std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& params) const {
     std::istringstream iss(params);
     std::string channel, password;
     iss >> channel >> password;
+    if (channel.empty() || channel[0] != '#') {
+        throw std::invalid_argument("O nome do canal deve começar com '#'.");
+    }
     return std::make_pair(channel, password);
 }
 

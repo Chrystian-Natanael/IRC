@@ -6,6 +6,7 @@
 #include "Commands/PRIVMSG.hpp"
 #include "Commands/LIST.hpp"
 #include "Commands/PART.hpp"
+#include "Commands/JOIN.hpp"
 
 //Constructors
 
@@ -72,7 +73,7 @@ ACommand* MakeList(const std::string& args, Server* server, Client& client) {
 }
 
 ACommand* MakeJoin(const std::string& args, Server* server, Client& client) {
-	return new CommandList("JOIN", args, server, client);
+	return new CommandJoin("JOIN", args, server, client);
 }
 
 ACommand* MakePart(const std::string& args, Server* server, Client& client) {

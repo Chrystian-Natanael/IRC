@@ -20,7 +20,7 @@ void CommandList::Execute() const {
         std::string topic = it->second->GetTopic();
         if (topic.length() > 18)
             topic = topic.substr(0, 18) + "...";
-        std::cout << std::left << std::setw(30) << ("#" + it->first + " " + lockEmoji)
+        std::cout << std::left << std::setw(30) << (it->first + " " + lockEmoji)
                   << std::right << std::setw(10) << it->second->GetUsers().size()
                   << "      " << std::left << std::setw(16) << topic << std::endl;
     }
