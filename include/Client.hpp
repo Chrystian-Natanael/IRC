@@ -3,16 +3,15 @@
 
 #define RECEIVE_BUFFER_SIZE 1024
 
-#include <unistd.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <algorithm>
-#include <algorithm>
+// #include "Channel.hpp"
+
 
 enum AuthState {
     PASSWORD,       // Esperando o comando PASS
@@ -61,8 +60,6 @@ public:
 	void		PerformMessages(Server *server);
 	
 	std::vector<Channel*>& GetChannels();
-
-	void SendMessage(const std::string& msg, Server& server);
 
 	void SetUserName(const std::string& user_name);
 	void SetNickName(const std::string& nick_name);

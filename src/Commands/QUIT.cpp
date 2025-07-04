@@ -8,7 +8,7 @@ CommandQuit::CommandQuit(const std::string &command, const std::string &params, 
 
 CommandQuit::~CommandQuit(){}
 
-void CommandQuit::Execute() {
+void CommandQuit::Execute() const {
     std::string quitMsg = "Client has quit the server.";
     if (!this->args.empty()) {
         quitMsg = this->args;

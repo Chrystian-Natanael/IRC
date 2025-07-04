@@ -92,26 +92,6 @@ struct sockaddr_in&	Server::GetServerAddr() {
 	return (this->server_addr);
 }
 
-struct sockaddr_in&	Server::GetServerAddr() {
-	return (this->server_addr);
-}
-
-std::string Server::GetPassword() const {
-	return (this->password);
-}
-
-//Setters :
-void	Server::SetNonBlocking(int fd) {
-	if (fd < 0)
-		throw std::invalid_argument("Invalid file descriptor");
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Fail in getting the flags");
-	flags = (flags | O_NONBLOCK);
-	if (fcntl(fd, F_SETFL, flags) == -1)
-		throw std::runtime_error("Fail in setting nonblocking file");
-}
-
 void	Server::SetSocketOptions() {
 	int opt_value = 1;
 	

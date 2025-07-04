@@ -140,3 +140,4 @@ void Channel::BroadcastMessage(const std::string &message, Server *server) {
     for (size_t i = 0; i < this->users.size(); ++i) {
         this->users[i]->SendMessage(message, *server);
     }
+}

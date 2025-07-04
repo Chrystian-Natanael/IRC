@@ -18,7 +18,7 @@ bool CommandNick::ValidateCommand(const std::string& params){
     return true;
 }
 
-void CommandNick::Execute(){
+void CommandNick::Execute() const{
     if (this->client.GetLoginState() != NICK){
         this->client.SendMessage(ERR_ERRONICKSTATE, *this->server);
         throw std::runtime_error("Invalid nick state");
@@ -34,9 +34,9 @@ void CommandNick::Execute(){
                 throw std::runtime_error("Invalid nickname");
             }
     }
-    for (std::vector<Client>::iterator it = this->server->GetClients().begin(); 
+    for (std::vector<Client *>::const_iterator it = this->server->GetClients().begin(); 
         it != this->server->GetClients().end(); ++it) {
-        if (it->GetNickName() == this->args) {
+        if ((*it)->GetNickName() == this->args) {
             this->client.SendMessage(ERR_NICKNAMEDUPLICATE, *this->server);
             throw std::runtime_error("Nickname is already in use");
         }

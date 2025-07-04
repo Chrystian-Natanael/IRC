@@ -9,7 +9,7 @@ CommandPass::CommandPass(const std::string &command, const std::string &params, 
 
 CommandPass::~CommandPass() {}
 
-void CommandPass::Execute() {
+void CommandPass::Execute() const{
     std::cout << "Executing PASS command with parameters: " << args << std::endl;
 	if (this->client.GetLoginState() != PASSWORD){
 		this->client.SendMessage(ERR_ERROPASSSTATE, *this->server);

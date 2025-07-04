@@ -1,11 +1,14 @@
-#include "Server.hpp"
 #include "ACommand.hpp"
+#include "Server.hpp"
 #include "Commands/WHO.hpp"
+#include "Commands/KICK.hpp"
+#include "Commands/INVITE.hpp"
+#include "Commands/TOPIC.hpp"
+#include "Commands/MODE.hpp"
 #include "Commands/PRIVMSG.hpp"
 #include "Commands/LIST.hpp"
 #include "Commands/PART.hpp"
 #include "Commands/JOIN.hpp"
-#include "Commands/WHO.hpp"
 #include "Commands/PASS.hpp"
 #include "Commands/NICK.hpp"
 #include "Commands/USER.hpp"
@@ -24,23 +27,6 @@ ACommand::~ACommand() {}
 
 // O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
-
-//makers
-ACommand* MakeKick(const std::string& args) {
-	return new CommandKick("KICK", args);
-}
-
-ACommand* MakeInvite(const std::string& args) {
-	return new CommandInvite("INVITE", args);
-}
-
-ACommand* MakeTopic(const std::string& args) {
-	return new CommandTopic("TOPIC", args);
-}
-
-ACommand* MakeMode(const std::string& args) {
-	return new CommandMode("MODE", args);
-}
 
 void InitCommandFactory() {
 	commandFactory["KICK"]		= &MakeKick;
@@ -124,8 +110,6 @@ ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
 ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
 	return new CommandQuit("QUIT", args, server, client);
 }
-
-
 
 std::vector<std::string> SplitArguments(const std::string& input) {
     std::vector<std::string> args;

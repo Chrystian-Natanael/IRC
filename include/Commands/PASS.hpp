@@ -11,7 +11,7 @@ class CommandPass : public ACommand {
 	public:
 		CommandPass(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandPass();
-		void Execute();
+		void Execute() const;
 		bool ValidateCommand(const std::string &params);
 };
 

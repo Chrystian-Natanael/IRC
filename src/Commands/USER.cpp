@@ -35,7 +35,7 @@ static bool isAlphaOrSpace(unsigned char c) {
     return std::isalpha(c) || std::isspace(c);
 }
 
-void CommandUser::Execute () {
+void CommandUser::Execute() const{
     // validar se username contem apenas numeros e letras
     if (this->client.GetLoginState() != USER){
         this->client.SendMessage(ERR_ERROUSERSTATE, *this->server);

@@ -15,7 +15,7 @@ class CommandUser : public ACommand {
 	public:
 		CommandUser(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandUser();
-		void Execute();
+		void Execute() const;
         bool ValidateCommand(const std::string &params);
 		void ParseUserCommand(const std::string &str);
 

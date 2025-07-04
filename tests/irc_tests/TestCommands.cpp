@@ -50,7 +50,7 @@ struct SocketTestSetup {
         try {
             server->AcceptNewClient();
             if (!server->GetClients().empty()) {
-                client = &server->GetClients().back();
+                client = server->GetClients().back();
             }
         } catch (...) {
             // Failed to accept client

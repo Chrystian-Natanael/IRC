@@ -41,7 +41,7 @@ protected:
 public:
 	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 	virtual ~ACommand();
-	virtual void Execute() = 0;
+	virtual void Execute() const = 0;
 	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 
 };
@@ -63,6 +63,7 @@ ACommand* MakeWho(const std::string& args, Server* server, Client& client);
 ACommand* MakePass(const std::string& args, Server* server, Client&client);
 ACommand* MakeNick(const std::string& args, Server* server, Client&client);
 ACommand* MakeUser(const std::string& args, Server* server, Client&client);
+ACommand* MakeQuit(const std::string& args, Server* server, Client&client);
 
 std::vector<std::string> SplitArguments(const std::string& input);
 
