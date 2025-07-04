@@ -1,8 +1,9 @@
 #include "Channel.hpp"
 
-Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false){}
+Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1) {}
 
-Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false){}
+Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1) {}
+
 
 Channel::~Channel(void){}
 

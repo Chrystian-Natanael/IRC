@@ -58,5 +58,4 @@ void CommandInvite::Execute() const {
     std::string message = ":" + this->client.GetNickName() + " INVITE " + invited->GetNickName() + " :" + channelName + "\r\n";
 
     invited->SendMessage(message, *this->server);
-    std::cout << "EXECUTOU" << std::endl;
 }

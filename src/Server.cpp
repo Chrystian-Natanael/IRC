@@ -34,6 +34,10 @@ Server&	Server::operator=(const Server& src) {
 }
 
 void	Server::ClearClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		delete this->clients[i];
+	}
+
 	this->clients.clear();
 }
 
@@ -43,12 +47,8 @@ void	Server::CloseFds() {
 
 void	Server::SetNonBlocking(int fd) {
 	if (fd < 0)
-		throw std::invalid_argument("Invalid file descriptor");
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Fail in getting the flags");
-	flags = (flags | O_NONBLOCK);
-	if (fcntl(fd, F_SETFL, flags) == -1)
+		return ;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
@@ -74,6 +74,10 @@ const std::vector<Client *>&	Server::GetClients() const {
 
 std::vector<struct pollfd>&	Server::GetPollFds() {
 	return (this->fds);
+}
+
+struct sockaddr_in&	Server::GetServerAddr() {
+	return (this->server_addr);
 }
 
 void	Server::InitSocket() {
@@ -167,7 +171,7 @@ void	Server::AcceptNewClient() {
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
 
-	std::cout << G << "Client <" << incofd << "> Connecte?" << RST << std::endl;
+	// std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveDataAllClients() {
