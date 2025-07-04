@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "../include/Server.hpp"
 
+
 TEST(ClientGetNextMessageTest, ReturnsEmptyOnEmptyBuffer) {
     Client client(-1, "127.0.0.1");
     client.SetBufferMessage("");
@@ -44,58 +45,23 @@ TEST(ClientGetNextMessageTest, CRLFAtStartReturnsEmptyString) {
     EXPECT_EQ(client.GetBufferMessage(), "");
 }
 
+TEST(ClientGetNextMessageTest, messagetooLongIsIgnoredAndBufferCleared) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
 
-// Descomentar esses testes depois do merge do Cris
-//
-// TEST(ClientGetNextMessageTest, messagetooLongThrowsException) {
-//     Client client(-1, "127.0.0.1");
-//     client.SetBufferMessage(std::string(513, 'a') + "\r\n");
-//     EXPECT_EQ(client.GetBufferMessage(), "");
-// }
-//
-// TEST(ClientGetNextMessageTest, messageTooLongClearsOnlyThatMessage) {
-//     Client client(-1, "127.0.0.1");
-//     client.SetBufferMessage(std::string(513, 'a') + "\r\n" + "Algum comando\r\n" + "Outro comando\r\n");
-//     EXPECT_EQ(client.GetNextMessage(), "Algum comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
-//     EXPECT_EQ(client.GetNextMessage(), "Outro comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "");
-// }
-//
-// TEST(ClientGetNextMessageTest, mensagem_muito_Longa_com_varios_comandos_invalidos) {
-//     Client client(-1, "127.0.0.1");
-//     client.SetBufferMessage(
-//         std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n"
-//     );
-//     EXPECT_EQ(client.GetNextMessage(), "");
-//     EXPECT_EQ(client.GetBufferMessage(), "");
-// }
-//
-// TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands) {
-//     Client client(-1, "127.0.0.1");
-//     client.SetBufferMessage(
-//         std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
-//         "Algum comando\r\n" + "Outro comando\r\n"
-//     );
-//     EXPECT_EQ(client.GetNextMessage(), "Algum comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
-//     EXPECT_EQ(client.GetNextMessage(), "Outro comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "");
-// }
-//
-// TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands_NãoSeiQueNomeDar) {
-//     Client client(-1, "127.0.0.1");
-//     client.SetBufferMessage(
-//         std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
-//         "Algum comando\r\n" + "Outro comando\r\n" +
-//         std::string(513, 'a') + "\r\n"
-//     );
-//     EXPECT_EQ(client.GetNextMessage(), "Algum comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n" + std::string(513, 'a') + "\r\n");
-//     EXPECT_EQ(client.GetNextMessage(), "Outro comando");
-//     EXPECT_EQ(client.GetBufferMessage(), "");
-// }
+TEST(ClientGetNextMessageTest, messageTooLongClearsOnlyThatMessage) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + std::string(513, 'a') + "\r\n" + "Algum comando\r\n" + "Algum outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Algum outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum outro comando");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
 
+}
 
 /**
  * @resume: Testa se SendMessage envia corretamente para um cliente conectado.
@@ -115,7 +81,7 @@ TEST(ClientSendMessage, SendsSuccessfullyToConnectedClient) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = *(server.GetClients().back());
+    Client& client = *server.GetClients().back();
 
     ASSERT_NO_THROW({
         client.SendMessage("Hello, client! Yey! We've mande it!\r\n", server);
@@ -132,6 +98,59 @@ TEST(ClientSendMessage, SendsSuccessfullyToConnectedClient) {
     close(client_fd);
     server.DisconnectClient(client);
     EXPECT_TRUE(server.GetClients().empty());
+}
+
+
+TEST(ClientGetNextMessageTest, messagetooLongThrowsException) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest2, messageTooLongClearsOnlyThatMessage) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(std::string(513, 'a') + "\r\n" + "Algum comando\r\n" + "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
+        "Algum comando\r\n" + "Outro comando\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, mensagem_muito_Longa_com_varios_comandos_invalidos) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
+}
+
+TEST(ClientGetNextMessageTest, LongInvalidAndTwoValidCommands_NãoSeiQueNomeDar) {
+    Client client(-1, "127.0.0.1");
+    client.SetBufferMessage(
+        std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" + std::string(513, 'a') + "\r\n" +
+        "Algum comando\r\n" + "Outro comando\r\n" +
+        std::string(513, 'a') + "\r\n"
+    );
+    EXPECT_EQ(client.GetNextMessage(), "Algum comando");
+    EXPECT_EQ(client.GetBufferMessage(), "Outro comando\r\n" + std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "Outro comando");
+    EXPECT_EQ(client.GetBufferMessage(), std::string(513, 'a') + "\r\n");
+    EXPECT_EQ(client.GetNextMessage(), "");
+    EXPECT_EQ(client.GetBufferMessage(), "");
 }
 
 /**
@@ -152,7 +171,7 @@ TEST(ClientSendMessageTest, ThrowsOnDisconnectedClient) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = *(server.GetClients().back());
+    Client& client = *server.GetClients().back();
 
     // Simula desconexão do lado do cliente
     close(client.GetFd());
@@ -186,7 +205,7 @@ TEST(ClientSendMessageTest, SendsEmptyMessageSuccessfully) {
     ASSERT_NO_THROW(server.AcceptNewClient());
     ASSERT_FALSE(server.GetClients().empty());
 
-    Client& client = *(server.GetClients().back());
+    Client& client = *server.GetClients().back();
 
     // Enviar mensagem vazia - deve funcionar sem lançar exceção
     ASSERT_NO_THROW({

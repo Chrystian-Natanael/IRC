@@ -1,0 +1,222 @@
+[==========] Running 69 tests from 15 test suites.
+[----------] Global test environment set-up.
+[----------] 5 tests from testTopic
+[ RUN      ] testTopic.testChangeTopic
+[       OK ] testTopic.testChangeTopic (0 ms)
+[ RUN      ] testTopic.testNoPermissionChangeTopic
+[       OK ] testTopic.testNoPermissionChangeTopic (0 ms)
+[ RUN      ] testTopic.testNoChannel
+[       OK ] testTopic.testNoChannel (0 ms)
+[ RUN      ] testTopic.testPrintTopicChannel
+vim é o melhor editor de texto
+[       OK ] testTopic.testPrintTopicChannel (0 ms)
+[ RUN      ] testTopic.testPrintAfterChangeTopic
+vim é o pior editor de texto
+[       OK ] testTopic.testPrintAfterChangeTopic (0 ms)
+[----------] 5 tests from testTopic (0 ms total)
+
+[----------] 2 tests from testList
+[ RUN      ] testList.testListOneChannel
+Channel                            Users       Topic
+amantes_do_vim 🔓                    0      vim é o melhor ed...
+[       OK ] testList.testListOneChannel (0 ms)
+[ RUN      ] testList.testListMultipleChannels
+Channel                            Users       Topic
+Jogadores_de_CandyCrush 🔓           0      Esse jogo é vicia...
+Linux_eh_melhor 🔒                   1      Quem usa Windows n...
+MAC_falso_com_linux 🔒               0      contra mac falso c...
+Odeio_frio 🔓                        0      frio é horrível
+amantes_do_vim 🔓                    1      vim é o melhor ed...
+[       OK ] testList.testListMultipleChannels (0 ms)
+[----------] 2 tests from testList (0 ms total)
+
+[----------] 5 tests from testKick
+[ RUN      ] testKick.testKickSuccess
+Channel: canal_kick, User: target_user, Reason: Motivo do kick
+target_user Has been kicked because: Motivo do kick
+[       OK ] testKick.testKickSuccess (0 ms)
+[ RUN      ] testKick.testKickNoPermission
+Channel: canal_kick, User: Motivo, Reason: do kick
+[       OK ] testKick.testKickNoPermission (0 ms)
+[ RUN      ] testKick.testKickChannelNotFound
+Channel: canal_inexistente, User: Motivo, Reason: do kick
+[       OK ] testKick.testKickChannelNotFound (0 ms)
+[ RUN      ] testKick.testKickUserNotFound
+Channel: canal_kick, User: usuario_inexistente, Reason: Motivo do kick
+[       OK ] testKick.testKickUserNotFound (0 ms)
+[ RUN      ] testKick.testKickDefaultReason
+Channel: canal_kick, User: target_user, Reason:
+target_user Has been kicked because: You have been Kicked from the Channel
+[       OK ] testKick.testKickDefaultReason (0 ms)
+[----------] 5 tests from testKick (0 ms total)
+
+[----------] 1 test from testChannel
+[ RUN      ] testChannel.testJoinFullChannel
+[       OK ] testChannel.testJoinFullChannel (0 ms)
+[----------] 1 test from testChannel (0 ms total)
+
+[----------] 6 tests from CommandInviteTest
+[ RUN      ] CommandInviteTest.InviteSuccess
+EXECUTOU
+PENDENTES:1
+[       OK ] CommandInviteTest.InviteSuccess (0 ms)
+[ RUN      ] CommandInviteTest.InviteFailsIfNotOperator
+[       OK ] CommandInviteTest.InviteFailsIfNotOperator (0 ms)
+[ RUN      ] CommandInviteTest.InviteFailsIfUserAlreadyInChannel
+[       OK ] CommandInviteTest.InviteFailsIfUserAlreadyInChannel (0 ms)
+[ RUN      ] CommandInviteTest.InviteFailsIfChannelDoesNotExist
+[       OK ] CommandInviteTest.InviteFailsIfChannelDoesNotExist (0 ms)
+[ RUN      ] CommandInviteTest.InviteFailsIfUserDoesNotExist
+[       OK ] CommandInviteTest.InviteFailsIfUserDoesNotExist (0 ms)
+[ RUN      ] CommandInviteTest.InviteFailsIfParamsEmpty
+[       OK ] CommandInviteTest.InviteFailsIfParamsEmpty (0 ms)
+[----------] 6 tests from CommandInviteTest (0 ms total)
+
+[----------] 11 tests from ClientGetNextMessageTest
+[ RUN      ] ClientGetNextMessageTest.ReturnsEmptyOnEmptyBuffer
+[       OK ] ClientGetNextMessageTest.ReturnsEmptyOnEmptyBuffer (0 ms)
+[ RUN      ] ClientGetNextMessageTest.ReturnsMessageAndClearsBuffer
+[       OK ] ClientGetNextMessageTest.ReturnsMessageAndClearsBuffer (0 ms)
+[ RUN      ] ClientGetNextMessageTest.ReturnsFirstMessageAndUpdatesBuffer
+[       OK ] ClientGetNextMessageTest.ReturnsFirstMessageAndUpdatesBuffer (0 ms)
+[ RUN      ] ClientGetNextMessageTest.NoCRLFReturnsWholeBuffer
+[       OK ] ClientGetNextMessageTest.NoCRLFReturnsWholeBuffer (0 ms)
+[ RUN      ] ClientGetNextMessageTest.CRLFAtStartReturnsEmptyString
+[       OK ] ClientGetNextMessageTest.CRLFAtStartReturnsEmptyString (0 ms)
+[ RUN      ] ClientGetNextMessageTest.messagetooLongIsIgnoredAndBufferCleared
+[       OK ] ClientGetNextMessageTest.messagetooLongIsIgnoredAndBufferCleared (0 ms)
+[ RUN      ] ClientGetNextMessageTest.messageTooLongClearsOnlyThatMessage
+[       OK ] ClientGetNextMessageTest.messageTooLongClearsOnlyThatMessage (0 ms)
+[ RUN      ] ClientGetNextMessageTest.messagetooLongThrowsException
+[       OK ] ClientGetNextMessageTest.messagetooLongThrowsException (0 ms)
+[ RUN      ] ClientGetNextMessageTest.mensagem_muito_Longa_com_varios_comandos_invalidos
+[       OK ] ClientGetNextMessageTest.mensagem_muito_Longa_com_varios_comandos_invalidos (0 ms)
+[ RUN      ] ClientGetNextMessageTest.LongInvalidAndTwoValidCommands
+[       OK ] ClientGetNextMessageTest.LongInvalidAndTwoValidCommands (0 ms)
+[ RUN      ] ClientGetNextMessageTest.LongInvalidAndTwoValidCommands_NãoSeiQueNomeDar
+[       OK ] ClientGetNextMessageTest.LongInvalidAndTwoValidCommands_NãoSeiQueNomeDar (0 ms)
+[----------] 11 tests from ClientGetNextMessageTest (0 ms total)
+
+[----------] 1 test from ClientSendMessage
+[ RUN      ] ClientSendMessage.SendsSuccessfullyToConnectedClient
+[1;32mClient <5> Connecte?[0m
+Hello, client! Yey! We've mande it!
+
+[       OK ] ClientSendMessage.SendsSuccessfullyToConnectedClient (0 ms)
+[----------] 1 test from ClientSendMessage (0 ms total)
+
+[----------] 1 test from ClientGetNextMessageTest2
+[ RUN      ] ClientGetNextMessageTest2.messageTooLongClearsOnlyThatMessage
+[       OK ] ClientGetNextMessageTest2.messageTooLongClearsOnlyThatMessage (0 ms)
+[----------] 1 test from ClientGetNextMessageTest2 (0 ms total)
+
+[----------] 2 tests from ClientSendMessageTest
+[ RUN      ] ClientSendMessageTest.ThrowsOnDisconnectedClient
+[1;32mClient <7> Connecte?[0m
+[       OK ] ClientSendMessageTest.ThrowsOnDisconnectedClient (0 ms)
+[ RUN      ] ClientSendMessageTest.SendsEmptyMessageSuccessfully
+[1;32mClient <8> Connecte?[0m
+[       OK ] ClientSendMessageTest.SendsEmptyMessageSuccessfully (0 ms)
+[----------] 2 tests from ClientSendMessageTest (0 ms total)
+
+[----------] 4 tests from ClientPerformMessagesTest
+[ RUN      ] ClientPerformMessagesTest.PerformHandlesInvalidCommand
+[1;32mClient <10> Connecte?[0m
+[       OK ] ClientPerformMessagesTest.PerformHandlesInvalidCommand (0 ms)
+[ RUN      ] ClientPerformMessagesTest.HandlesMultipleInvalidCommands
+[1;32mClient <12> Connecte?[0m
+[       OK ] ClientPerformMessagesTest.HandlesMultipleInvalidCommands (0 ms)
+[ RUN      ] ClientPerformMessagesTest.HandlesEmptyCommand
+[1;32mClient <14> Connecte?[0m
+[       OK ] ClientPerformMessagesTest.HandlesEmptyCommand (0 ms)
+[ RUN      ] ClientPerformMessagesTest.NoMessagesDoesNothing
+[1;32mClient <16> Connecte?[0m
+[       OK ] ClientPerformMessagesTest.NoMessagesDoesNothing (0 ms)
+[----------] 4 tests from ClientPerformMessagesTest (0 ms total)
+
+[----------] 3 tests from ServerConstructorTest
+[ RUN      ] ServerConstructorTest.ValidPort
+[       OK ] ServerConstructorTest.ValidPort (0 ms)
+[ RUN      ] ServerConstructorTest.InvalidPortBelowRange
+[       OK ] ServerConstructorTest.InvalidPortBelowRange (0 ms)
+[ RUN      ] ServerConstructorTest.InvalidPortAboveRange
+[       OK ] ServerConstructorTest.InvalidPortAboveRange (0 ms)
+[----------] 3 tests from ServerConstructorTest (0 ms total)
+
+[----------] 3 tests from ServerAcceptNewClientTest
+[ RUN      ] ServerAcceptNewClientTest.AcceptsClientSuccessfully
+[1;32mClient <18> Connecte?[0m
+[       OK ] ServerAcceptNewClientTest.AcceptsClientSuccessfully (0 ms)
+[ RUN      ] ServerAcceptNewClientTest.AcceptThrowsOnAcceptError
+[       OK ] ServerAcceptNewClientTest.AcceptThrowsOnAcceptError (0 ms)
+[ RUN      ] ServerAcceptNewClientTest.AcceptThrowsOnFcntlError
+[       OK ] ServerAcceptNewClientTest.AcceptThrowsOnFcntlError (0 ms)
+[----------] 3 tests from ServerAcceptNewClientTest (0 ms total)
+
+[----------] 4 tests from ServerReceiveTest
+[ RUN      ] ServerReceiveTest.ReceiveData_ReadSuccess
+[1;32mClient <19> Connecte?[0m
+[       OK ] ServerReceiveTest.ReceiveData_ReadSuccess (0 ms)
+[ RUN      ] ServerReceiveTest.ReceiveData_ClientDisconnected
+[1;32mClient <20> Connecte?[0m
+[       OK ] ServerReceiveTest.ReceiveData_ClientDisconnected (0 ms)
+[ RUN      ] ServerReceiveTest.RecvFails_BytesLessThanZero
+[1;32mClient <21> Connecte?[0m
+[       OK ] ServerReceiveTest.RecvFails_BytesLessThanZero (0 ms)
+[ RUN      ] ServerReceiveTest.RecvComMaisDeUmCliente
+[1;32mClient <22> Connecte?[0m
+[1;32mClient <23> Connecte?[0m
+[       OK ] ServerReceiveTest.RecvComMaisDeUmCliente (0 ms)
+[----------] 4 tests from ServerReceiveTest (1 ms total)
+
+[----------] 3 tests from ServerPollTest
+[ RUN      ] ServerPollTest.ReturnIfFdsEmpty
+[       OK ] ServerPollTest.ReturnIfFdsEmpty (0 ms)
+[ RUN      ] ServerPollTest.ThrowsWhenPollFails
+[       OK ] ServerPollTest.ThrowsWhenPollFails (0 ms)
+[ RUN      ] ServerPollTest.DoesNotThrowIfPollSucceeds
+[       OK ] ServerPollTest.DoesNotThrowIfPollSucceeds (0 ms)
+[----------] 3 tests from ServerPollTest (0 ms total)
+
+[----------] 18 tests from CommandFactory
+[ RUN      ] CommandFactory.CreatesKickCommandAccentuationArgs
+[       OK ] CommandFactory.CreatesKickCommandAccentuationArgs (0 ms)
+[ RUN      ] CommandFactory.ReturnsNullptrForUnknownCommand
+[       OK ] CommandFactory.ReturnsNullptrForUnknownCommand (0 ms)
+[ RUN      ] CommandFactory.ReturnsNullptrForEmptyCommand
+[       OK ] CommandFactory.ReturnsNullptrForEmptyCommand (0 ms)
+[ RUN      ] CommandFactory.ReturnsNullptrForAccentuationCommand
+[       OK ] CommandFactory.ReturnsNullptrForAccentuationCommand (0 ms)
+[ RUN      ] CommandFactory.ReturnsNullptrForEmptyCommandEmptyArgs
+[       OK ] CommandFactory.ReturnsNullptrForEmptyCommandEmptyArgs (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithLeadingAndTrailingSpaces
+[       OK ] CommandFactory.HandlesCommandWithLeadingAndTrailingSpaces (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithLeadingAndTrailingSpacesBehind
+[       OK ] CommandFactory.HandlesCommandWithLeadingAndTrailingSpacesBehind (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithTabsAndNewlines
+[       OK ] CommandFactory.HandlesCommandWithTabsAndNewlines (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithSpecialCharacters
+[       OK ] CommandFactory.HandlesCommandWithSpecialCharacters (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithInternalSpaces
+[       OK ] CommandFactory.HandlesCommandWithInternalSpaces (0 ms)
+[ RUN      ] CommandFactory.HandlesVeryLongCommandName
+[       OK ] CommandFactory.HandlesVeryLongCommandName (0 ms)
+[ RUN      ] CommandFactory.HandlesVeryLongArgs
+[       OK ] CommandFactory.HandlesVeryLongArgs (0 ms)
+[ RUN      ] CommandFactory.HandlesArgsWithSpecialCharacters
+[       OK ] CommandFactory.HandlesArgsWithSpecialCharacters (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithPrefixOrSuffix
+[       OK ] CommandFactory.HandlesCommandWithPrefixOrSuffix (0 ms)
+[ RUN      ] CommandFactory.HandlesCommandWithMixedCaseAndSpaces
+[       OK ] CommandFactory.HandlesCommandWithMixedCaseAndSpaces (0 ms)
+[ RUN      ] CommandFactory.HandlesWhitespaceOnlyCommand
+[       OK ] CommandFactory.HandlesWhitespaceOnlyCommand (0 ms)
+[ RUN      ] CommandFactory.HandlesArgsWithUnicode
+[       OK ] CommandFactory.HandlesArgsWithUnicode (0 ms)
+[ RUN      ] CommandFactory.NumbersAsArgs
+[       OK ] CommandFactory.NumbersAsArgs (0 ms)
+[----------] 18 tests from CommandFactory (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 69 tests from 15 test suites ran. (7 ms total)
+[  PASSED  ] 69 tests.

@@ -15,6 +15,8 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <algorithm>
+#include <map>
 #include <string.h>
 
 #include "ColorsTerm.hpp"
@@ -23,13 +25,16 @@
 
 extern int volatile g_server;
 
+class Channel;
+
 class Server {
 private:
-	int							port;
-	int							server_socket_fd;
-	struct sockaddr_in			server_addr;
-	std::vector<Client *>		clients;
-	std::vector<struct pollfd>	fds;
+	int									port;
+	int									server_socket_fd;
+	struct sockaddr_in					server_addr;
+	std::vector<Client *>				clients;
+	std::vector<struct pollfd>			fds;
+	std::map<std::string, Channel*>		channel;
 
 	Server();
 
@@ -60,7 +65,10 @@ private:
 
 	int		GetFd() const;
 	int		GetPort() const;
+	const std::map<std::string, Channel*> &GetChannel() const;
 	Client&	GetClient(int fd);
+
+	Client* FindClientByNick(const std::string& nickname);
 
 	const std::vector<Client *>&	GetClients() const;
 	std::vector<struct pollfd>&		GetPollFds();
@@ -68,6 +76,8 @@ private:
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
+	void	AddChannel(const std::string& name, Channel* channel);
+	void	addClient(Client* client);
 
 };
 

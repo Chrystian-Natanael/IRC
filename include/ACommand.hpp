@@ -18,6 +18,7 @@ public:
 	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 	virtual ~ACommand();
 	virtual void Execute() const = 0;
+	// virtual bool ValidateCommand() const = 0;
 	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 
 };
@@ -31,5 +32,9 @@ ACommand* MakeKick(const std::string& args, Server* server, Client&client);
 ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
 ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
 ACommand* MakeMode(const std::string& args, Server* server, Client&client);
+ACommand* MakePrivMsg(const std::string& args, Server* server, Client&client);
+ACommand* MakeList(const std::string& args, Server* server, Client&client);
+ACommand* MakeJoin(const std::string& args, Server* server, Client&client);
+ACommand* MakePart(const std::string& args, Server* server, Client& client);
 
 # endif
