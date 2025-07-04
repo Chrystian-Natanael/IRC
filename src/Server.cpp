@@ -21,6 +21,7 @@ Server::~Server() {
 
 	this->ClearClients();
 	this->CloseFds();
+	this->ClearChannels();
 
 	ClearCommandFactory();
 }
@@ -43,6 +44,13 @@ void	Server::ClearClients() {
 
 void	Server::CloseFds() {
 	this->fds.clear();
+}
+
+void	Server::ClearChannels() {
+	for (std::map<std::string, Channel *>::iterator it = this->channel.begin(); it != this->channel.end(); ++it) {
+		delete it->second;
+	}
+	this->channel.clear();
 }
 
 void	Server::SetNonBlocking(int fd) {

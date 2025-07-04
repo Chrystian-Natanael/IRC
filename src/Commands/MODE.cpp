@@ -90,27 +90,30 @@ bool CommandMode::IsLimitFlag(const std::string& modeToken) {
 }
 
 void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
-	size_t expectedSize, const std::string& flagName) {
+		size_t expectedSize, const std::string& flagName) {
+
 	if (tokens.size() != expectedSize)
 		throw std::runtime_error("MODE command error: " + flagName + " flag requires a differente number of parameter(s).");
-	if (tokens[1].size() != 2)
+	else if (tokens[1].size() != 2)
 		throw std::runtime_error("MODE command error: wrong syntax for " + flagName + " flag.");
 }
 
 void CommandMode::Execute() const {
 	Channel *channel = GetChannelIfExists();
-
 	if (!channel)
 		throw std::runtime_error("Channel doesn't exist.");
-	if (this->tokens[1][1] == 'i')
+
+	if (channel->isOperator(&this->client) == false)
+		throw std::runtime_error("You are not an operator of this channel.");
+	else if (this->tokens[1][1] == 'i')
 		ExecuteInvite(channel);
-	if (this->tokens[1][1] == 't')
+	else if (this->tokens[1][1] == 't')
 		ExecuteTopic(channel);
-	if (this->tokens[1][1] == 'k')
+	else if (this->tokens[1][1] == 'k')
 		ExecuteKey(channel);
-	if (this->tokens[1][1] == 'o')
+	else if (this->tokens[1][1] == 'o')
 		ExecuteOperator(channel);
-	if (this->tokens[1][1] == 'l')
+	else if (this->tokens[1][1] == 'l')
 		ExecuteLimit(channel);
 }
 
@@ -125,50 +128,60 @@ Channel* CommandMode::GetChannelIfExists() const {
 
 void CommandMode::ExecuteInvite(Channel *channel) const {
 	if (this->tokens[1][0] == '+')
-		channel->SetBlockChannel(true);
-	if (this->tokens[1][0] == '-')
-		channel->SetBlockChannel(false);
+		channel->SetInviteOnly(true);
+	else if (this->tokens[1][0] == '-')
+		channel->SetInviteOnly(false);
 }
 
 void CommandMode::ExecuteTopic(Channel *channel) const {
 	if (this->tokens[1][0] == '+')
 		channel->SetBlockTopic(true);
-	if (this->tokens[1][0] == '-')
+	else if (this->tokens[1][0] == '-')
 		channel->SetBlockTopic(false);
 }
 
 void CommandMode::ExecuteKey(Channel *channel) const {
 	if (this->tokens[1][0] == '+') {
-		if (!channel->ValidatePassword("")) {
-			std::cout << "Error: a password is already set for this channel." << std::endl;
-			return;
+		if (channel->isBlock()) {
+			throw (std::runtime_error("Error: a password is already set for this channel."));
 		}
 		channel->SetPassword(this->tokens[2]);
+		channel->SetBlockChannel(true);
 	}
 	else if (this->tokens[1][0] == '-') {
 		if (!channel->ValidatePassword(this->tokens[2])) {
-			std::cout << "Error: incorrect password for removal." << std::endl;
-			return;
+			throw (std::runtime_error("Error: incorrect password for removal."));
 		}
+		channel->SetBlockChannel(false);
 		channel->SetPassword("");
 	}
 }
 
-// void CommandMode::ExecuteOperator(Channel *channel) const {
-// 	/* checar se o cliente que está executando é operador do canal.
-// 	Se não for, lançar exceção ou enviar msg de erro.*/
-// 	if (this->tokens[1][0] == '+') {
-// 		const std::vector<Client *>& clients = this->server->GetClients();
-// 		std::vector<Client *>::const_iterator it = clients.find(this->tokens[2]);
+void CommandMode::ExecuteOperator(Channel *channel) const {
+	std::string nickname = this->tokens[2];
+	Client *client = channel->findUserByNickname(nickname);
+	if (!client)
+		throw std::runtime_error("Client not found.");
 
-// 	if (it != channels.end())
-// 		return it->second;
-// 	return (NULL);
-// 	}
-// 	if (this->tokens[1][0] == '-')
-// 		channel->SetBlockTopic(false);
-// }
+	if (this->tokens[1][0] == '+' && !channel->isOperator(client))
+		channel->AddOperator(client);
+	else if (this->tokens[1][0] == '-' && channel->isOperator(client))
+		channel->RemoveOperator(client);
+}
 
 void CommandMode::ExecuteLimit(Channel *channel) const {
-	
+	if (this->tokens[1].empty())
+		throw std::runtime_error("Limit value cannot be empty.");
+	if (this->tokens[1][0] == '-'){
+		channel->SetMaxUsers(-1);
+		return;
+	}
+	if (this->tokens[1].find_first_not_of("0123456789") == std::string::npos)
+		throw std::runtime_error("Limit must be a number.");
+	int limit = std::atoi(this->tokens[2].c_str());
+	if (limit <= 0)
+		throw std::runtime_error("Limit must be a positive number.");
+	if (limit < channel->GetUsers().size())
+		throw std::runtime_error("Limit cannot be less than the number of users in the channel.");
+	channel->SetMaxUsers(limit);
 }
