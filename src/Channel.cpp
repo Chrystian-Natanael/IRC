@@ -4,6 +4,7 @@ Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), bl
 
 Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1) {}
 
+
 Channel::~Channel(void){}
 
 Channel::Channel(Channel &rhs){
