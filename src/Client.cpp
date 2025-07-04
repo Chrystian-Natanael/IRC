@@ -10,6 +10,17 @@ Client::Client(int fd, std::string ip) :
 Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
+
+	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
+}
+
+bool Client::operator==(const Client& other) const {
+	return (this->fd == other.fd &&
+			this->ip == other.ip &&
+			this->user_name == other.user_name &&
+			this->nick_name == other.nick_name &&
+			this->real_name == other.real_name &&
+			this->buffer_message == other.buffer_message);
 }
 
 bool Client::operator<(const Client& other) const {
@@ -68,7 +79,7 @@ std::string Client::GetNextMessage() {
     this->buffer_message.erase(0, pos + 2);
 
     if (result.size() > 512) {
-        return "";
+        return GetNextMessage();
     }
 
     return result;
@@ -111,13 +122,13 @@ void	Client::ReceiveData() {
 }
 
 void	Client::SendMessage(const std::string& msg, Server& server) {
-	if (msg.empty())
+	if (msg.empty() || this->fd < 0)
 		return;
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
 		server.DisconnectClient(*this);
-		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+		// throw std::runtime_error("Client disconnected: send() failed or returned 0.");
 	}
 }
 
@@ -136,7 +147,7 @@ void	Client::PerformMessages(Server *server) {
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-			std::cerr << "Error creating command: " << e.what() << std::endl;
+			std::cerr << "Error - " << e.what() << std::endl;
 		}
 		msg = this->GetNextMessage();
 	}

@@ -7,11 +7,10 @@
 #include "../include/Channel.hpp"
 
 TEST(testTopic, testChangeTopic){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
 
@@ -31,14 +30,15 @@ TEST(testTopic, testChangeTopic){
 
     std::string expectedTopic = "vim é o pior editor de texto";
     ASSERT_EQ(channel.GetTopic(), expectedTopic);
+
+	delete command;
 }
 
 TEST(testTopic, testNoPermissionChangeTopic){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
 
@@ -52,26 +52,28 @@ TEST(testTopic, testNoPermissionChangeTopic){
 
     std::string expectedTopic = "vim é o pior editor de texto";
     EXPECT_NE(channel.GetTopic(), expectedTopic);
+
+	delete command;
 }
 
 TEST(testTopic, testNoChannel){
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim :vim é o pior editor de texto", &server, client);
     EXPECT_THROW(command->Execute(), std::runtime_error);
+
+	delete command;
 }
 
 TEST(testTopic, testPrintTopicChannel)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
 
@@ -83,15 +85,16 @@ TEST(testTopic, testPrintTopicChannel)
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim", &server, client);
 
     ASSERT_NO_THROW(command->Execute());
+
+	delete command;
 }
 
 TEST(testTopic, testPrintAfterChangeTopic)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
 
@@ -110,20 +113,22 @@ TEST(testTopic, testPrintAfterChangeTopic)
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim :vim é o pior editor de texto", &server, client);
     EXPECT_NO_THROW(command->Execute());
 
+	delete command;
     command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim", &server, client);
     EXPECT_NO_THROW(command->Execute());
 
     EXPECT_EQ(channel.GetTopic(), "vim é o pior editor de texto");
+
+	delete command;
 }
 
 
 TEST(testList, testListOneChannel)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
 
@@ -135,16 +140,17 @@ TEST(testList, testListOneChannel)
     ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
 
     EXPECT_NO_THROW(command->Execute());
+
+	delete command;
 }
 
 
 TEST(testList, testListMultipleChannels)
 {
-    Server server;
+    Server server(5000);
 
     Client client(-1, "192.168");
 
-    InitCommandFactory();
 
     Channel channel("amantes_do_vim");
     std::string topic("vim é o melhor editor de texto");
@@ -178,15 +184,16 @@ TEST(testList, testListMultipleChannels)
     ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
 
     EXPECT_NO_THROW(command->Execute());
+
+	delete command;
 }
 
 
 TEST(testKick, testKickSuccess) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     targetClient.SetNickName("target_user");
-    InitCommandFactory();
 
     Channel channel("canal_kick");
     channel.AddUser(&operatorClient);
@@ -202,13 +209,14 @@ TEST(testKick, testKickSuccess) {
 
     EXPECT_NO_THROW(command->Execute());
     EXPECT_EQ(channel.findUserByNickname(targetClient.GetNickName()), nullptr);
+
+	delete command;
 }
 
 TEST(testKick, testKickNoPermission) {
-    Server server;
+    Server server(5000);
     Client notOperator(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
-    InitCommandFactory();
 
     Channel channel("canal_kick");
     channel.AddUser(&notOperator);
@@ -220,13 +228,14 @@ TEST(testKick, testKickNoPermission) {
     ACommand *command = ACommand::CreateCommand("KICK", args, &server, notOperator);
 
     EXPECT_THROW(command->Execute(), std::runtime_error);
+
+	delete command;
 }
 
 TEST(testKick, testKickChannelNotFound) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
-    InitCommandFactory();
 
     // Não adiciona canal ao servidor
 
@@ -234,12 +243,13 @@ TEST(testKick, testKickChannelNotFound) {
     ACommand *command = ACommand::CreateCommand("KICK", args, &server, operatorClient);
 
     EXPECT_THROW(command->Execute(), std::runtime_error);
+
+	delete command;
 }
 
 TEST(testKick, testKickUserNotFound) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
-    InitCommandFactory();
 
     Channel channel("canal_kick");
     channel.AddUser(&operatorClient);
@@ -250,13 +260,14 @@ TEST(testKick, testKickUserNotFound) {
     ACommand *command = ACommand::CreateCommand("KICK", args, &server, operatorClient);
 
     EXPECT_THROW(command->Execute(), std::runtime_error);
+
+	delete command;
 }
 
 TEST(testKick, testKickDefaultReason) {
-    Server server;
+    Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
-    InitCommandFactory();
 
     Channel channel("canal_kick");
     targetClient.SetNickName("target_user");
@@ -270,4 +281,155 @@ TEST(testKick, testKickDefaultReason) {
 
     EXPECT_NO_THROW(command->Execute());
     EXPECT_EQ(channel.findUserByNickname(targetClient.GetNickName()), nullptr);
+
+	delete command;
+}
+
+TEST(testChannel, testJoinFullChannel) {
+    Server server(5000);
+    Client user1(-1, "192.168.0.1");
+    Client user2(-2, "192.168.0.2");
+    Client user3(-3, "192.168.0.3");
+
+    Channel channel("canal_cheio");
+    // Supondo que exista esse método para limitar usuários
+    channel.SetMaxUsers(2);
+
+    user1.SetNickName("user1");
+    user2.SetNickName("user2");
+    user3.SetNickName("user3");
+
+    channel.AddUser(&user1);
+    channel.AddUser(&user2);
+
+    server.AddChannel("canal_cheio", &channel);
+
+    // Tentativa de adicionar um terceiro usuário ao canal cheio
+    EXPECT_THROW(channel.AddUser(&user3), std::runtime_error);
+}
+
+
+// ! TESTES INVITE
+
+TEST(CommandInviteTest, InviteSuccess) {
+    Server server(5000);
+    Client *operatorClient = new Client(-1, "1234");
+    Client *invitedClient = new Client(-2, "12345");
+    invitedClient->SetNickName("invitee");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(operatorClient);
+    server.addClient(operatorClient);
+    server.addClient(invitedClient);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *operatorClient);
+
+    ASSERT_NO_THROW(command->Execute());
+    const std::vector<Client*>& pendings = channel->GetPendentInvites();
+    EXPECT_NE(std::find(pendings.begin(), pendings.end(), invitedClient), pendings.end());
+
+	delete command;
+	delete channel;
+}
+
+TEST(CommandInviteTest, InviteFailsIfNotOperator) {
+    Server server(5000);
+    Client* notOP = new Client(-1, "1234");
+    Client* invitedClient = new Client(-2, "12345");
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    server.addClient(invitedClient);
+    server.addClient(notOP);
+    channel->AddUser(notOP);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *notOP);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+
+	delete command;
+	delete channel;
+}
+
+TEST(CommandInviteTest, InviteFailsIfUserAlreadyInChannel) {
+    Server server(5000);
+    Client *oper = new Client(-1, "1234");
+    oper->SetNickName("oper");
+    Client* invited = new Client(-2, "12345");
+    invited->SetNickName("invitee");
+	server.addClient(oper);
+	server.addClient(invited);
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(oper);
+    channel->AddUser(oper);
+    channel->AddUser(invited);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+
+	delete command;
+	delete channel;
+}
+
+TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
+    Server server(5000);
+    Client *oper = new Client(-1, "1234");
+    server.addClient(oper);
+    oper->SetNickName("oper");
+    Client invited(-2, "12345");
+    invited.SetNickName("invitee");
+
+    std::string args = "invitee #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
+    ASSERT_THROW(command->Execute(), std::runtime_error);
+
+    delete command;
+}
+
+TEST(CommandInviteTest, InviteFailsIfUserDoesNotExist) {
+    Server server(5000);
+    Client *oper = new Client(-1, "1234");
+    server.addClient(oper);
+    oper->SetNickName("oper");
+    Channel* channel = new Channel("testchan");
+    channel->AddOperator(oper);
+    channel->AddUser(oper);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "ghost #testchan";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+
+	delete command;
+    delete channel;
+
+}
+
+TEST(CommandInviteTest, InviteFailsIfParamsEmpty) {
+    Server server(5000);
+    Client *operatorClient = new Client(-1, "1234");
+    Client *invitedClient = new Client(-2, "12345");
+    invitedClient->SetNickName("invitee");
+    server.addClient(operatorClient);
+    server.addClient(invitedClient);
+    Channel* channel = new Channel("testchan");
+    channel->SetMaxUsers(-1);
+    channel->AddOperator(operatorClient);
+    server.AddChannel("testchan", channel);
+
+    std::string args = "";
+    ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *operatorClient);
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+    EXPECT_TRUE(channel->GetPendentInvites().empty());
+
+	delete command;
+	delete channel;
 }

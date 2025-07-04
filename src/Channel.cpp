@@ -1,8 +1,9 @@
 #include "Channel.hpp"
 
-Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false){}
+Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1) {}
 
-Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false){}
+Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1) {}
+
 
 Channel::~Channel(void){}
 
@@ -70,6 +71,8 @@ void    Channel::AddOperator(Client *user){
 }
 
 void    Channel::AddUser(Client *user){
+    if (this->maxUsers > 0 && this->users.size() >= static_cast<size_t>(this->maxUsers))
+        throw std::runtime_error("Channel is full!");
     this->users.push_back(user);
 }
 
@@ -92,7 +95,29 @@ void    Channel::RemoveUser(Client *user){
         this->users.erase(it);
 }
 
+int Channel::GetMaxUsers(void) const{
+    return this->maxUsers;
+}
+
+void Channel::SetMaxUsers(int maxUsers){
+    this->maxUsers = maxUsers;
+}
 
 bool    Channel::ValidatePassword(const std::string& password) const{
     return (this->password == password);
+}
+
+void Channel::AddPendentInvite(Client *user){
+    this->pendent_invites.push_back(user);
+}
+
+const std::vector<Client *> &Channel::GetPendentInvites(void) const {
+    return this->pendent_invites;
+}
+
+void Channel::RemovePendentInvite(Client *user) {
+    std::vector<Client *>::iterator it = std::find(this->pendent_invites.begin(), this->pendent_invites.end(), user);
+    if (it != this->pendent_invites.end()) {
+        this->pendent_invites.erase(it);
+    }
 }

@@ -1,7 +1,16 @@
 #include "Server.hpp"
+#include <signal.h>
+
+void sig_handler(int signum) {
+	if (signum == SIGINT) {
+		g_server = 0;
+	}
+}
 
 int main() {
 	Server server(6667);
+
+	signal(SIGINT, sig_handler);
 
 	try {
 		server.ServerInit();

@@ -1,10 +1,14 @@
 #include "Server.hpp"
 
+int volatile g_server = 1;
+
 Server::Server() : port(-1), server_socket_fd(-1) {}
 
 Server::Server(int port) : port(port), server_socket_fd(-1) {
 	if (port < 1024 || port > 65535)
 		throw std::invalid_argument("Port number must be between 1024 and 65535");
+
+	InitCommandFactory();
 }
 
 Server::Server(const Server& src) :
@@ -17,6 +21,8 @@ Server::~Server() {
 
 	this->ClearClients();
 	this->CloseFds();
+
+	ClearCommandFactory();
 }
 
 Server&	Server::operator=(const Server& src) {
@@ -28,6 +34,10 @@ Server&	Server::operator=(const Server& src) {
 }
 
 void	Server::ClearClients() {
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		delete this->clients[i];
+	}
+
 	this->clients.clear();
 }
 
@@ -37,12 +47,8 @@ void	Server::CloseFds() {
 
 void	Server::SetNonBlocking(int fd) {
 	if (fd < 0)
-		throw std::invalid_argument("Invalid file descriptor");
-	int flags = fcntl(fd, F_GETFL, 0);
-	if (flags == -1)
-		throw std::runtime_error("Fail in getting the flags");
-	flags = (flags | O_NONBLOCK);
-	if (fcntl(fd, F_SETFL, flags) == -1)
+		return ;
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
 		throw std::runtime_error("Fail in setting nonblocking file");
 }
 
@@ -62,12 +68,16 @@ Client&	Server::GetClient(int fd) {
 	throw std::runtime_error("Client not found");
 }
 
-const std::vector<Client *>& Server::GetClients() const {
+const std::vector<Client *>&	Server::GetClients() const {
 	return (this->clients);
 }
 
 std::vector<struct pollfd>&	Server::GetPollFds() {
 	return (this->fds);
+}
+
+struct sockaddr_in&	Server::GetServerAddr() {
+	return (this->server_addr);
 }
 
 void	Server::InitSocket() {
@@ -116,27 +126,27 @@ void	Server::Poll() {
 	if (this->fds.empty())
 		return ;
 
-	if (poll(this->fds.data(), this->fds.size(), -1) == -1)
+	if (poll(this->fds.data(), this->fds.size(), -1) == -1 && g_server)
 		throw std::runtime_error("Error: failed to poll.");
 }
 
 void	Server::DisconnectClient(Client &client)
 {
-	for (size_t i = 0; i < this->clients.size(); i++)
-	{
-		if (clients[i]->GetFd() == client.GetFd())
-		{
-			delete(clients[i]);
-			clients.erase(clients.begin() + i);
-			break;
-		}
-	}
-
 	for (size_t i = 0; i < this->fds.size(); i++)
 	{
 		if (fds[i].fd == client.GetFd())
 		{
 			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
+		if (clients[i]->GetFd() == client.GetFd())
+		{
+			delete clients[i];
+			clients.erase(clients.begin() + i);
 			break;
 		}
 	}
@@ -161,7 +171,7 @@ void	Server::AcceptNewClient() {
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
 
-	std::cout << G << "Client <" << incofd << "> Connecte?" << RST << std::endl;
+	// std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveDataAllClients() {
@@ -183,7 +193,7 @@ void	Server::PerformMessages() {
 }
 
 void	Server::ServerLoop() {
-	while (1) {
+	while (g_server) {
 		this->Poll();
 
 		if (this->fds[0].revents & POLLIN)
@@ -217,4 +227,10 @@ void	Server::AddChannel(const std::string& name, Channel* channel){
 	if (channel == NULL)
 		throw std::runtime_error("Channel pointer is null");
 	this->channel.insert(std::make_pair(name, channel));
+}
+
+void	Server::addClient(Client* client) {
+	if (client == NULL)
+		throw std::runtime_error("Client pointer is null");
+	this->clients.push_back(client);
 }

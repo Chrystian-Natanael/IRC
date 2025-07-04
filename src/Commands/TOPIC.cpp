@@ -18,7 +18,7 @@ std::pair<std::string, std::string> CommandTopic::ParseTopic(const std::string& 
         topic = topic.substr(1);
     if (!channel.empty() && channel[0] == '#')
         channel = channel.substr(1);
-    return {channel, topic};
+    return std::make_pair(channel, topic);
 }
 
 void CommandTopic::Execute() const {
