@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include "ACommand.hpp"
 #include "Server.hpp"
 
 Client::Client() {}
@@ -6,7 +7,25 @@ Client::Client() {}
 Client::Client(int fd, std::string ip) :
 	ip(ip), fd(fd), login_state(PASSWORD) {}
 
-Client::~Client() {}
+Client::~Client() {
+	if (this->fd != -1)
+		close(this->fd);
+
+	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
+}
+
+bool Client::operator==(const Client& other) const {
+	return (this->fd == other.fd &&
+			this->ip == other.ip &&
+			this->user_name == other.user_name &&
+			this->nick_name == other.nick_name &&
+			this->real_name == other.real_name &&
+			this->buffer_message == other.buffer_message);
+}
+
+bool Client::operator<(const Client& other) const {
+	return (this->fd < other.fd);
+}
 
 int Client::GetFd() const {
 	return (this->fd);
@@ -71,30 +90,87 @@ void Client::AddChannel(Channel *channel) {
 }
 
 std::string Client::GetNextMessage() {
-	if (this->buffer_message.empty())
-		return ("");
+    if (this->buffer_message.empty())
+        return "";
 
-	size_t pos = this->buffer_message.find("\r\n", 0);
-	if (pos == std::string::npos)
-		return ("");
+    size_t pos = this->buffer_message.find("\r\n", 0);
+    if (pos == std::string::npos)
+        return "";
 
-	std::string result = this->buffer_message.substr(0, pos);
-	this->buffer_message.erase(0, pos + 2);
+    std::string result = this->buffer_message.substr(0, pos);
+    this->buffer_message.erase(0, pos + 2);
 
-	if (result.size() > 512) {
-		throw std::runtime_error("Error: message too long");
+    if (result.size() > 512) {
+        return GetNextMessage();
+    }
+
+    return result;
+}
+
+std::string	Client::GetArgs(std::istringstream& iss) {
+	std::string args;
+	std::getline(iss >> std::ws, args);
+	return (args);
+}
+
+std::string	Client::GetRawCommand(std::istringstream& iss) {
+	std::string rawCommand;
+	std::getline(iss, rawCommand, ' ');
+	return (rawCommand);
+}
+
+void	Client::AppendBuffer(std::string buffer) {
+	this->buffer_message.append(buffer);
+}
+
+void	Client::ReceiveData() {
+	char	*buff = new char[RECEIVE_BUFFER_SIZE + 1];
+
+	if (buff == NULL)
+		throw std::runtime_error("Memory allocation failed for buffer");
+
+	ssize_t bytes = recv(this->fd, buff, RECEIVE_BUFFER_SIZE, 0);
+
+	if (bytes <= 0) {
+		delete[] buff;
+		throw std::runtime_error("Desconectar cliente");
 	}
 
-	return (result);
+	buff[bytes] = '\0';
+
+	this->AppendBuffer(buff);
+
+	delete[] buff;
 }
 
 void	Client::SendMessage(const std::string& msg, Server& server) {
-	if (msg.empty())
+	if (msg.empty() || this->fd < 0)
 		return;
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
 		server.DisconnectClient(*this);
-		throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+		// throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+	}
+}
+
+void	Client::PerformMessages(Server *server) {
+	std::string rawCommand = "";
+	std::string args = "";
+
+	std::string msg = this->GetNextMessage();
+	while (!msg.empty()) {
+		std::istringstream iss(msg);
+		rawCommand = GetRawCommand(iss);
+		args = GetArgs(iss);
+		try {
+			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
+			cmd->Execute();
+			delete cmd;
+		}
+		catch(const std::exception &e) {
+			std::cerr << "Error - " << e.what() << std::endl;
+		}
+		msg = this->GetNextMessage();
 	}
 }

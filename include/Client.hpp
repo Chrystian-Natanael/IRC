@@ -1,6 +1,10 @@
 #ifndef CLIENT_HPP
-#define CLIENT_HPP
+# define CLIENT_HPP
 
+#define RECEIVE_BUFFER_SIZE 1024
+
+#include <unistd.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <iostream>
@@ -32,10 +36,14 @@ private:
 	int			login_state;
 	Client();
 
+	static std::string	GetRawCommand(std::istringstream& iss);
+	static std::string	GetArgs(std::istringstream& iss);
+
 public:
 
 	Client(int fd, std::string ip);
 	virtual ~Client();
+	bool operator==(const Client& other) const;
 
 	int			GetFd() const;
 	int			GetLoginState() const;
@@ -47,6 +55,10 @@ public:
 
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
+	void		AppendBuffer(std::string buffer);
+	void		ReceiveData();
+	void		SendMessage(const std::string& msg, Server& server);
+	void		PerformMessages(Server *server);
 	
 	std::vector<Channel*>& GetChannels();
 
@@ -59,6 +71,7 @@ public:
 
 	void SetBufferMessage(const std::string& message);
 
+	bool operator<(const Client& other) const;
 	void AddChannel(Channel *channel);
 
 };

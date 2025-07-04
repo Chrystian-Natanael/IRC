@@ -1,6 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#define RECEIVE_BUFFER_SIZE 1024
+
 #include <fcntl.h>
 #include <vector>
 #include <iostream>
@@ -13,32 +15,34 @@
 #include <poll.h>
 #include <stdexcept>
 #include <exception>
+#include <algorithm>
 #include <map>
+#include <string.h>
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
+#include "ACommand.hpp"
 
-// Forward declaration
+extern int volatile g_server;
+
 class Channel;
-
-// validateComand(server &server, client &client)
-
-// validateComand(){
-// 	this.server.password = password;
-// }
 
 class Server {
 private:
-	int							port;
-	int							server_socket_fd;
-	struct sockaddr_in			server_addr;
-	std::string					password;
-	std::vector<Client>			clients;
-	std::vector<struct pollfd>	fds;
+	int									port;
+	int									server_socket_fd;
+	struct sockaddr_in					server_addr;
+	std::string							password;
+	std::vector<Client *>				clients;
+	std::vector<struct pollfd>			fds;
 	std::map<std::string, Channel*>		channel;
 
-	// void	CloseFds();
-	// void	ClearClients(int fd);
+	Server();
+
+	void		CloseFds();
+	void		ClearClients();
+	void		ClearChannels();
 
 	static void	SetNonBlocking(int fd);
 
@@ -46,15 +50,8 @@ private:
 	void		SetSocketOptions();
 	void		BindSocket();
 	void		ListenSocket();
-	void		Poll();
 
-	// ! FOR TESTS
-	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
-	friend class ServerPollTest_ThrowsWhenPollFails_Test;
-	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
-
-public:
-	Server();
+	public:
 	Server(int port);
 	Server(const Server& src);
 	~Server();
@@ -63,20 +60,28 @@ public:
 	void	ServerInit();
 	void	ServerLoop();
 	void	AcceptNewClient();
-	void	ReceiveData(int fd);
+	void	ReceiveDataAllClients();
 	void	DisconnectClient(Client &client);
-	
+	void	PerformMessages();
+	void	Poll();
+
 	std::string GetPassword( void ) const;
+
 	int		GetFd() const;
 	int		GetPort() const;
+	const std::map<std::string, Channel*> &GetChannel() const;
+	Client&	GetClient(int fd);
 
-	std::vector<Client>&		GetClients();
-	std::vector<struct pollfd>&	GetPollFds();
-	std::map<std::string, Channel*>& GetChannel();
-	void	AddChannel(const std::string& name, Channel* channel);
+	Client* FindClientByNick(const std::string& nickname);
+
+	const std::vector<Client *>&	GetClients() const;
+	std::vector<struct pollfd>&		GetPollFds();
+	struct sockaddr_in&				GetServerAddr();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
+	void	AddChannel(const std::string& name, Channel* channel);
+	void	addClient(Client* client);
 
 };
 
