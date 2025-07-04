@@ -3,10 +3,12 @@
 #include "Commands/INVITE.hpp"
 #include "Commands/TOPIC.hpp"
 #include "Commands/MODE.hpp"
+#include "Commands/WHO.hpp"
 #include "Commands/PRIVMSG.hpp"
 #include "Commands/LIST.hpp"
 #include "Commands/PART.hpp"
 #include "Commands/JOIN.hpp"
+#include "Commands/WHO.hpp"
 
 //Constructors
 
@@ -31,6 +33,7 @@ void InitCommandFactory() {
 	commandFactory["JOIN"]		= &MakeJoin;
 	commandFactory["PART"]		= &MakePart;
 	commandFactory["PRIVMSG"]	= &MakePrivMsg;
+	commandFactory["WHO"]		= &MakeWho;
 }
 
 void ClearCommandFactory() {
@@ -62,6 +65,10 @@ ACommand* MakeTopic(const std::string& args, Server* server, Client& client) {
 
 ACommand* MakeMode(const std::string& args, Server* server, Client& client) {
 	return new CommandMode("MODE", args, server, client);
+}
+
+ACommand* MakeWho(const std::string& args, Server* server, Client& client) {
+	return new CommandWho("WHO", args, server, client);
 }
 
 ACommand* MakePrivMsg(const std::string& args, Server* server, Client& client) {
