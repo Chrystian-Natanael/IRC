@@ -21,6 +21,7 @@
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "ACommand.hpp"
 
 extern int volatile g_server;
@@ -40,6 +41,7 @@ private:
 
 	void		CloseFds();
 	void		ClearClients();
+	void		ClearChannels();
 
 	static void	SetNonBlocking(int fd);
 
