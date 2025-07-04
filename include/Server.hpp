@@ -21,6 +21,10 @@
 
 #include "ColorsTerm.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
+#include "ACommand.hpp"
+
+extern int volatile g_server;
 
 class Channel;
 
@@ -33,8 +37,11 @@ private:
 	std::vector<struct pollfd>			fds;
 	std::map<std::string, Channel*>		channel;
 
+	Server();
+
 	void		CloseFds();
 	void		ClearClients();
+	void		ClearChannels();
 
 	static void	SetNonBlocking(int fd);
 
@@ -42,15 +49,8 @@ private:
 	void		SetSocketOptions();
 	void		BindSocket();
 	void		ListenSocket();
-	void		Poll();
-
-	// ! FOR TESTS
-	friend class ServerPollTest_ReturnIfFdsEmpty_Test;
-	friend class ServerPollTest_ThrowsWhenPollFails_Test;
-	friend class ServerPollTest_DoesNotThrowIfPollSucceeds_Test;
 
 	public:
-	Server();
 	Server(int port);
 	Server(const Server& src);
 	~Server();
@@ -62,6 +62,9 @@ private:
 	void	ReceiveDataAllClients();
 	void	DisconnectClient(Client &client);
 	void	PerformMessages();
+	void	Poll();
+
+
 	int		GetFd() const;
 	int		GetPort() const;
 	const std::map<std::string, Channel*> &GetChannel() const;
@@ -69,12 +72,14 @@ private:
 
 	Client* FindClientByNick(const std::string& nickname);
 
-	const std::vector<Client *>& GetClients() const;
-	std::vector<struct pollfd>&	GetPollFds();
+	const std::vector<Client *>&	GetClients() const;
+	std::vector<struct pollfd>&		GetPollFds();
+	struct sockaddr_in&				GetServerAddr();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
 	void	AddChannel(const std::string& name, Channel* channel);
+	void	addClient(Client* client);
 
 };
 
