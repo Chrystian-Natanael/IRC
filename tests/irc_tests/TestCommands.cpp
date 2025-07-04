@@ -74,13 +74,10 @@ TEST(CommandQuitTest, ValidateCommandAlwaysReturnsTrue) {
     ASSERT_TRUE(setup.IsValid());
     
     CommandQuit cmd1("QUIT", "", setup.server, *setup.client);
-    EXPECT_TRUE(cmd1.ValidateCommand(""));
     
     CommandQuit cmd2("QUIT", "Goodbye everyone!", setup.server, *setup.client);
-    EXPECT_TRUE(cmd2.ValidateCommand("Goodbye everyone!"));
     
     CommandQuit cmd3("QUIT", "Some random quit message", setup.server, *setup.client);
-    EXPECT_TRUE(cmd3.ValidateCommand("Some random quit message"));
 }
 
 TEST(CommandQuitTest, ExecuteWithNoChannels) {
@@ -570,23 +567,30 @@ TEST(CommandQuitTest, QuitWithOnlyWhitespaceMessage) {
     
     Channel channel("#testchannel");
     
+    InitCommandFactory();
+
     setup.client->SetNickName("testuser");
     setup.client->SetUserName("testuser");
     setup.client->SetRealName("Test User");
     setup.client->SetLoginState(REGISTERED);
-    
     channel.AddUser(setup.client);
     setup.client->AddChannel(&channel);
     
     // Test with various whitespace combinations
-    CommandQuit cmd1("QUIT", "   ", setup.server, *setup.client);
-    EXPECT_NO_THROW(cmd1.Execute());
+    ACommand *command1 = ACommand::CreateCommand("QUIT", "       ", setup.server, *setup.client);
+    EXPECT_NO_THROW(command1->Execute());
+
+    channel.AddUser(setup.client);
+    setup.client->AddChannel(&channel);
     
-    CommandQuit cmd2("QUIT", "\t\t\t", setup.server, *setup.client);
-    EXPECT_NO_THROW(cmd2.Execute());
+    ACommand *command2 = ACommand::CreateCommand("QUIT", "\t\t\t", setup.server, *setup.client);
+    EXPECT_NO_THROW(command2->Execute());
     
-    CommandQuit cmd3("QUIT", "\n\r\n", setup.server, *setup.client);
-    EXPECT_NO_THROW(cmd3.Execute());
+    channel.AddUser(setup.client);
+    setup.client->AddChannel(&channel);
+
+    ACommand *command3 = ACommand::CreateCommand("QUIT", "\n\r\n", setup.server, *setup.client);
+    EXPECT_NO_THROW(command3->Execute());
 }
 
 TEST(CommandQuitTest, QuitFromChannelAfterMultipleJoinsAndParts) {

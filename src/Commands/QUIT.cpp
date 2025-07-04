@@ -8,18 +8,20 @@ CommandQuit::CommandQuit(const std::string &command, const std::string &params, 
 
 CommandQuit::~CommandQuit(){}
 
-bool CommandQuit::ValidateCommand(const std::string& params) {
-    return true;
-}
-
 void CommandQuit::Execute() {
     std::string quitMsg = "Client has quit the server.";
     if (!this->args.empty()) {
         quitMsg = this->args;
     }
+
+    
     std::vector<Channel*>& clientChannels = this->client.GetChannels();
     for (size_t i = 0; i < clientChannels.size(); ++i) {
         Channel *channel = clientChannels[i];
+        this->client.GetChannels().erase(
+            std::remove(this->client.GetChannels().begin(), this->client.GetChannels().end(), channel),
+            this->client.GetChannels().end()
+        );
         channel->RemoveUser(&this->client);
         channel->BroadcastMessage(quitMsg, this->server);
     }

@@ -29,7 +29,7 @@ private:
 	std::string buffer_message;
 	std::vector<Channel *> 	channels;
 	int			fd;
-	int			login_state = PASSWORD;
+	int			login_state;
 	Client();
 
 public:

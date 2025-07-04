@@ -90,6 +90,10 @@ void    Channel::RemoveOperator(Client *user){
 }
 
 void    Channel::RemoveUser(Client *user){
+    if (this->users.empty()) {
+        std::cerr << "RemoveUser: users vector is empty or user pointer is null!" << std::endl;
+        return;
+    }
     std::vector<Client *>::iterator it = std::find(this->users.begin(), this->users.end(), user);
     if (it != this->users.end())
         this->users.erase(it);

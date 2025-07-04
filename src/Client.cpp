@@ -4,7 +4,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip) :
-	ip(ip), fd(fd) {}
+	ip(ip), fd(fd), login_state(PASSWORD) {}
 
 Client::~Client() {}
 

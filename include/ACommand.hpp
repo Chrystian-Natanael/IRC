@@ -42,7 +42,6 @@ public:
 	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client&client);
 	virtual ~ACommand();
 	virtual void Execute() = 0;
-	virtual bool ValidateCommand(const std::string &params) = 0;
 	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
 
 };

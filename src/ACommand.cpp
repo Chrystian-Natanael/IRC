@@ -92,7 +92,6 @@ std::vector<std::string> SplitArguments(const std::string& input) {
     std::vector<std::string> args;
     std::istringstream iss(input);
     std::string token;
-    bool inQuotes = false;
     std::string current;
 
     while (iss >> std::ws) {
