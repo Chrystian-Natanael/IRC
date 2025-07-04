@@ -70,12 +70,15 @@ private:
 	const std::map<std::string, Channel*> &GetChannel() const;
 	Client&	GetClient(int fd);
 
+	Client* FindClientByNick(const std::string& nickname);
+
 	const std::vector<Client *>&	GetClients() const;
 	std::vector<struct pollfd>&		GetPollFds();
 
 	// ! FOR TESTS
 	void	SetFd(int fd);
 	void	AddChannel(const std::string& name, Channel* channel);
+	void	addClient(Client* client);
 
 };
 

@@ -10,9 +10,11 @@ class Channel{
         std::string topic;
         std::set<Client *> operators;
         std::vector<Client *> users;
+        std::vector<Client *> pendent_invites;
         std::string password;
         bool    blockTopic;
         bool    blockChannel;
+        int     maxUsers;
 
         std::string GetPassword(void) const;
 
@@ -28,11 +30,15 @@ class Channel{
     void    SetBlockTopic(bool choice);
     void    SetPassword(std::string password);
     void    SetBlockChannel(bool choice);
+    void    SetMaxUsers(int maxUsers);
 
     std::string GetTopic(void);
     bool    GetBlockTopic(void);
     const std::set<Client *> &GetOperators(void) const;
     const std::vector<Client *> &GetUsers(void) const;
+    const std::vector<Client *> &GetPendentInvites(void) const;
+    int     GetMaxUsers(void) const;
+
 
     bool    isBlock(void) const;
     bool    ValidatePassword(const std::string& password) const;
@@ -44,7 +50,9 @@ class Channel{
 
     void    RemoveOperator(Client *user);
     void    RemoveUser(Client *user);
+    void    RemovePendentInvite(Client *user);
 
+    void    AddPendentInvite(Client *user);
 
 };
 
