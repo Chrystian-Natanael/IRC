@@ -18,7 +18,7 @@ class CommandWho : public ACommand {
 		~CommandWho();
 		CommandWho& operator=(const CommandWho& other);
 
-		bool ValidateCommand(std::string args) const;
+		void ValidateCommand(std::string args) const;
 		void Execute() const;
 };
 

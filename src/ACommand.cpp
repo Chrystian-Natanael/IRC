@@ -8,6 +8,7 @@
 #include "Commands/LIST.hpp"
 #include "Commands/PART.hpp"
 #include "Commands/JOIN.hpp"
+#include "Commands/WHO.hpp"
 
 //Constructors
 
@@ -32,7 +33,7 @@ void InitCommandFactory() {
 	commandFactory["JOIN"]		= &MakeJoin;
 	commandFactory["PART"]		= &MakePart;
 	commandFactory["PRIVMSG"]	= &MakePrivMsg;
-	commandFactory["WHO"]		= &MakePrivWho;
+	commandFactory["WHO"]		= &MakeWho;
 }
 
 void ClearCommandFactory() {

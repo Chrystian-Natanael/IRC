@@ -642,3 +642,98 @@ TEST(testTopic, testExecuteLimit){
 
 	delete command6;
 }
+
+// WHO TESTS
+TEST(CommandWhoTest, ListAllClientsSuccess) {
+    Server server(5000);
+
+    Client *client1 = new Client(-1, "192.168.0.1");
+    client1->SetNickName("user1");
+    Client *client2 = new Client(-2, "192.168.0.2");
+    client2->SetNickName("user2");
+
+    server.addClient(client1);
+    server.addClient(client2);
+
+    std::string args = "";  // Parâmetro vazio para listar todos os clientes
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
+
+    EXPECT_NO_THROW(command->Execute());
+
+    delete command;
+}
+
+TEST(CommandWhoTest, ListChannelUsersSuccess) {
+    Server server(5000);
+
+    Client *client1 = new Client(-1, "192.168.0.1");
+    client1->SetNickName("user1");
+    Client *client2 = new Client(-2, "192.168.0.2");
+    client2->SetNickName("user2");
+
+    server.addClient(client1);
+    server.addClient(client2);
+
+    Channel *channel = new Channel("testchan");
+    channel->AddUser(client1);
+    channel->AddUser(client2);
+    server.AddChannel("#testchan", channel);
+
+    std::string args = "#testchan";
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
+
+    EXPECT_NO_THROW(command->Execute());
+
+    delete command;
+}
+
+TEST(CommandWhoTest, ListSpecificUserSuccess) {
+    Server server(5000);
+
+    Client *client1 = new Client(-1, "192.168.0.1");
+    client1->SetNickName("user1");
+    Client *client2 = new Client(-2, "192.168.0.2");
+    client2->SetNickName("user2");
+
+    server.addClient(client1);
+    server.addClient(client2);
+
+    std::string args = "user2";  // Buscar usuário específico
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
+
+    EXPECT_NO_THROW(command->Execute());
+
+    delete command;
+}
+
+TEST(CommandWhoTest, ChannelNotFound) {
+    Server server(5000);
+
+    Client *client = new Client(-1, "192.168.0.1");
+    client->SetNickName("user1");
+
+    server.addClient(client);
+
+    std::string args = "#inexistente";  // Canal que não existe
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client);
+
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+
+    delete command;
+}
+
+TEST(CommandWhoTest, UserNotFound) {
+    Server server(5000);
+
+    Client *client = new Client(-1, "192.168.0.1");
+    client->SetNickName("user1");
+
+    server.addClient(client);
+
+    std::string args = "usuarioinexistente";  // Usuário que não existe
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client);
+
+    EXPECT_THROW(command->Execute(), std::runtime_error);
+
+    delete command;
+}

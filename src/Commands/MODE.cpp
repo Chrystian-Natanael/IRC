@@ -181,7 +181,8 @@ void CommandMode::ExecuteLimit(Channel *channel) const {
 	int limit = std::atoi(this->tokens[2].c_str());
 	if (limit <= 0)
 		throw std::runtime_error("Limit must be a positive number.");
-	if (limit < channel->GetUsers().size())
+	if (static_cast<size_t>(limit) < channel->GetUsers().size())
 		throw std::runtime_error("Limit cannot be less than the number of users in the channel.");
 	channel->SetMaxUsers(limit);
 }
+
