@@ -161,15 +161,18 @@ void	Client::PerformMessages(Server *server) {
 		rawCommand = GetRawCommand(iss);
 		args = GetArgs(iss);
 		std::cout << fd << " <- Command: " << rawCommand << " " << args << std::endl;
+		ACommand* cmd = NULL;
 		try {
-			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
+			cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
 			cmd->Execute();
 			delete cmd;
 		}
 		catch(const std::exception &e) {
             // std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
             // this->SendMessage(errorMsg, *server);
-            std::cerr << "Error - " << e.what() << std::endl;
+            // std::cerr << "Error - " << e.what() << std::endl;
+			if (cmd != NULL)
+				delete cmd;
 		}
 		msg = this->GetNextMessage();
 	}

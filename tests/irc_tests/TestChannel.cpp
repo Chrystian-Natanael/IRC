@@ -11,12 +11,14 @@ TEST(testTopic, testChangeTopic){
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
+
     Channel *channel = new Channel("amantes_do_vim");
 
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
 
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
 
     try {
         channel->AddOperator(&client);
@@ -38,13 +40,14 @@ TEST(testTopic, testNoPermissionChangeTopic){
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("amantes_do_vim");
 
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
 
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
 
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim :vim é o pior editor de texto", &server, client);
     EXPECT_THROW(command->Execute(), std::runtime_error);
@@ -60,6 +63,7 @@ TEST(testTopic, testNoChannel){
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
 
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim :vim é o pior editor de texto", &server, client);
     EXPECT_THROW(command->Execute(), std::runtime_error);
@@ -73,13 +77,14 @@ TEST(testTopic, testPrintTopicChannel)
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("amantes_do_vim");
 
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
 
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
 
     ACommand *command = ACommand::CreateCommand("TOPIC", "#amantes_do_vim", &server, client);
 
@@ -94,13 +99,14 @@ TEST(testTopic, testPrintAfterChangeTopic)
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("amantes_do_vim");
 
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
 
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
 
     try {
         channel->AddOperator(&client);
@@ -128,13 +134,14 @@ TEST(testList, testListOneChannel)
 
     Client client(-1, "192.168");
 
+    client.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("amantes_do_vim");
 
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
 
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
 
     ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
 
@@ -149,36 +156,37 @@ TEST(testList, testListMultipleChannels)
     Server server(5000);
 
     Client client(-1, "192.168");
+    client.SetLoginState(REGISTERED);
 
 
     Channel *channel = new Channel("amantes_do_vim");
     std::string topic("vim é o melhor editor de texto");
     channel->SetTopic(topic);
-    server.AddChannel("amantes_do_vim", channel);
+    server.AddChannel("#amantes_do_vim", channel);
     channel->AddUser(&client);
 
     Channel *channel2 = new Channel("Odeio_frio");
     std::string topic2("frio é horrível");
     channel2->SetTopic(topic2);
-    server.AddChannel("Odeio_frio", channel2);
+    server.AddChannel("#Odeio_frio", channel2);
 
     Channel *channel3 = new Channel("Jogadores_de_CandyCrush");
     std::string topic3("Esse jogo é viciante");
     channel3->SetTopic(topic3);
-    server.AddChannel("Jogadores_de_CandyCrush", channel3);
+    server.AddChannel("#Jogadores_de_CandyCrush", channel3);
 
     Channel *channel4 = new Channel("Linux_eh_melhor");
     std::string topic4("Quem usa Windows não sabe o que é bom");
     channel4->SetTopic(topic4);
     channel4->SetBlockChannel(true);
-    server.AddChannel("Linux_eh_melhor", channel4);
+    server.AddChannel("#Linux_eh_melhor", channel4);
     channel4->AddUser(&client);
 
     Channel *channel5 = new Channel("MAC_falso_com_linux");
     std::string topic5("contra mac falso com linux horroroso");
     channel5->SetTopic(topic5);
     channel5->SetBlockChannel(true);
-    server.AddChannel("MAC_falso_com_linux", channel5);
+    server.AddChannel("#MAC_falso_com_linux", channel5);
 
     ACommand *command = ACommand::CreateCommand("LIST", "", &server, client);
 
@@ -193,12 +201,14 @@ TEST(testKick, testKickSuccess) {
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
     targetClient.SetNickName("target_user");
+    operatorClient.SetLoginState(REGISTERED);
+    targetClient.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("canal_kick");
     channel->AddUser(&operatorClient);
     channel->AddUser(&targetClient);
     channel->AddOperator(&operatorClient);
-    server.AddChannel("canal_kick", channel);
+    server.AddChannel("#canal_kick", channel);
 
     // Garante que o usuário está no canal antes do kick
     ASSERT_NE(channel->findUserByNickname(targetClient.GetNickName()), nullptr);
@@ -216,12 +226,14 @@ TEST(testKick, testKickNoPermission) {
     Server server(5000);
     Client notOperator(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
+    notOperator.SetLoginState(REGISTERED);
+    targetClient.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("canal_kick");
     channel->AddUser(&notOperator);
     channel->AddUser(&targetClient);
     // Não adiciona operador
-    server.AddChannel("canal_kick", channel);
+    server.AddChannel("#canal_kick", channel);
 
     std::string args = "#canal_kick " + targetClient.GetNickName() + " Motivo do kick";
     ACommand *command = ACommand::CreateCommand("KICK", args, &server, notOperator);
@@ -236,6 +248,9 @@ TEST(testKick, testKickChannelNotFound) {
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
 
+    operatorClient.SetLoginState(REGISTERED);
+    targetClient.SetLoginState(REGISTERED);
+
     // Não adiciona canal ao servidor
 
     std::string args = "#canal_inexistente " + targetClient.GetNickName() + " Motivo do kick";
@@ -249,11 +264,12 @@ TEST(testKick, testKickChannelNotFound) {
 TEST(testKick, testKickUserNotFound) {
     Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
+    operatorClient.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("canal_kick");
     channel->AddUser(&operatorClient);
     channel->AddOperator(&operatorClient);
-    server.AddChannel("canal_kick", channel);
+    server.AddChannel("#canal_kick", channel);
 
     std::string args = "canal_kick usuario_inexistente Motivo do kick";
     ACommand *command = ACommand::CreateCommand("KICK", args, &server, operatorClient);
@@ -267,6 +283,8 @@ TEST(testKick, testKickDefaultReason) {
     Server server(5000);
     Client operatorClient(-1, "192.168.0.1");
     Client targetClient(-2, "192.168.0.2");
+    operatorClient.SetLoginState(REGISTERED);
+    targetClient.SetLoginState(REGISTERED);
 
     Channel *channel = new Channel("canal_kick");
     targetClient.SetNickName("target_user");
@@ -290,6 +308,10 @@ TEST(testChannel, testJoinFullChannel) {
     Client user2(-2, "192.168.0.2");
     Client user3(-3, "192.168.0.3");
 
+    user1.SetLoginState(REGISTERED);
+    user2.SetLoginState(REGISTERED);
+    user3.SetLoginState(REGISTERED);
+
     Channel *channel = new Channel("canal_cheio");
     // Supondo que exista esse método para limitar usuários
     channel->SetMaxUsers(2);
@@ -301,7 +323,7 @@ TEST(testChannel, testJoinFullChannel) {
     channel->AddUser(&user1);
     channel->AddUser(&user2);
 
-    server.AddChannel("canal_cheio", channel);
+    server.AddChannel("#canal_cheio", channel);
 
     // Tentativa de adicionar um terceiro usuário ao canal cheio
     EXPECT_THROW(channel->AddUser(&user3), std::runtime_error);
@@ -314,13 +336,16 @@ TEST(CommandInviteTest, InviteSuccess) {
     Server server(5000);
     Client *operatorClient = new Client(-1, "1234");
     Client *invitedClient = new Client(-2, "12345");
+    operatorClient->SetLoginState(REGISTERED);
+    invitedClient->SetLoginState(REGISTERED);
+
     invitedClient->SetNickName("invitee");
     Channel* channel = new Channel("testchan");
     channel->SetMaxUsers(-1);
     channel->AddOperator(operatorClient);
     server.addClient(operatorClient);
     server.addClient(invitedClient);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "invitee #testchan";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *operatorClient);
@@ -336,12 +361,16 @@ TEST(CommandInviteTest, InviteFailsIfNotOperator) {
     Server server(5000);
     Client* notOP = new Client(-1, "1234");
     Client* invitedClient = new Client(-2, "12345");
+
+    notOP->SetLoginState(REGISTERED);
+    invitedClient->SetLoginState(REGISTERED);
+
     Channel* channel = new Channel("testchan");
     channel->SetMaxUsers(-1);
     server.addClient(invitedClient);
     server.addClient(notOP);
     channel->AddUser(notOP);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "invitee #testchan";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *notOP);
@@ -359,12 +388,17 @@ TEST(CommandInviteTest, InviteFailsIfUserAlreadyInChannel) {
     invited->SetNickName("invitee");
 	server.addClient(oper);
 	server.addClient(invited);
+
+    oper->SetLoginState(REGISTERED);
+    invited->SetLoginState(REGISTERED);
+
+
     Channel* channel = new Channel("testchan");
     channel->SetMaxUsers(-1);
     channel->AddOperator(oper);
     channel->AddUser(oper);
     channel->AddUser(invited);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "invitee #testchan";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
@@ -382,6 +416,10 @@ TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
     Client invited(-2, "12345");
     invited.SetNickName("invitee");
 
+    oper->SetLoginState(REGISTERED);
+    invited.SetLoginState(REGISTERED);
+
+
     std::string args = "invitee #testchan";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
     ASSERT_THROW(command->Execute(), std::runtime_error);
@@ -392,12 +430,14 @@ TEST(CommandInviteTest, InviteFailsIfChannelDoesNotExist) {
 TEST(CommandInviteTest, InviteFailsIfUserDoesNotExist) {
     Server server(5000);
     Client *oper = new Client(-1, "1234");
+    oper->SetLoginState(REGISTERED);
+
     server.addClient(oper);
     oper->SetNickName("oper");
     Channel* channel = new Channel("testchan");
     channel->AddOperator(oper);
     channel->AddUser(oper);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "ghost #testchan";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *oper);
@@ -412,13 +452,17 @@ TEST(CommandInviteTest, InviteFailsIfParamsEmpty) {
     Server server(5000);
     Client *operatorClient = new Client(-1, "1234");
     Client *invitedClient = new Client(-2, "12345");
+
+    operatorClient->SetLoginState(REGISTERED);
+    invitedClient->SetLoginState(REGISTERED);
+
     invitedClient->SetNickName("invitee");
     server.addClient(operatorClient);
     server.addClient(invitedClient);
     Channel* channel = new Channel("testchan");
     channel->SetMaxUsers(-1);
     channel->AddOperator(operatorClient);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "";
     ACommand *command = ACommand::CreateCommand("INVITE", args, &server, *operatorClient);
@@ -434,8 +478,10 @@ TEST(CommandModeTest, UserIsNotOperator) {
     Server server(5000);
     Client *client = new Client(-2, "12345");
 
+    client->SetLoginState(REGISTERED);
+
     Channel* channel = new Channel("testchan");
-    channel->AddUser(client);
+    channel->AddOperator(client);
 	server.addClient(client);
     client->SetNickName("testuser");
     server.AddChannel("#testchan", channel);
@@ -452,8 +498,11 @@ TEST(CommandModeTest, TestKeyMode) {
     Server server(5000);
     Client *client = new Client(-2, "12345");
 
+    client->SetLoginState(REGISTERED);
+
     Channel* channel = new Channel("testchan");
     channel->AddOperator(client);
+    channel->AddUser(client);
 	server.addClient(client);
     client->SetNickName("testuser");
     server.AddChannel("#testchan", channel);
@@ -489,8 +538,11 @@ TEST(CommandModeTest, TestInviteOnlyMode) {
     Server server(5000);
     Client *client = new Client(-2, "12345");
 
+    client->SetLoginState(REGISTERED);
+
     Channel* channel = new Channel("testchan");
     channel->AddOperator(client);
+    channel->AddUser(client);
 	server.addClient(client);
     client->SetNickName("testuser");
     server.AddChannel("#testchan", channel);
@@ -513,6 +565,8 @@ TEST(CommandModeTest, TestInviteOnlyMode) {
 TEST(CommandModeTest, WhenChannelDoesNotExist) {
 	Server server(5000);
 	Client *client = new Client(-2, "12345");
+    client->SetLoginState(REGISTERED);
+
 	client->SetNickName("testuser");
 	server.addClient(client);
 
@@ -527,6 +581,8 @@ TEST(CommandModeTest, WhenChannelDoesNotExist) {
 TEST(CommandModeTest, TestBlockTopicMode) {
 	Server server(5000);
 	Client *client = new Client(-2, "12345");
+    client->SetLoginState(REGISTERED);
+
 
 	Channel* channel = new Channel("testchan");
 	channel->AddUser(client);
@@ -560,6 +616,9 @@ TEST(CommandModeTest, TestOperatorMode) {
 	server.addClient(client_operador1);
 	server.addClient(client_operador2);
 
+    client_operador1->SetLoginState(REGISTERED);
+    client_operador2->SetLoginState(REGISTERED);
+
 	Channel* channel = new Channel("testchan");
 	server.AddChannel("#testchan", channel);
 	channel->AddUser(client_operador1);
@@ -590,6 +649,10 @@ TEST(testTopic, testExecuteLimit){
 	server.addClient(client);
 	Client *client2 = new Client(-1, "192.168");
 	server.addClient(client2);
+
+    client->SetLoginState(REGISTERED);
+    client2->SetLoginState(REGISTERED);
+
 
     Channel *channel = new Channel("testChannel");
 	channel->AddOperator(client);
@@ -652,6 +715,10 @@ TEST(CommandWhoTest, ListAllClientsSuccess) {
     Client *client2 = new Client(-2, "192.168.0.2");
     client2->SetNickName("user2");
 
+    client1->SetLoginState(REGISTERED);
+    client2->SetLoginState(REGISTERED);
+
+
     server.addClient(client1);
     server.addClient(client2);
 
@@ -671,17 +738,20 @@ TEST(CommandWhoTest, ListChannelUsersSuccess) {
     Client *client2 = new Client(-2, "192.168.0.2");
     client2->SetNickName("user2");
 
+    client1->SetLoginState(REGISTERED);
+    client2->SetLoginState(REGISTERED);
+
     server.addClient(client1);
     server.addClient(client2);
-
     Channel *channel = new Channel("testchan");
     channel->AddUser(client1);
     channel->AddUser(client2);
-    server.AddChannel("#testchan", channel);
+    server.AddChannel("testchan", channel);
 
     std::string args = "#testchan";
-    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
 
+    ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
+    
     EXPECT_NO_THROW(command->Execute());
 
     delete command;
@@ -694,6 +764,9 @@ TEST(CommandWhoTest, ListSpecificUserSuccess) {
     client1->SetNickName("user1");
     Client *client2 = new Client(-2, "192.168.0.2");
     client2->SetNickName("user2");
+
+    client1->SetLoginState(REGISTERED);
+    client2->SetLoginState(REGISTERED);
 
     server.addClient(client1);
     server.addClient(client2);
@@ -712,6 +785,7 @@ TEST(CommandWhoTest, ChannelNotFound) {
     Client *client = new Client(-1, "192.168.0.1");
     client->SetNickName("user1");
 
+    client->SetLoginState(REGISTERED);
     server.addClient(client);
 
     std::string args = "#inexistente";  // Canal que não existe
@@ -728,6 +802,7 @@ TEST(CommandWhoTest, UserNotFound) {
     Client *client = new Client(-1, "192.168.0.1");
     client->SetNickName("user1");
 
+    client->SetLoginState(REGISTERED);
     server.addClient(client);
 
     std::string args = "usuarioinexistente";  // Usuário que não existe

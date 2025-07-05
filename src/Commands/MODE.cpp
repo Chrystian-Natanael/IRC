@@ -121,6 +121,27 @@ void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 void CommandMode::Execute() const {
 	Channel *channel = GetChannelIfExists();
 	
+	bool isUserInChannel = false;
+	
+	if (!channel) {
+		std::string message = ERR_NOSUCHCHANNEL(this->tokens[0]);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+
+    for (std::vector<Client *>::const_iterator iter = channel->GetUsers().begin() ; iter != channel->GetUsers().end(); ++iter){
+		if ((*iter)->GetNickName() == this->client.GetNickName()) {
+			isUserInChannel = true;
+			break;
+		}
+	}
+	if (isUserInChannel == false)
+	{
+		std::string message = ERR_NOTONCHANNEL(channel->GetName());
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+
 	std::string message = "+";
 	if (this->tokens.size() == 1) {
 		// :ft.irc 324 daniel #general +itkl senha123 25
@@ -144,12 +165,7 @@ void CommandMode::Execute() const {
 		this->client.SendMessage(RPL_CHANNELMODEIS(this->client.GetNickName(), channel->GetName(), message), *this->server);
 		return;
 	}
-	
-	if (!channel) {
-		std::string message = ERR_NOSUCHCHANNEL(this->tokens[0]);
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
-	}
+
 
 	if (channel->isOperator(&this->client) == false) {
 		std::string message = ERR_CHANOPRISNEEDED(this->client.GetNickName(), this->tokens[0]);

@@ -300,6 +300,8 @@ TEST(CommandFactory, CreatesKickCommandAccentuationArgs) {
     InitCommandFactory();
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     ACommand* cmd = ACommand::CreateCommand("KICK", "LÁR", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -313,6 +315,8 @@ TEST(CommandFactory, CreatesKickCommandAccentuationArgs) {
 TEST(CommandFactory, ReturnsNullptrForUnknownCommand) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("FOOBAR", "args", &server, client), std::invalid_argument);
 }
 
@@ -324,6 +328,8 @@ TEST(CommandFactory, ReturnsNullptrForUnknownCommand) {
 TEST(CommandFactory, ReturnsNullptrForEmptyCommand) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("", "args", &server, client), std::invalid_argument);
 }
 
@@ -335,6 +341,8 @@ TEST(CommandFactory, ReturnsNullptrForEmptyCommand) {
 TEST(CommandFactory, ReturnsNullptrForAccentuationCommand) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("TÓPIC", "", &server, client), std::invalid_argument);
 }
 
@@ -346,6 +354,8 @@ TEST(CommandFactory, ReturnsNullptrForAccentuationCommand) {
 TEST(CommandFactory, ReturnsNullptrForEmptyCommandEmptyArgs) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("", "", &server, client), std::invalid_argument);
 }
 
@@ -357,6 +367,8 @@ TEST(CommandFactory, ReturnsNullptrForEmptyCommandEmptyArgs) {
 TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpaces) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("  kick  ", "chan user", &server, client), std::invalid_argument);
 }
 
@@ -368,6 +380,8 @@ TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpaces) {
 TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("kick  ", "chan user", &server, client), std::invalid_argument);
 }
 
@@ -379,6 +393,8 @@ TEST(CommandFactory, HandlesCommandWithLeadingAndTrailingSpacesBehind) {
 TEST(CommandFactory, HandlesCommandWithTabsAndNewlines) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("\tkick\n", "chan user", &server, client), std::invalid_argument);
 }
 
@@ -390,6 +406,8 @@ TEST(CommandFactory, HandlesCommandWithTabsAndNewlines) {
 TEST(CommandFactory, HandlesCommandWithSpecialCharacters) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("KICK!", "chan user", &server, client), std::invalid_argument);
     EXPECT_THROW(ACommand::CreateCommand("KICK#", "chan user", &server, client), std::invalid_argument);
 }
@@ -414,6 +432,8 @@ TEST(CommandFactory, HandlesVeryLongCommandName) {
     std::string longCmd(1000, 'K');
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand(longCmd, "chan user", &server, client), std::invalid_argument);
 }
 
@@ -426,6 +446,8 @@ TEST(CommandFactory, HandlesVeryLongArgs) {
     std::string longArgs(10000, 'a');
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     ACommand* cmd = ACommand::CreateCommand("KICK", longArgs, &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -439,6 +461,8 @@ TEST(CommandFactory, HandlesVeryLongArgs) {
 TEST(CommandFactory, HandlesArgsWithSpecialCharacters) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     ACommand* cmd = ACommand::CreateCommand("INVITE", "canal!@# usuário$%¨&*()", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -452,6 +476,8 @@ TEST(CommandFactory, HandlesArgsWithSpecialCharacters) {
 TEST(CommandFactory, HandlesCommandWithPrefixOrSuffix) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("PREKICK", "chan user", &server, client), std::invalid_argument);
     EXPECT_THROW(ACommand::CreateCommand("KICKPOST", "chan user", &server, client), std::invalid_argument);
 }
@@ -464,6 +490,8 @@ TEST(CommandFactory, HandlesCommandWithPrefixOrSuffix) {
 TEST(CommandFactory, HandlesCommandWithMixedCaseAndSpaces) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("  KiCk ", "chan user", &server, client), std::invalid_argument);
 }
 
@@ -475,6 +503,8 @@ TEST(CommandFactory, HandlesCommandWithMixedCaseAndSpaces) {
 TEST(CommandFactory, HandlesWhitespaceOnlyCommand) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     EXPECT_THROW(ACommand::CreateCommand("   ", "chan user", &server, client), std::invalid_argument);
 }
 
@@ -486,6 +516,7 @@ TEST(CommandFactory, HandlesWhitespaceOnlyCommand) {
 TEST(CommandFactory, HandlesArgsWithUnicode) {
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
     ACommand* cmd = ACommand::CreateCommand("TOPIC", u8"canal :tópico com çãõé", &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
@@ -500,6 +531,8 @@ TEST(CommandFactory, NumbersAsArgs) {
     std::string numericArgs = "12345 67890";
     Server server(5000);
     Client client(-1, "123123");
+    client.SetLoginState(REGISTERED);
+
     ACommand* cmd = ACommand::CreateCommand("KICK", numericArgs, &server, client);
     EXPECT_NE(cmd, nullptr);
     delete cmd;
