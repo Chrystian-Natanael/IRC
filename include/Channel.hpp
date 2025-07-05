@@ -17,23 +17,23 @@ class Channel {
         int     maxUsers;
         bool    invite_only;
 
-        std::string GetPassword(void) const;
-
-    public:
+        
+        public:
         Channel(void);
         Channel(std::string name);
         ~Channel(void);
         Channel(Channel &rhs);
         Channel &operator=(const Channel &other);
-
-    /*TOPIC*/
-    void    SetTopic(std::string &topic);
-    void    SetInviteOnly(bool choice);
-    void    SetBlockTopic(bool choice);
-    void    SetPassword(std::string password);
-    void    SetBlockChannel(bool choice);
-    void    SetMaxUsers(int maxUsers);
-
+        
+        /*TOPIC*/
+        void    SetTopic(std::string &topic);
+        void    SetInviteOnly(bool choice);
+        void    SetBlockTopic(bool choice);
+        void    SetPassword(std::string password);
+        void    SetBlockChannel(bool choice);
+        void    SetMaxUsers(int maxUsers);
+        
+    std::string GetPassword(void) const;
     std::string	GetTopic(void);
     std::string	GetName(void);
     bool		GetBlockTopic(void);

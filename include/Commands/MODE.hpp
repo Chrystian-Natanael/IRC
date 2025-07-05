@@ -15,7 +15,6 @@ class CommandMode : public ACommand {
 
 		std::vector<std::string> ExtractTokens(const std::string& params);
 
-		void ValidateVectorSize(std::vector<std::string>& tokens);
 		void ValidateMode(std::vector<std::string>& tokens);
 		void ValidateChannelToken(const std::string& channelToken);
 		void ValidateModeToken(const std::string& modeToken);

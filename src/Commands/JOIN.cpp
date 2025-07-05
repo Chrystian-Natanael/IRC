@@ -78,11 +78,11 @@ void CommandJoin::Execute() const {
 				}
 			}
 
-			if (!members.empty()) {
-				Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
-				this->client.SendMessage(Msg, *this->server);
-				Msg.clear();
-			}
+			members += this->client.GetNickName() + " ";
+
+			Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+			this->client.SendMessage(Msg, *this->server);
+			Msg.clear();
 
 			Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
             this->client.SendMessage(Msg, *this->server);
@@ -147,11 +147,11 @@ void CommandJoin::Execute() const {
 			}
 		}
 
-		if (!members.empty()) {
-			Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
-			this->client.SendMessage(Msg, *this->server);
-			Msg.clear();
-		}
+		members += this->client.GetNickName() + " ";
+
+		Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+		this->client.SendMessage(Msg, *this->server);
+		Msg.clear();
 
 		Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
 		this->client.SendMessage(Msg, *this->server);
@@ -174,6 +174,7 @@ void CommandJoin::Execute() const {
 		// mensagem para falar o tópico, no caso sempre vai estar vazio
 		joinMsg.append(RPL_NOTOPIC(this->client.GetNickName(), newChannel->GetName()));
 
+		joinMsg.append(RPL_NAMREPLY(this->client.GetNickName(), newChannel->GetName(), "@" + this->client.GetNickName() + " "));
 		// mensagem para falar todos os integrantes, no caso só tem o usuário que acabou de entrar
 		joinMsg.append(RPL_ENDOFNAMES(this->client.GetNickName(), newChannel->GetName()));
 

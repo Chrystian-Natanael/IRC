@@ -20,18 +20,9 @@ std::vector<std::string> CommandMode::ExtractTokens(const std::string& params) {
 }
 
 void CommandMode::ValidateMode(std::vector<std::string>& tokens) {
-	ValidateVectorSize(tokens);
 	ValidateChannelToken(tokens[0]);
 	ValidateModeToken(tokens[1]);
 	ValidateModeFlags(tokens);
-}
-
-void CommandMode::ValidateVectorSize(std::vector<std::string>& tokens) {
-	if (tokens.size() < 2) {
-		std::string message = ERR_NEEDMOREPARAMS("MODE", "Insufficient arguments.");
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
-	}
 }
 
 void CommandMode::ValidateChannelToken(const std::string& channelToken) {
@@ -56,12 +47,12 @@ void CommandMode::ValidateChannelToken(const std::string& channelToken) {
 }
 
 void CommandMode::ValidateModeToken(const std::string& modeToken) {
-	if (modeToken[0] != '+' && modeToken[0] != '-') {
+	if (this->tokens.size() >= 2 && modeToken[0] != '+' && modeToken[0] != '-') {
 		std::string message = ERR_UNKNOWNMODE(this->client.GetNickName(), modeToken);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
-	if (modeToken.size() < 2) {
+	if (this->tokens.size() >= 2 && modeToken.size() < 2) {
 		std::string message = ERR_UNKNOWNMODE(this->client.GetNickName(), modeToken);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
@@ -69,21 +60,21 @@ void CommandMode::ValidateModeToken(const std::string& modeToken) {
 }
 
 void CommandMode::ValidateModeFlags(std::vector<std::string>& tokens) {
-	if (IsInviteFlag(tokens[1]))
+	if (this->tokens.size() >= 2 && IsInviteFlag(tokens[1]))
 		ValidateFlagParameters(tokens, 2, "invite");
-	else if (IsTopicFlag(tokens[1]))
+	else if (this->tokens.size() >= 2 && IsTopicFlag(tokens[1]))
 		ValidateFlagParameters(tokens, 2, "topic");
-	else if (IsKeyFlag(tokens[1]))
+	else if (this->tokens.size() >= 2 && IsKeyFlag(tokens[1]))
 		ValidateFlagParameters(tokens, 3, "key"); //Os modos são case-sensitive (baseado no RFC 2812)
-	else if (IsOperatorFlag(tokens[1]))
+	else if (this->tokens.size() >= 2 && IsOperatorFlag(tokens[1]))
 		ValidateFlagParameters(tokens, 3, "operator");
-	else if (IsLimitFlag(tokens[1])) {
+	else if (this->tokens.size() >= 2 && IsLimitFlag(tokens[1])) {
 		if (tokens[1][0] == '+')
 			ValidateFlagParameters(tokens, 3, "limit");
 		else
 			ValidateFlagParameters(tokens, 2, "limit");
 	}
-	else {
+	else if (this->tokens.size() >= 2){
 		std::string message = ERR_UNKNOWNMODE(this->client.GetNickName(), tokens[1]);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
@@ -91,23 +82,23 @@ void CommandMode::ValidateModeFlags(std::vector<std::string>& tokens) {
 }
 
 bool CommandMode::IsInviteFlag(const std::string& modeToken) {
-	return (modeToken.size() > 1 && modeToken[1] == 'i');
+	return (this->tokens.size() >= 2 && modeToken.size() > 1 && modeToken[1] == 'i');
 }
 
 bool CommandMode::IsTopicFlag(const std::string& modeToken) {
-	return (modeToken.size() > 1 && modeToken[1] == 't');
+	return (this->tokens.size() >= 2 && modeToken.size() > 1 && modeToken[1] == 't');
 }
 
 bool CommandMode::IsKeyFlag(const std::string& modeToken) {
-	return (modeToken.size() > 1 && modeToken[1] == 'k');
+	return (this->tokens.size() >= 2 && modeToken.size() > 1 && modeToken[1] == 'k');
 }
 
 bool CommandMode::IsOperatorFlag(const std::string& modeToken) {
-	return (modeToken.size() > 1 && modeToken[1] == 'o');
+	return (this->tokens.size() >= 2 && modeToken.size() > 1 && modeToken[1] == 'o');
 }
 
 bool CommandMode::IsLimitFlag(const std::string& modeToken) {
-	return (modeToken.size() > 1 && modeToken[1] == 'l');
+	return (this->tokens.size() >= 2 && modeToken.size() > 1 && modeToken[1] == 'l');
 }
 
 void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
@@ -129,6 +120,31 @@ void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 
 void CommandMode::Execute() const {
 	Channel *channel = GetChannelIfExists();
+	
+	std::string message = "+";
+	if (this->tokens.size() == 1) {
+		// :ft.irc 324 daniel #general +itkl senha123 25
+		if (channel->GetInviteOnly())
+			message += "i";
+		if (channel->GetBlockTopic())
+			message += "t";
+		if (channel->GetBlockChannel())
+			message += "k";
+		if (channel->GetMaxUsers() > 0)
+			message += "l";
+		if (channel->GetBlockChannel()) {
+			message += " " + channel->GetPassword();
+		}
+		if (channel->GetMaxUsers() > 0) {
+            std::ostringstream oss;
+            oss << channel->GetMaxUsers();
+            message += " " + oss.str();
+        }
+
+		this->client.SendMessage(RPL_CHANNELMODEIS(this->client.GetNickName(), channel->GetName(), message), *this->server);
+		return;
+	}
+	
 	if (!channel) {
 		std::string message = ERR_NOSUCHCHANNEL(this->tokens[0]);
         this->client.SendMessage(message, *this->server);
