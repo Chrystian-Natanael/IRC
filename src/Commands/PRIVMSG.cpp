@@ -136,8 +136,8 @@ void CommandPrivMsg::Execute() const { // Checar se vamos mandar a msg no format
 void CommandPrivMsg::SendToChannel() const {
 	Channel *channel = GetChannelIfExists();
 
+	std::string message = RPL_PRIVMSG(this->client.GetUserName(), channel->GetName(), this->msgToDest.second);
 	if (!channel) {
-		std::string message = ERR_NOSUCHCHANNEL(this->msgToDest.first);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
@@ -145,7 +145,7 @@ void CommandPrivMsg::SendToChannel() const {
 	std::vector<Client *> users = channel->GetUsers();
 	for (size_t i = 0; i < users.size(); i++) {
 		if (users[i]->GetFd() != this->client.GetFd())
-			users[i]->SendMessage(this->msgToDest.second, *this->server);
+			channel->SendMessage2Channel(&this->client, message, this->server);
 	}
 }
 
@@ -161,14 +161,15 @@ Channel* CommandPrivMsg::GetChannelIfExists() const {
 void CommandPrivMsg::SendToUser() const {
 	Client* recipient = GetUserIfExists();
 
+	std::string message = RPL_PRIVMSG(this->client.GetNickName(), this->msgToDest.first, this->msgToDest.second);
 	if (!recipient) {
-		std::string message = ERR_NOSUCHNICK(this->msgToDest.first);
-        this->client.SendMessage(message, *this->server);
+        // this->client.SendMessage(message, *this->server);
+		recipient->SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 
 	if (recipient->GetFd() != this->client.GetFd())
-		recipient->SendMessage(this->msgToDest.second, *this->server);
+		recipient->SendMessage(message, *this->server);
 }
 
 Client* CommandPrivMsg::GetUserIfExists() const {

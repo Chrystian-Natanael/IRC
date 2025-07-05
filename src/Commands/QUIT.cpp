@@ -19,7 +19,7 @@ void CommandQuit::Execute() const {
     for (size_t i = 0; i < clientChannels.size(); ++i) {
         Channel *channel = clientChannels[i];
         std::string message = ":" + this->client.GetNickName() + " QUIT :" + quitMsg + "\r\n";
-        channel->BroadcastMessage(message, this->server);
+        channel->BroadcastAllMessage(message, this->server);
         channel->RemoveUser(&this->client);
         this->client.GetChannels().erase(
             std::remove(this->client.GetChannels().begin(), this->client.GetChannels().end(), channel),

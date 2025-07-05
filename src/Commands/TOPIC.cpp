@@ -16,8 +16,8 @@ std::pair<std::string, std::string> CommandTopic::ParseTopic(const std::string& 
         topic = topic.substr(1);
     if (!topic.empty() && topic[0] == ':')
         topic = topic.substr(1);
-    if (!channel.empty() && channel[0] == '#')
-        channel = channel.substr(1);
+    // if (!channel.empty() && channel[0] == '#')
+        // channel = channel.substr(1);
     return std::make_pair(channel, topic);
 }
 
@@ -39,8 +39,8 @@ void CommandTopic::Execute() const {
     }
     if (it->second->GetOperators().find(&this->client) != it->second->GetOperators().end()) {
         it->second->SetTopic(result.second);
-        std::string message = ":" + this->client.GetNickName() + " TOPIC #" + result.first + " :" + result.second + "\r\n";
-        it->second->BroadcastMessage(message, this->server);
+        std::string message = ":" + this->client.GetNickName() + " TOPIC " + result.first + " :" + result.second + "\r\n";
+        it->second->BroadcastAllMessage(message, this->server);
     }
     else {
         std::string message = ERR_CHANOPRISNEEDED(this->client.GetNickName(), result.first);

@@ -21,7 +21,14 @@ ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 	rawCommand(rawCommand),
 	args(args),
 	server(server),
-	client(client){}
+	client(client) {
+
+	if (client.GetLoginState() != REGISTERED && (rawCommand != "PASS" && rawCommand != "NICK" && rawCommand != "USER")) {
+		std::string errorMsg = ":server 400 * :You must register before using commands\r\n";
+		client.SendMessage(errorMsg, *server);
+		throw std::runtime_error("Client not registered");
+	}
+}
 
 ACommand::~ACommand() {}
 

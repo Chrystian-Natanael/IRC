@@ -16,8 +16,6 @@ std::pair<std::string, std::string> CommandPart::ParsePart(const std::string& pa
         part = part.substr(1);
     if (!part.empty() && part[0] == ':')
         part = part.substr(1);
-    if (!channel.empty() && channel[0] == '#')
-        channel = channel.substr(1);
     return std::make_pair(channel, part);
 }
 
@@ -44,8 +42,10 @@ void CommandPart::Execute() const {
     if (channel->GetOperators().find(&this->client) != channel->GetOperators().end())
         channel->RemoveOperator(&this->client);
     channel->RemoveUser(&this->client);
+
     if (!message.empty())
-        std::cout << "User " << this->client.GetNickName() << " left channel #" << channelName << ": " << message << std::endl;
+        channel->BroadcastAllMessage(RPL_PARTMSG(this->client.GetNickName(), this->client.GetUserName(), channelName, message), this->server);
     else
-        std::cout << "User " << this->client.GetNickName() << " left channel #" << channelName << std::endl;
+        channel->BroadcastAllMessage(RPL_PARTNOMSG(this->client.GetNickName(), this->client.GetUserName(), channelName), this->server);
+
 }

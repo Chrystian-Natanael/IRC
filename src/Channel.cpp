@@ -144,8 +144,15 @@ void Channel::RemovePendentInvite(Client *user) {
     }
 }
 
-void Channel::BroadcastMessage(const std::string &message, Server *server) {
+void Channel::BroadcastAllMessage(const std::string &message, Server *server) {
     for (size_t i = 0; i < this->users.size(); ++i) {
+        this->users[i]->SendMessage(message, *server);
+    }
+}
+void Channel::SendMessage2Channel(Client *client, const std::string &message, Server *server) {
+    for (size_t i = 0; i < this->users.size(); ++i) {
+        if (this->users[i]->GetFd() == client->GetFd())
+            continue;
         this->users[i]->SendMessage(message, *server);
     }
 }
