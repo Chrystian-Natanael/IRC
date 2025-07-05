@@ -133,7 +133,7 @@ void CommandWho::Execute() const {
 		if (!clients.empty()) {
 			for (std::vector<Client *>::iterator it_users = clients.begin(); it_users != clients.end(); ++it_users) {
 				// std::cout << "User found: " << (*it_users)->GetNickName() << std::endl;
-				std::string flags = channels[it->second->GetName()]->isOperator(*it_users) ? "O" : "H";
+				std::string flags = it->second->isOperator(*it_users) ? "O" : "H";
 
 				response += RPL_WHOREPLY(
 					it->second->GetName(),

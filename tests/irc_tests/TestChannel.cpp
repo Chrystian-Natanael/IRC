@@ -745,13 +745,14 @@ TEST(CommandWhoTest, ListChannelUsersSuccess) {
     server.addClient(client2);
     Channel *channel = new Channel("testchan");
     channel->AddUser(client1);
+	channel->AddOperator(client1);
     channel->AddUser(client2);
-    server.AddChannel("testchan", channel);
+    server.AddChannel("#testchan", channel);
 
     std::string args = "#testchan";
 
     ACommand *command = ACommand::CreateCommand("WHO", args, &server, *client1);
-    
+
     EXPECT_NO_THROW(command->Execute());
 
     delete command;
