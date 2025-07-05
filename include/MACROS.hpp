@@ -22,7 +22,7 @@
 # define RPL_INVITING(nick, recipient, channel)                         (FTIRC + " 341 " + nick + " " + recipient + " :" + channel + CRLF)
 # define RPL_WHOREPLY(channel, user, nick, flags, realname)  (FTIRC + " 352 " + channel + " " + user + " 42sp.org.br ft.irc " + nick + " " + flags + ":0 " + realname + CRLF)
 # define RPL_NAMREPLY(nick, channel, names)                  (FTIRC + " 353 " + nick + " = " + channel + " :" + names + CRLF)
-# define RPL_ENDOFNAMES(nick, channel)                       (FTIRC + " 366 " + nick + " " + channel + " : End of names list" + CRLF)
+# define RPL_ENDOFNAMES(nick, channel)                       (FTIRC + " 366 " + nick + " " + channel + " :End of /NAMES list" + CRLF)
 
 # define ERR_NOSUCHCHANNEL(channel)                      (FTIRC + " 403 * " + channel + " :Invalid channel name!" + CRLF)
 # define ERR_CANNOTSENDTOCHAN(nick, chan)				         (FTIRC + " 404 " + nick + " " + chan + " :Cannot send to channel" + CRLF)
@@ -38,7 +38,7 @@
 # define ERR_USERONCHANNEL(nick, channel)                (FTIRC + " 443 * " + nick + " " + channel + " :Client on channel!" + CRLF)
 # define ERR_NEEDMOREPARAMS(command, reason)             (FTIRC + " 461 * " + command + " :" + reason + CRLF)
 # define ERR_ALREADYREGISTERED(user)                     (FTIRC + " 462 " + user + " :User already registered" + CRLF)
-# define ERR_PASSWDMISMATCH()                            (FTIRC + " 464 * :Password was either not given or was incorrect" + CRLF)
+# define ERR_PASSWDMISMATCH()                            (FTIRC + " 464 * :Password incorrect" + CRLF)
 # define ERR_CHANNELISFULL(channel)                      (FTIRC + " 471 * " + channel + " :Channel is full!" + CRLF)
 # define ERR_UNKNOWNMODE(nick, modechar)                 (FTIRC + " 472 " + nick + " " + modechar + " :is unknown mode char to me" + CRLF)
 # define ERR_INVITEONLYCHAN(channel)                     (FTIRC + " 473 * " + channel + " :Channel is invite-only!" + CRLF)
@@ -60,5 +60,10 @@
 
 
 #define ERR_TOOMANYTARGETS(nick, target) (":" + std::string(nick) + " 407 " + std::string(target) + " :Too many targets. Only one allowed\r\n")
+
+
+// As que eu que fiz
+#define ERR_NOTREGISTERED() FTIRC + " 451 * :You have not registered" + CRLF
+
 
 #endif

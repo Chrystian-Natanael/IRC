@@ -10,6 +10,7 @@ void sig_handler(int signum) {
 int main() {
 	Server server(6667);
 	server.SetPass("batata");
+	// server.SetPass("batata1");
 
 	signal(SIGINT, sig_handler);
 

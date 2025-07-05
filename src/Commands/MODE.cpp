@@ -113,9 +113,11 @@ bool CommandMode::IsLimitFlag(const std::string& modeToken) {
 void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 		size_t expectedSize, const std::string& flagName) {
 
+	(void)flagName;
+
 	if (tokens.size() != expectedSize) {
 		std::string message = ERR_NEEDMOREPARAMS("MODE", flagName + " flag requires a different number of parameter(s).");
-        this->client.SendMessage(message, *this->server);
+		this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 	else if (tokens[1].size() != 2) {
@@ -212,7 +214,7 @@ void CommandMode::ExecuteOperator(Channel *channel) const {
 void CommandMode::ExecuteLimit(Channel *channel) const {
 	if (this->tokens[1].empty()) {
 		std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit value cannot be empty.");
-        this->client.SendMessage(message, *this->server);
+		this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 	if (this->tokens[1][0] == '-'){
@@ -221,19 +223,19 @@ void CommandMode::ExecuteLimit(Channel *channel) const {
 	}
 	if (this->tokens[1].find_first_not_of("0123456789") == std::string::npos) {
 		std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit must be a number.");
-        this->client.SendMessage(message, *this->server);
+		this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 	int limit = std::atoi(this->tokens[2].c_str());
 	if (limit <= 0)
 	{
 		std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit must be a positive number.");
-        this->client.SendMessage(message, *this->server);
+		this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 	if (static_cast<size_t>(limit) < channel->GetUsers().size()) {
 		std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit cannot be less than the number of users in the channel.");
-        this->client.SendMessage(message, *this->server);
+		this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
 	}
 	channel->SetMaxUsers(limit);

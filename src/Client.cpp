@@ -164,8 +164,8 @@ void	Client::PerformMessages(Server *server) {
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-            std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
-            this->SendMessage(errorMsg, *server);
+            // std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+            // this->SendMessage(errorMsg, *server);
             std::cerr << "Error - " << e.what() << std::endl;
 		}
 		msg = this->GetNextMessage();

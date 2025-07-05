@@ -1,0 +1,20 @@
+ARRUMAR MENSAGENS:
+    invite
+    KICK
+    MODE
+    LIS
+
+ARRUMAR BUGS:
+    USUARIO MANDA MENSAGEM SEM ESTAR NO CANAL
+	Segfault quando usuário manda mensagem para canal que não existe
+	Ele deveria dar um erro com `JOIN #`
+	Join fala que alguém entrou no canal, mas não fala quem foi
+	Quando alterar o nick usando NICK deve avisar todo mundo dessa forma :antigo_nick!username@host NICK :novo_nick
+
+
+
+OBS:
+
+    VERIFICAR LEAKS
+    VERIFICAR CANAIS COM SENHA
+    VERIFICAR MUDANÇAS DO MODE E SUAS RESPECTIVAS FUNÇÕES

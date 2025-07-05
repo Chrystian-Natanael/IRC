@@ -24,7 +24,7 @@ ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 	client(client) {
 
 	if (client.GetLoginState() != REGISTERED && (rawCommand != "PASS" && rawCommand != "NICK" && rawCommand != "USER")) {
-		std::string errorMsg = ":server 400 * :You must register before using commands\r\n";
+		std::string errorMsg = ERR_NOTREGISTERED();
 		client.SendMessage(errorMsg, *server);
 		throw std::runtime_error("Client not registered");
 	}
@@ -45,10 +45,10 @@ void InitCommandFactory() {
 	commandFactory["PART"]		= &MakePart;
 	commandFactory["PRIVMSG"]	= &MakePrivMsg;
 	commandFactory["WHO"]		= &MakeWho;
-	commandFactory["PASS"]   = &MakePass;
-	commandFactory["NICK"]   = &MakeNick;
-	commandFactory["USER"]   = &MakeUser;
-    commandFactory["QUIT"]   = &MakeQuit;
+	commandFactory["PASS"]		= &MakePass;
+	commandFactory["NICK"]		= &MakeNick;
+	commandFactory["USER"]		= &MakeUser;
+	commandFactory["QUIT"]		= &MakeQuit;
 }
 
 void ClearCommandFactory() {

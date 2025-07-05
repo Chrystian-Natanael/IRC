@@ -13,15 +13,28 @@ bool all_of(Iterator first, Iterator last, Predicate pred) {
 }
 
 CommandUser::CommandUser(const std::string &command, const std::string &params, Server* server, Client& client) :
-	ACommand(command, params, server, client) {
-        if (this->ValidateCommand(params) == 0) {
-			std::string message = ERR_NEEDMOREPARAMS("USER", "Not enough parameters for USER command.");
-			this->client.SendMessage(message, *this->server);
-        	throw std::runtime_error(message);
-		}
-    }
+		ACommand(command, params, server, client) {
 
-    CommandUser::~CommandUser(){}
+	if (this->client.GetLoginState() < USER) {
+		std::string message = ERR_NOTREGISTERED();
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
+
+	if (this->client.GetLoginState() == REGISTERED) {
+		std::string message = ERR_ALREADYREGISTERED(this->client.GetUserName());
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+
+	if (this->ValidateCommand(params) == 0) {
+		std::string message = ERR_NEEDMOREPARAMS("USER", "Not enough parameters");
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+}
+
+CommandUser::~CommandUser(){}
 
 bool CommandUser::ValidateCommand (const std::string& params) {
     this->userName = "";
@@ -38,19 +51,7 @@ static bool isAlphaOrSpace(unsigned char c) {
     return std::isalpha(c) || std::isspace(c);
 }
 
-void CommandUser::Execute() const{
-
-	if (this->client.GetLoginState() == PASSWORD) {
-        this->client.SendMessage("You're not signed in\n", *this->server);
-        throw std::runtime_error("You're not signed in");
-    }
-
-    // validar se username contem apenas numeros e letras
-    if (this->client.GetLoginState() != USER){
-        std::string message = ERR_ALREADYREGISTERED(this->client.GetUserName());
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
-    }
+void CommandUser::Execute() const {
 
     if (!::all_of(this->userName.begin(), this->userName.end(), ::isalnum)){
         std::string message = ERR_NEEDMOREPARAMS("USER", "Username must contain only alphanumeric characters");

@@ -34,7 +34,7 @@ void CommandTopic::Execute() const {
         std::string topicMsg = it->second->GetTopic();
         if (topicMsg.empty())
             topicMsg = "No topic is set.";
-        this->client.SendMessage(topicMsg, *this->server);
+        this->client.SendMessage(RPL_TOPIC(this->client.GetNickName(), it->second->GetName(), topicMsg), *this->server);
         return;
     }
     if (it->second->GetOperators().find(&this->client) != it->second->GetOperators().end()) {

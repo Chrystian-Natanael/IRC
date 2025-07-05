@@ -1,6 +1,6 @@
 #include "Channel.hpp"
 
-Channel::Channel(void): name("untitle"), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
+Channel::Channel(void): name("untitle"), topic("No topic is set"), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
 
 Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
 
