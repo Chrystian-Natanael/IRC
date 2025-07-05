@@ -24,15 +24,27 @@ std::pair<std::string, std::string> CommandTopic::ParseTopic(const std::string& 
 void CommandTopic::Execute() const {
     std::pair<std::string, std::string> result = ParseTopic(this->args);
     std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(result.first);
-    if (it == this->server->GetChannel().end())
-        throw std::runtime_error("Channel not found!");
+    if (it == this->server->GetChannel().end()) {
+        std::string message = ERR_NOSUCHCHANNEL(result.first);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
     else if (result.second.empty())
     {
-        std::cout << it->second->GetTopic() << std::endl;
+        std::string topicMsg = it->second->GetTopic();
+        if (topicMsg.empty())
+            topicMsg = "No topic is set.";
+        this->client.SendMessage(topicMsg, *this->server);
         return;
     }
-    if (it->second->GetOperators().find(&this->client) != it->second->GetOperators().end())
+    if (it->second->GetOperators().find(&this->client) != it->second->GetOperators().end()) {
         it->second->SetTopic(result.second);
-    else
-        throw std::runtime_error("Permission denied");
+        std::string message = ":" + this->client.GetNickName() + " TOPIC #" + result.first + " :" + result.second + "\r\n";
+        it->second->BroadcastMessage(message, this->server);
+    }
+    else {
+        std::string message = ERR_CHANOPRISNEEDED(this->client.GetNickName(), result.first);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
 }

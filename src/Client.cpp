@@ -10,8 +10,6 @@ Client::Client(int fd, std::string ip) :
 Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
-
-	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
 }
 
 bool Client::operator==(const Client& other) const {
@@ -80,12 +78,9 @@ void Client::SetBufferMessage(const std::string& message) {
 }
 
 void Client::AddChannel(Channel *channel) {
-    // Verifica se o canal já está no vetor usando std::find
     if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
-        // Canal já existe
         return;
     }
-    // Se não encontrado, adiciona o canal
     this->channels.push_back(channel);
 }
 
@@ -133,7 +128,7 @@ void	Client::ReceiveData() {
 
 	if (bytes <= 0) {
 		delete[] buff;
-		throw std::runtime_error("Desconectar cliente");
+		throw std::runtime_error(":server 400 * :Client disconnected (recv failed)\r\n");
 	}
 
 	buff[bytes] = '\0';
@@ -150,7 +145,6 @@ void	Client::SendMessage(const std::string& msg, Server& server) {
 
 	if (bytesSent <= 0) {
 		server.DisconnectClient(*this);
-		// throw std::runtime_error("Client disconnected: send() failed or returned 0.");
 	}
 }
 
@@ -163,13 +157,16 @@ void	Client::PerformMessages(Server *server) {
 		std::istringstream iss(msg);
 		rawCommand = GetRawCommand(iss);
 		args = GetArgs(iss);
+		std::cout << fd << " - Command: " << msg << std::endl;
 		try {
 			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
 			cmd->Execute();
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-			std::cerr << "Error - " << e.what() << std::endl;
+            std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+            this->SendMessage(errorMsg, *server);
+            std::cerr << "Error - " << e.what() << std::endl;
 		}
 		msg = this->GetNextMessage();
 	}

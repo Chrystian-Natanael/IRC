@@ -26,14 +26,32 @@ void CommandKick::Execute() const {
     KickParams result = ParseKick(this->args);
     std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(result.channel);
     std::cout << "Channel: " << result.channel << ", User: " << result.nick << ", Reason: " << result.reason << std::endl;
-    if (it == this->server->GetChannel().end())
-        throw std::runtime_error("Channel not found!");
-    else if (it->second->GetOperators().find(&this->client) == it->second->GetOperators().end())
-        throw std::runtime_error("Permission Denied!");
-    else if (it->second->findUserByNickname(result.nick) == NULL)
-        throw std::runtime_error("User not found!");
+    if (it == this->server->GetChannel().end()) {
+        std::string message = ERR_NOSUCHCHANNEL(result.channel);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
+    else if (it->second->GetOperators().find(&this->client) == it->second->GetOperators().end()) {
+        std::string message = ERR_CHANOPRISNEEDED(this->client.GetNickName(), result.channel);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
+    Client* kickedUser = it->second->findUserByNickname(result.nick);
+    if (kickedUser == NULL) {
+        std::string message = ERR_USERNOTINCHANNEL(this->client.GetNickName(), result.nick, result.channel);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
     if (result.reason.empty())
         result.reason = "You have been Kicked from the Channel";
-    it->second->RemoveUser(it->second->findUserByNickname(result.nick));
-    std::cout << result.nick << " Has been kicked because: " << result.reason << std::endl;
+
+    std::string kickMsg = RPL_KICKREASON(
+        this->client.GetNickName(),
+        this->client.GetUserName(),
+        result.channel,
+        kickedUser->GetNickName(),
+        result.reason
+    );
+    kickedUser->SendMessage(kickMsg, *this->server);
+    it->second->RemoveUser(kickedUser);
 }

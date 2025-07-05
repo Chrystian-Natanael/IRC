@@ -10,22 +10,28 @@ CommandPrivMsg::CommandPrivMsg(const std::string &command, const std::string& pa
 
 CommandPrivMsg::~CommandPrivMsg() {}
 
-// Implementação da validate, só para compilar
-// Isso vai sair depois
-// bool	CommandPrivMsg::ValidateCommand(const std::string& params) {
-// 	return (true);
-// }
-
 std::pair<std::string, std::string> CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
-	if (!HasTextDelimiter(params))
-		throw std::runtime_error("Missing ':' delimiter in PRIVMSG command.");
-	if (!HasTextBeforeDelimiter(params))
-		throw std::runtime_error("Missing <destination> before ':' in PRIVMSG command.");
-	if (!HasTextAfterDelimiter(params))
-		throw std::runtime_error("Missing <message> after ':' in PRIVMSG command.");
+	if (!HasTextDelimiter(params)) {
+		std::string message = ERR_NOTEXTTOSEND(this->client.GetNickName());
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
+	if (!HasTextBeforeDelimiter(params)) {
+		std::string message = ERR_NORECIPIENT(this->client.GetNickName());
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
+	if (!HasTextAfterDelimiter(params)) {
+		std::string message = ERR_NOTEXTTOSEND(this->client.GetNickName());
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
 	std::string destination = ExtractDestination(params);
-	if (HasMultipleTargets(destination))
-		throw std::runtime_error("Multiple targets are not supported in PRIVMSG command.");
+	if (HasMultipleTargets(destination)) {
+		std::string message = ERR_TOOMANYTARGETS(this->client.GetNickName(), destination);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
 	if (IsChannelTarget(destination))
 		ValidateChannelTarget(destination);
 	else
@@ -130,8 +136,11 @@ void CommandPrivMsg::Execute() const { // Checar se vamos mandar a msg no format
 void CommandPrivMsg::SendToChannel() const {
 	Channel *channel = GetChannelIfExists();
 
-	if (!channel)
-		throw std::runtime_error("Destination doesn't exist.");
+	if (!channel) {
+		std::string message = ERR_NOSUCHCHANNEL(this->msgToDest.first);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
 
 	std::vector<Client *> users = channel->GetUsers();
 	for (size_t i = 0; i < users.size(); i++) {
@@ -152,8 +161,11 @@ Channel* CommandPrivMsg::GetChannelIfExists() const {
 void CommandPrivMsg::SendToUser() const {
 	Client* recipient = GetUserIfExists();
 
-	if (!recipient)
-		throw std::runtime_error("Destination doesn't exist.");
+	if (!recipient) {
+		std::string message = ERR_NOSUCHNICK(this->msgToDest.first);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+	}
 
 	if (recipient->GetFd() != this->client.GetFd())
 		recipient->SendMessage(this->msgToDest.second, *this->server);

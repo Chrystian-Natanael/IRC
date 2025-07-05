@@ -5,8 +5,10 @@ int volatile g_server = 1;
 Server::Server() : port(-1), server_socket_fd(-1) {}
 
 Server::Server(int port) : port(port), server_socket_fd(-1) {
-	if (port < 1024 || port > 65535)
-		throw std::invalid_argument("Port number must be between 1024 and 65535");
+	if (port < 1024 || port > 65535) {
+		std::string errorMsg = ":server 400 * :Port number must be between 1024 and 65535\r\n";
+        throw std::invalid_argument(errorMsg);
+	}
 
 	InitCommandFactory();
 }
@@ -56,8 +58,10 @@ void	Server::ClearChannels() {
 void	Server::SetNonBlocking(int fd) {
 	if (fd < 0)
 		return ;
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1)
-		throw std::runtime_error("Fail in setting nonblocking file");
+	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
+		std::string errorMsg = ":server 400 * :Fail in setting nonblocking file\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 }
 
 int	Server::GetFd() const {
@@ -77,7 +81,8 @@ Client&	Server::GetClient(int fd) {
 		if (this->clients[i]->GetFd() == fd)
 			return (*(this->clients[i]));
 	}
-	throw std::runtime_error("Client not found");
+	std::string errorMsg = ":server 400 * :Client not found\r\n";
+    throw std::runtime_error(errorMsg);
 }
 
 const std::vector<Client *>&	Server::GetClients() const {
@@ -94,17 +99,21 @@ struct sockaddr_in&	Server::GetServerAddr() {
 
 void	Server::SetSocketOptions() {
 	int opt_value = 1;
-	
+
 	this->server_addr.sin_family = AF_INET;
 	this->server_addr.sin_addr.s_addr = INADDR_ANY;
 	this->server_addr.sin_port = htons(port);
-	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0)
-		throw std::runtime_error("Error: setsockopt failed");
+	if (setsockopt(this->server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt_value, sizeof(opt_value)) < 0) {
+	 	std::string errorMsg = ":server 400 * :Error: setsockopt failed\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 }
 
 void Server::ListenSocket() {
-	if (listen(this->server_socket_fd, 10) < 0)
-		throw std::runtime_error("Listen failed");
+	if (listen(this->server_socket_fd, 10) < 0) {
+		std::string errorMsg = ":server 400 * :Listen failed\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 
 	this->SetNonBlocking(this->server_socket_fd);
 
@@ -121,13 +130,17 @@ void Server::ListenSocket() {
 
 void	Server::InitSocket() {
 	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->server_socket_fd == -1)
-		throw std::runtime_error("Error to create server socket");
+	if (this->server_socket_fd == -1) {
+		std::string errorMsg = ":server 400 * :Error to create server socket\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 }
 
 void	Server::BindSocket() {
-	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1)
-		throw std::runtime_error("Error: failed to bind socket");
+	if (bind(this->server_socket_fd, (struct sockaddr *)&this->server_addr, sizeof(this->server_addr)) == -1) {
+		std::string errorMsg = ":server 400 * :Error: failed to bind socket\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 }
 
 void	Server::ServerInit() {
@@ -173,8 +186,10 @@ void	Server::AcceptNewClient() {
 	socklen_t len = sizeof(cliadd);
 
 	int incofd = accept(this->server_socket_fd, (sockaddr *) &(cliadd), &len);
-	if (incofd == -1)
-		throw std::runtime_error("accept() failed");
+	if (incofd == -1) {
+		std::string errorMsg = ":server 400 * :accept() failed\r\n";
+        throw std::runtime_error(errorMsg);
+	}
 
 	this->SetNonBlocking(incofd);
 
@@ -185,8 +200,6 @@ void	Server::AcceptNewClient() {
 	Client* cli = new Client(incofd, inet_ntoa((cliadd.sin_addr)));
 	this->clients.push_back(cli);
 	this->fds.push_back(NewPoll);
-
-	// std::cout << G << "Client <" << incofd << "> Connected" << RST << std::endl;
 }
 
 void	Server::ReceiveDataAllClients() {
@@ -195,7 +208,9 @@ void	Server::ReceiveDataAllClients() {
 			try {
 				this->clients[i]->ReceiveData();
 			} catch (std::exception &e) {
-				this->DisconnectClient(*(this->clients[i]));
+				std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+                this->clients[i]->SendMessage(errorMsg, *this);
+                this->DisconnectClient(*(this->clients[i]));
 			}
 		}
 	}
@@ -229,6 +244,10 @@ Client* Server::FindClientByNick(const std::string& nickname) {
             return *it;
     }
     return NULL;
+}
+
+void Server::SetPass(const std::string& pass) {
+	this->password = pass;
 }
 
 // ! FOR TESTS

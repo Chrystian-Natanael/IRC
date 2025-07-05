@@ -78,28 +78,28 @@ void CommandWho::ValidateCommand(std::string args) const {
 	return;
 }
 
-inline std::string RPL_WHOREPLY(
-	const std::string& channel,
-	const std::string& user,
-	const std::string& nick,
-	const std::string& flags,
-	const std::string& realname)
-{
-    return (
-		std::string(":ft.irc") +
-		std::string(" 352 ") +
-		channel +
-		std::string(" ") +
-		user +
-		std::string(" 42sp.org.br ft.irc ") +
-		nick +
-		std::string(" ") +
-		flags +
-		std::string(":0 ") +
-		realname +
-		std::string("\r\n")
-	);
-}
+// inline std::string RPL_WHOREPLY(
+// 	const std::string& channel,
+// 	const std::string& user,
+// 	const std::string& nick,
+// 	const std::string& flags,
+// 	const std::string& realname)
+// {
+//     return (
+// 		std::string(":ft.irc") +
+// 		std::string(" 352 ") +
+// 		channel +
+// 		std::string(" ") +
+// 		user +
+// 		std::string(" 42sp.org.br ft.irc ") +
+// 		nick +
+// 		std::string(" ") +
+// 		flags +
+// 		std::string(":0 ") +
+// 		realname +
+// 		std::string("\r\n")
+// 	);
+// }
 
 void CommandWho::Execute() const {
 	std::string response;

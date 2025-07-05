@@ -9,13 +9,14 @@
 #include <algorithm>
 #include "Server.hpp"
 #include "Client.hpp"
+#include "MACROS.hpp"
 
 // PASS ERRORS
 #define ERR_ERROPASSSTATE "PASS command can only be used in the PASS state."
 #define ERR_ERROWRONGPASSSERVER "PASS command requires a valid password to connect to the server."
 
 // NICK ERRORS
-#define ERR_ERRONEUSNICKNAME "NICK command requires a nickname between 4 and 9 characters."
+#define ERR_ERRONEUSNICKNAMEE "NICK command requires a nickname between 4 and 9 characters."
 #define ERR_ERRONICKSTATE "NICK command can only be used in the NICK state."
 #define ERR_ERROINVALIDNICKNAME "NICK command requires a valid nickname (alphanumeric, '-', or '_')."
 #define ERR_NICKNAMEDUPLICATE "NICK command requires a unique nickname."

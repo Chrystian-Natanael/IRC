@@ -14,12 +14,15 @@ bool all_of(Iterator first, Iterator last, Predicate pred) {
 
 CommandUser::CommandUser(const std::string &command, const std::string &params, Server* server, Client& client) :
 	ACommand(command, params, server, client) {
-        if (this->ValidateCommand(params) == 0)
-        throw std::runtime_error("Error: validation of the command USER.");
+        if (this->ValidateCommand(params) == 0) {
+			std::string message = ERR_NEEDMOREPARAMS("USER", "Not enough parameters for USER command.");
+			this->client.SendMessage(message, *this->server);
+        	throw std::runtime_error(message);
+		}
     }
-    
+
     CommandUser::~CommandUser(){}
-    
+
 bool CommandUser::ValidateCommand (const std::string& params) {
     this->userName = "";
     this->realName = "";
@@ -36,37 +39,44 @@ static bool isAlphaOrSpace(unsigned char c) {
 }
 
 void CommandUser::Execute() const{
+
+	if (this->client.GetLoginState() == PASSWORD) {
+        this->client.SendMessage("You're not signed in\n", *this->server);
+        throw std::runtime_error("You're not signed in");
+    }
+
     // validar se username contem apenas numeros e letras
     if (this->client.GetLoginState() != USER){
-        this->client.SendMessage(ERR_ERROUSERSTATE, *this->server);
-        throw std::runtime_error("Invalid user state");
+        std::string message = ERR_ALREADYREGISTERED(this->client.GetUserName());
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
     }
+
     if (!::all_of(this->userName.begin(), this->userName.end(), ::isalnum)){
-        this->client.SendMessage(ERR_ERROUSERNAME, *this->server);
-        throw std::runtime_error(ERR_ERROUSERNAME);
+        std::string message = ERR_NEEDMOREPARAMS("USER", "Username must contain only alphanumeric characters");
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
     }
+
     // validar se realname contém apenas espaços
     if (::all_of(this->realName.begin(), this->realName.end(), ::isspace)) {
-        this->client.SendMessage(ERR_ERROUSERREALNAME, *this->server);
-        throw std::runtime_error(ERR_ERROUSERREALNAME);
+        std::string message = ERR_NEEDMOREPARAMS("USER", "Real name cannot be empty");
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
     }
+
     // validar se realname contém apenas letras e espaços
     if (!::all_of(this->realName.begin(), this->realName.end(), isAlphaOrSpace)) {
-        this->client.SendMessage(ERR_ERROUSERREALNAME, *this->server);
-        throw std::runtime_error(ERR_ERROUSERREALNAME);
+        std::string message = ERR_NEEDMOREPARAMS("USER", "Real name must contain only letters and spaces");
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
     }
-    if (this->realName.length() > 25) {
-        this->client.SendMessage(ERR_ERROUSERREALNAMESIZE, *this->server);
-        throw std::runtime_error(ERR_ERROUSERREALNAMESIZE);
-    }
-    if (this->userName.length() > 15) {
-        this->client.SendMessage(ERR_ERROUSERNAMESIZE, *this->server);
-        throw std::runtime_error(ERR_ERROUSERNAMESIZE);
-    }
-        
+
     this->client.SetUserName(this->userName);
     this->client.SetLoginState(REGISTERED);
-    std::cout << "User " << this->client.GetUserName() << " registered with real name: " << this->client.GetRealName() << std::endl;
+
+	std::string welcomeMessage = RPL_WELCOME(this->client.GetNickName(), this->client.GetUserName());
+	this->client.SendMessage(welcomeMessage, *this->server);
 }
 
 

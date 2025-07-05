@@ -9,6 +9,7 @@ void sig_handler(int signum) {
 
 int main() {
 	Server server(6667);
+	server.SetPass("batata");
 
 	signal(SIGINT, sig_handler);
 
@@ -16,8 +17,9 @@ int main() {
 		server.ServerInit();
 		server.ServerLoop();
 	} catch (const std::exception& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
-		return (1);
+		std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+        std::cerr << "Error: " << errorMsg << std::endl;
+        return (1);
 	}
 
 	return (0);

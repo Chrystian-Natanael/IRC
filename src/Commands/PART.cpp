@@ -26,13 +26,20 @@ void CommandPart::Execute() const {
     std::string channelName = result.first;
     std::string message = result.second;
     std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(channelName);
-    if (it == this->server->GetChannel().end())
-        throw std::runtime_error("Channel not found!");
+    if (it == this->server->GetChannel().end()) {
+        std::string errMsg = ERR_NOSUCHCHANNEL(channelName);
+        this->client.SendMessage(errMsg, *this->server);
+        throw std::runtime_error(errMsg);
+    }
 
     Channel* channel = it->second;
     const std::vector<Client *> users = channel->GetUsers();
     if(std::find(users.begin(), users.end(), &this->client) == users.end())
-        throw std::runtime_error("You're not on that channel");
+    {
+        std::string errMsg = ERR_NOTONCHANNEL(channelName);
+        this->client.SendMessage(errMsg, *this->server);
+        throw std::runtime_error(errMsg);
+    }
 
     if (channel->GetOperators().find(&this->client) != channel->GetOperators().end())
         channel->RemoveOperator(&this->client);

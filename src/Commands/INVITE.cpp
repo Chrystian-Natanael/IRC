@@ -47,7 +47,9 @@ bool CommandInvite::ValidateCommand(std::string& nickname, std::string& channelN
 void CommandInvite::Execute() const {
     std::string nickname, channelName;
     if (!ValidateCommand(nickname, channelName)) {
-        throw std::runtime_error("Invalid command or permission denied");
+        std::string message = ERR_NEEDMOREPARAMS("INVITE", "Invalid command or permission denied");
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
     }
 
 
@@ -55,7 +57,9 @@ void CommandInvite::Execute() const {
     Client* invited = this->server->FindClientByNick(nickname);
 
     channel->AddPendentInvite(invited);
-    std::string message = ":" + this->client.GetNickName() + " INVITE " + invited->GetNickName() + " :" + channelName + "\r\n";
+    std::string inviteMsg = RPL_INVITEMSG(this->client.GetNickName(), this->client.GetUserName(), invited->GetNickName(), channelName);
+    this->client.SendMessage(inviteMsg, *this->server);
 
-    invited->SendMessage(message, *this->server);
+    std::string invitedMsg = RPL_INVITING(this->client.GetNickName(), invited->GetNickName(), channelName);
+    invited->SendMessage(invitedMsg, *this->server);
 }

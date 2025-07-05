@@ -35,6 +35,7 @@ class Channel {
     void    SetMaxUsers(int maxUsers);
 
     std::string	GetTopic(void);
+    std::string	GetName(void);
     bool		GetBlockTopic(void);
     bool		GetBlockChannel(void);
     bool		GetInviteOnly(void);

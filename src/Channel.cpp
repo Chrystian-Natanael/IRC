@@ -39,6 +39,10 @@ std::string Channel::GetTopic(void){
     return (this->topic);
 }
 
+std::string Channel::GetName(void){
+    return (this->name);
+}
+
 bool Channel::GetInviteOnly(void){
     return (this->invite_only);
 }
@@ -81,9 +85,13 @@ void    Channel::AddOperator(Client *user){
 }
 
 void    Channel::AddUser(Client *user){
-    if (this->maxUsers > 0 && this->users.size() >= static_cast<size_t>(this->maxUsers))
-        throw std::runtime_error("Channel is full!");
-    this->users.push_back(user);
+	if (std::find(this->users.begin(), this->users.end(), user) != this->users.end())
+		return;
+	if (this->maxUsers > 0 && this->users.size() >= static_cast<size_t>(this->maxUsers)) {
+        std::string message = ERR_CHANNELISFULL(this->name);
+        throw std::runtime_error(message);
+    }
+	this->users.push_back(user);
 }
 
 bool Channel::isOperator(Client *user) const{

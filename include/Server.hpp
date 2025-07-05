@@ -78,6 +78,8 @@ private:
 	std::vector<struct pollfd>&		GetPollFds();
 	struct sockaddr_in&				GetServerAddr();
 
+	void	SetPass(const std::string& pass);
+
 	// ! FOR TESTS
 	void	SetFd(int fd);
 	void	AddChannel(const std::string& name, Channel* channel);
