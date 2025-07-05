@@ -16,8 +16,6 @@ KickParams CommandKick::ParseKick(const std::string& params)const {
     std::getline(iss, kp.reason);
     if (!kp.reason.empty() && kp.reason[0] == ' ')
         kp.reason = kp.reason.substr(1);
-    if (!kp.channel.empty() && kp.channel[0] == '#')
-        kp.channel = kp.channel.substr(1);
     return kp;
 }
 
@@ -25,8 +23,13 @@ KickParams CommandKick::ParseKick(const std::string& params)const {
 void CommandKick::Execute() const {
     KickParams result = ParseKick(this->args);
     std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(result.channel);
-    std::cout << "Channel: " << result.channel << ", User: " << result.nick << ", Reason: " << result.reason << std::endl;
-    if (it == this->server->GetChannel().end()) {
+
+    if (result.channel.empty() || result.nick.empty()) {
+        std::string message = ERR_NEEDMOREPARAMS(this->client.GetNickName(), this->args);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
+    else if (it == this->server->GetChannel().end()) {
         std::string message = ERR_NOSUCHCHANNEL(result.channel);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
@@ -36,9 +39,29 @@ void CommandKick::Execute() const {
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
     }
+
+    bool isUserInChannel = false;
+    for (std::vector<Client *>::const_iterator iter = it->second->GetUsers().begin() ; iter != it->second->GetUsers().end(); ++iter){
+		if ((*iter)->GetNickName() == this->client.GetNickName()) {
+			isUserInChannel = true;
+			break;
+		}
+	}
+	if (isUserInChannel == false)
+	{
+		std::string message = ERR_NOTONCHANNEL(it->second->GetName());
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+
     Client* kickedUser = it->second->findUserByNickname(result.nick);
     if (kickedUser == NULL) {
         std::string message = ERR_USERNOTINCHANNEL(this->client.GetNickName(), result.nick, result.channel);
+        this->client.SendMessage(message, *this->server);
+        throw std::runtime_error(message);
+    }
+    if (kickedUser->GetNickName() == this->client.GetNickName()) {
+        std::string message = ERR_CANTKICKSELF(this->client.GetNickName(), result.channel);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
     }

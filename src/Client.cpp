@@ -141,10 +141,13 @@ void	Client::ReceiveData() {
 void	Client::SendMessage(const std::string& msg, Server& server) {
 	if (msg.empty() || this->fd < 0)
 		return;
+
+	std::cout << fd << " -> " << msg << std::endl;
+
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
-		server.DisconnectClient(*this);
+		server.DisconnectClient(*this, "");
 	}
 }
 
@@ -157,7 +160,7 @@ void	Client::PerformMessages(Server *server) {
 		std::istringstream iss(msg);
 		rawCommand = GetRawCommand(iss);
 		args = GetArgs(iss);
-		std::cout << fd << " - Command: " << msg << std::endl;
+		std::cout << fd << " <- Command: " << rawCommand << " " << args << std::endl;
 		try {
 			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
 			cmd->Execute();

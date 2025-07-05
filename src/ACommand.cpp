@@ -13,6 +13,7 @@
 #include "Commands/NICK.hpp"
 #include "Commands/USER.hpp"
 #include "Commands/QUIT.hpp"
+#include "Commands/NOTICE.hpp"
 
 //Constructors
 
@@ -49,6 +50,7 @@ void InitCommandFactory() {
 	commandFactory["NICK"]		= &MakeNick;
 	commandFactory["USER"]		= &MakeUser;
 	commandFactory["QUIT"]		= &MakeQuit;
+	commandFactory["NOTICE"]	= &MakeNotice;
 }
 
 void ClearCommandFactory() {
@@ -116,6 +118,10 @@ ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
 
 ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
 	return new CommandQuit("QUIT", args, server, client);
+}
+
+ACommand* MakeNotice(const std::string& args, Server* server, Client& client) {
+	return new CommandNotice("NOTICE", args, server, client);
 }
 
 std::vector<std::string> SplitArguments(const std::string& input) {

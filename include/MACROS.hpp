@@ -2,6 +2,7 @@
 # define MACROS_HPP
 
 #include "ColorsTerm.hpp"
+#include <string>
 
 # define FTIRC std::string(":ft.irc")
 # define CRLF std::string("\r\n")
@@ -13,8 +14,8 @@
 
 #define  RPL_QUIT(nick, userName, host, reason) (":" + (nick) + "!" + (userName) + "@" + (host) + " QUIT :" + (reason) + CRLF)
 # define RPL_ENDOFWHO(channel)                               (FTIRC + " 315 " + channel + " :End of /WHO list" + CRLF)
-# define RPL_LISTSTART(nick)                                 (FTIRC + " 321 " + nick + " Channel    |   Users   |   Topic" + CRLF)
-# define RPL_LIST(nick, channel, users, topic)               (FTIRC + " 322 " + nick + " " + channel + " " + users + " :" + topic + CRLF)
+# define RPL_LISTSTART()                                     (FTIRC + " 321 Channel :Users Name" + CRLF)
+# define RPL_LIST(nick, channel, client_count, topic)        (FTIRC + " 322 " + nick + " " + channel + " " + client_count + " :" + topic + CRLF)
 # define RPL_LISTEND(nick)                                   (FTIRC + " 323 " + nick + " :End of /LIST" + CRLF)
 # define RPL_CHANNELMODEIS(channel, mode, modeParams)        (FTIRC + " 324 * " + channel + " " + mode + " " + modeParams + CRLF)
 # define RPL_NOTOPIC(nick, channel)                          (FTIRC + " 331 " + nick + " " + channel + " :No topic is set" + CRLF)
@@ -50,6 +51,7 @@
 # define JOIN(user, channel)                                         (COLON + user + " JOIN " + channel + CRLF)
 # define PRIVMSG_BROADCAST(nick, user, channel, topic)               (COLON + nick + "!~" + user + "@ft.irc TOPIC " + channel + SPACE + topic + CRLF)
 # define RPL_PRIVMSG(user, dest, message)                            (COLON + user + " PRIVMSG " + dest + " :" + message + CRLF)
+# define RPL_NOTICE(user, dest, message)                             (COLON + user + " NOTICE " + dest + " :" + message + CRLF)
 # define RPL_PARTMSG(nick, user, dest, message)                      (COLON + nick + "!~" + user + "@* PART " + dest + " :" + message + CRLF)
 # define RPL_PARTNOMSG(nick, user, dest)                             (COLON + nick + "!" + user + "@* PART " + dest + CRLF)
 # define RPL_KICKREASON(op_nick, op_user, channel, client, reason)   (COLON + op_nick + "!" + op_user + "@ft.irc KICK " + channel + SPACE + client + SPACE + COLON + reason + CRLF)
@@ -63,7 +65,10 @@
 
 
 // As que eu que fiz
-#define ERR_NOTREGISTERED() FTIRC + " 451 * :You have not registered" + CRLF
+#define ERR_CANTKICKSELF(nick, channel) (FTIRC + " 482 " + nick + " " + channel + " :You can't kick yourself!" + CRLF)
+#define ERR_NOTREGISTERED() (FTIRC + " 451 * :You have not registered" + CRLF)
+#define RPL_NICK(old_nick, username, nick) (":" + old_nick + "!" + username + "@ft.irc NICK :" + nick + CRLF)
+#define RPL_JOIN(nickname, username, canal) (":" + nickname + "!" + username + "@ft.irc JOIN :" + canal + CRLF)
 
 
 #endif

@@ -13,6 +13,7 @@ int main() {
 	// server.SetPass("batata1");
 
 	signal(SIGINT, sig_handler);
+	signal(SIGPIPE, SIG_IGN);
 
 	try {
 		server.ServerInit();

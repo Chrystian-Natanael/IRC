@@ -1,8 +1,8 @@
 #include "Channel.hpp"
 
-Channel::Channel(void): name("untitle"), topic("No topic is set"), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
+Channel::Channel(void): name("untitle"), topic(""), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
 
-Channel::Channel(std::string name): name(name), topic("untitle"), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
+Channel::Channel(std::string name): name(name), topic(""), blockTopic(false), blockChannel(false), maxUsers(-1), invite_only(false) {}
 
 
 Channel::~Channel(void){}
@@ -12,8 +12,7 @@ Channel::Channel(Channel &rhs){
 }
 
 Channel& Channel::operator=(const Channel &other){
-    if (this != &other)
-    {
+    if (this != &other) {
         this->name = other.name;
         this->topic = other.topic;
         this->operators = other.operators;
@@ -155,4 +154,10 @@ void Channel::SendMessage2Channel(Client *client, const std::string &message, Se
             continue;
         this->users[i]->SendMessage(message, *server);
     }
+}
+
+void Channel::BroadcastMessageDisconect(const std::string &message) {
+	for (size_t i = 0; i < this->users.size(); ++i) {
+		send(this->users[i]->GetFd(), message.c_str(), message.length(), 0);
+	}
 }

@@ -40,8 +40,52 @@ void CommandJoin::Execute() const {
             channel->RemovePendentInvite(&this->client);
             channel->AddUser(&this->client);
             this->client.AddChannel(channel);
-            std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
-            this->client.SendMessage(joinMsg, *this->server);
+            std::string Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
+		    channel->BroadcastAllMessage(Msg, this->server);
+            Msg.clear();
+
+
+			std::string topic;
+			if (channel->GetTopic().empty())
+			topic.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
+			else
+			topic.append(RPL_TOPIC(this->client.GetNickName(), channel->GetName(), channel->GetTopic()));
+
+            Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
+			Msg.append(topic);
+			this->client.SendMessage(Msg, *this->server);
+			Msg.clear();
+
+            std::string members;
+			int i = 0;
+			const std::vector<Client *>& users = channel->GetUsers();
+			for (std::vector<Client *>::const_iterator itUser = users.begin(); itUser != users.end(); ++itUser) {
+				if (*itUser != &this->client) {
+					if (channel->isOperator(*itUser)) {
+						members += "@" + (*itUser)->GetNickName() + " ";
+					} else {
+						members += (*itUser)->GetNickName() + " ";
+					}
+				}
+				i++;
+
+				if (i == 5) {
+					Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+					this->client.SendMessage(Msg, *this->server);
+					Msg.clear();
+					members.clear();
+					i = 0;
+				}
+			}
+
+			if (!members.empty()) {
+				Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+				this->client.SendMessage(Msg, *this->server);
+				Msg.clear();
+			}
+
+			Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
+            this->client.SendMessage(Msg, *this->server);
 
             return ;
         }
@@ -62,19 +106,27 @@ void CommandJoin::Execute() const {
 
 		// Primeira mensagem do JOIN
 		// Esse aqui precisa ser enviado para todos os usuários do canal
-        std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
+        // std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
+		std::string joinMsg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
 		channel->BroadcastAllMessage(joinMsg, this->server);
+		joinMsg.clear();
 
 		// Mensagem para falar o tópico
-		if (channel->GetTopic().empty()) // Aqui vai precisar de uma variável para ver se o tópico foi setado
-			joinMsg.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
+		std::string topic;
+		if (channel->GetTopic().empty())
+		topic.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
 		else
-			joinMsg.append(RPL_TOPIC(this->client.GetNickName(), channel->GetName(), channel->GetTopic()));
+		topic.append(RPL_TOPIC(this->client.GetNickName(), channel->GetName(), channel->GetTopic()));
 
-		// Mensagem para falar todos os integrantes
+		std::string Msg;
+
+		Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
+		Msg.append(topic);
+		this->client.SendMessage(Msg, *this->server);
+		Msg.clear();
 
 		std::string members;
-
+		int i = 0;
 		const std::vector<Client *>& users = channel->GetUsers();
 		for (std::vector<Client *>::const_iterator itUser = users.begin(); itUser != users.end(); ++itUser) {
 			if (*itUser != &this->client) {
@@ -84,13 +136,25 @@ void CommandJoin::Execute() const {
 					members += (*itUser)->GetNickName() + " ";
 				}
 			}
+			i++;
+
+			if (i == 5) {
+				Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+				this->client.SendMessage(Msg, *this->server);
+				Msg.clear();
+				members.clear();
+				i = 0;
+			}
 		}
 
-		// Mensagem para falar que acabou
-		joinMsg = RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members);
-		joinMsg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
+		if (!members.empty()) {
+			Msg.append(RPL_NAMREPLY(this->client.GetNickName(), channel->GetName(), members));
+			this->client.SendMessage(Msg, *this->server);
+			Msg.clear();
+		}
 
-        this->client.SendMessage(joinMsg, *this->server);
+		Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
+		this->client.SendMessage(Msg, *this->server);
     }
     else {
         Channel* newChannel = new Channel(result.first);

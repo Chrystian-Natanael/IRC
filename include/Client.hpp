@@ -1,7 +1,7 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#define RECEIVE_BUFFER_SIZE 1024
+#define RECEIVE_BUFFER_SIZE 2048
 
 #include <sys/socket.h>
 #include <unistd.h>
@@ -50,7 +50,7 @@ public:
 	std::string	GetUserName() const;
 	std::string	GetNickName() const;
 	std::string	GetRealName() const;
-	
+
 
 	std::string GetBufferMessage() const;
 	std::string GetNextMessage();
@@ -58,7 +58,7 @@ public:
 	void		ReceiveData();
 	void		SendMessage(const std::string& msg, Server& server);
 	void		PerformMessages(Server *server);
-	
+
 	std::vector<Channel*>& GetChannels();
 
 	void SetUserName(const std::string& user_name);

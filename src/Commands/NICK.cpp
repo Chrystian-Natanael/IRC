@@ -48,7 +48,7 @@ void CommandNick::Execute() const {
 	// 	throw std::runtime_error(message);
 	// }
 
-	if (this->args.length() < 4 || this->args.length() > 9){
+	if (this->args.length() < 4 || this->args.length() > 20){
 		std::string message = ERR_ERRONEUSNICKNAME(this->args);
 		this->client.SendMessage(message, *this->server);
 		throw std::runtime_error(message);
@@ -70,6 +70,18 @@ void CommandNick::Execute() const {
 		}
 	}
 
+	std::string old_nick = this->client.GetNickName();
 	this->client.SetNickName(this->args);
-	this->client.SetLoginState(USER);
+
+	if (this->client.GetLoginState() == NICK) {
+		this->client.SetLoginState(USER);
+	} else {
+		std::string message = RPL_NICK(old_nick, this->client.GetUserName(), this->client.GetNickName());
+		// Envia a mensagem de mudança de nick para todos os clientes conectados
+		for (std::vector<Client *>::const_iterator it = this->server->GetClients().begin(); it != this->server->GetClients().end(); ++it) {
+			(*it)->SendMessage(message, *this->server);
+		}
+
+		// this->client.SendMessage(message, *this->server);
+	}
 }

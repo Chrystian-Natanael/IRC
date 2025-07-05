@@ -108,47 +108,50 @@ void CommandWho::Execute() const {
 		std::vector<Client*> clients = this->server->GetClients();
 		if (!clients.empty()) {
 			for (std::vector<Client *>::iterator it = clients.begin(); it != clients.end(); ++it) {
-				response = RPL_WHOREPLY(
+				response += RPL_WHOREPLY(
 					(*it)->GetNickName(),
 					(*it)->GetUserName(),
 					(*it)->GetNickName(),
-					"H", // Flags, pode ser "H" para usuário normal ou "O" para operador
+					"H",
 					(*it)->GetRealName()
 				);
-				this->client.SendMessage(response, *this->server);
-				std::cout << response << std::endl;
+				// this->client.SendMessage(response, *this->server);
+				// std::cout << response << std::endl;
 			}
 		}
-		this->client.SendMessage(RPL_ENDOFWHO(this->client.GetNickName()), *this->server);
-		std::cout << RPL_ENDOFWHO(this->client.GetNickName()) << std::endl;
+		response += RPL_ENDOFWHO(this->client.GetNickName());
+		this->client.SendMessage(response, *this->server);
+		// std::cout << RPL_ENDOFWHO(this->client.GetNickName()) << std::endl;
 	} else if (this->is_channel) {
 		std::map<std::string, Channel*> channels = this->server->GetChannel();
 		std::map<std::string, Channel*>::iterator it = channels.find(this->channel);
 		if (it == channels.end()) {
-			this->client.SendMessage(ERR_NOSUCHCHANNEL(this->channel), *this->server);
+			this->client.SendMessage(RPL_ENDOFWHO(this->client.GetNickName()), *this->server);
 			throw std::runtime_error(ERR_NOSUCHCHANNEL(this->channel));
 		}
 		std::vector<Client*> clients = it->second->GetUsers();
 		if (!clients.empty()) {
 			for (std::vector<Client *>::iterator it_users = clients.begin(); it_users != clients.end(); ++it_users) {
-				std::cout << "User found: " << (*it_users)->GetNickName() << std::endl;
-				response = RPL_WHOREPLY(
+				// std::cout << "User found: " << (*it_users)->GetNickName() << std::endl;
+				std::string flags = channels[it->second->GetName()]->isOperator(*it_users) ? "O" : "H";
+
+				response += RPL_WHOREPLY(
 					it->second->GetName(),
 					(*it_users)->GetUserName(),
 					(*it_users)->GetNickName(),
-					"H", // Flags, pode ser "H" para usuário normal ou "O" para operador
+					flags,
 					(*it_users)->GetRealName()
 				);
-				this->client.SendMessage(response, *this->server);
-				std::cout << response << std::endl;
+				// this->client.SendMessage(response, *this->server);
 			}
-			this->client.SendMessage(RPL_ENDOFWHO(this->client.GetNickName()), *this->server);
-			std::cout << "End of WHO list" << std::endl;
 		}
+		response += RPL_ENDOFWHO(this->client.GetNickName());
+		this->client.SendMessage(response, *this->server);
 
 	} else { // Listar um usuário específico
 		Client* client = this->server->FindClientByNick(this->nick);
 		if (!client) {
+			this->client.SendMessage(RPL_ENDOFWHO(this->client.GetNickName()), *this->server);
 			throw std::runtime_error("User not found: " + this->nick);
 		}
 
@@ -156,50 +159,10 @@ void CommandWho::Execute() const {
 			this->client.GetNickName(),
 			client->GetUserName(),
 			client->GetNickName(),
-			"H", // Flags, pode ser "H" para usuário normal ou "O" para operador
+			"H",
 			client->GetRealName()
 		);
 		this->client.SendMessage(response, *this->server);
 		this->client.SendMessage(RPL_ENDOFWHO(this->client.GetNickName()), *this->server);
-		std::cout << response << std::endl;
-		std::cout << "End of WHO list" << std::endl;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 		response = RPL_WHOREPLY(
-// 			this->client.GetNickName(),
-// 			client->GetUserName(),
-// 			client->GetNickName(),
-// 			"H", // Flags, pode ser "H" para usuário normal ou "O" para operador
-// 			client->GetRealName()
-// 		);
-// 		// Mandar para o cliente o resultado da pesquisa
-// 		this->client.SendMessage(response, *this->server);
-//		// Depois mandar o RPL_ENDOFWHO
-
-
-//	Mensagem de resposta para o cliente
-// 		response = RPL_WHOREPLY(
-// 			"PRECISA_IMPLEMENTAR",
-// 			this->client.GetUserName(),
-// 			this->client.GetNickName(),
-// 			"H",
-// 			this->client.GetRealName()
-// 		);
-//
-// 		this->client.SendMessage(response, *this->server); // o SendMessage precisa receber um ponteiro
