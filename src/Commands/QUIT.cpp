@@ -27,4 +27,5 @@ void CommandQuit::Execute() const {
     //     );
     // }
     this->server->DisconnectClient(this->client, quitMsg);
+	throw "";
 }

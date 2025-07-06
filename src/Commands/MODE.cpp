@@ -26,16 +26,18 @@ void CommandMode::ValidateMode(std::vector<std::string>& tokens) {
 }
 
 void CommandMode::ValidateChannelToken(const std::string& channelToken) {
+	if (this->tokens.size() < 2)
+		return;
 	if (channelToken[0] != '#') {
-		std::string message = ERR_NOSUCHCHANNEL(channelToken);
+        std::string message = ERR_NOSUCHCHANNEL(channelToken);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
-	}
-	if (channelToken.length() == 1) {
-		std::string message = ERR_NOSUCHCHANNEL(channelToken);
+    }
+    if (channelToken.length() == 1) {
+        std::string message = ERR_NOSUCHCHANNEL(channelToken);
         this->client.SendMessage(message, *this->server);
         throw std::runtime_error(message);
-	}
+    }
 	for (std::string::const_iterator it = channelToken.begin(); it != channelToken.end(); it++) {
 		char c = *it;
 		if (c == ',' || c == '\a') {
@@ -120,9 +122,15 @@ void CommandMode::ValidateFlagParameters(const std::vector<std::string>& tokens,
 
 void CommandMode::Execute() const {
 	Channel *channel = GetChannelIfExists();
-	
+
 	bool isUserInChannel = false;
-	
+
+	if (this->tokens.size() < 1) {
+		std::string message = ERR_NEEDMOREPARAMS("MODE", "Not enough parameters provided.");
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+
 	if (!channel) {
 		std::string message = ERR_NOSUCHCHANNEL(this->tokens[0]);
 		this->client.SendMessage(message, *this->server);
