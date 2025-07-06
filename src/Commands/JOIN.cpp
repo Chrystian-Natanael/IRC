@@ -38,6 +38,20 @@ void CommandJoin::Execute() const {
         std::vector<Client *>::const_iterator user = std::find(channel->GetPendentInvites().begin(), channel->GetPendentInvites().end(), &this->client);
         if (user != channel->GetPendentInvites().end()) {
             channel->RemovePendentInvite(&this->client);
+
+			if (channel->GetMaxUsers() > 0 && channel->GetUsers().size() >= static_cast<size_t>(channel->GetMaxUsers())) {
+				std::string message = ERR_CHANNELISFULL(channel->GetName());
+				this->client.SendMessage(message, *this->server);
+				throw std::runtime_error(message);
+			}
+
+			if (channel->GetInviteOnly() == true) {
+				if (channel->ValidatePassword(result.second) == false) {
+					std::string message = ERR_BADCHANNELKEY(this->client.GetNickName(), result.first);
+					this->client.SendMessage(message, *this->server);
+					throw std::runtime_error(message);
+			}
+
             channel->AddUser(&this->client);
             this->client.AddChannel(channel);
             std::string Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());

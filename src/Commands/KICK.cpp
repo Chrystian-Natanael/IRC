@@ -2,23 +2,20 @@
 #include "Channel.hpp"
 #include <sstream>
 
-
 CommandKick::CommandKick(const std::string &command, const std::string &params, Server* server, Client& client) :
 	ACommand(command, params, server, client) {}
 
 CommandKick::~CommandKick() {}
-
 
 KickParams CommandKick::ParseKick(const std::string& params)const {
     std::istringstream iss(params);
     KickParams kp;
     iss >> kp.channel >> kp.nick;
     std::getline(iss, kp.reason);
-    if (!kp.reason.empty() && kp.reason[0] == ' ')
-        kp.reason = kp.reason.substr(1);
+    if (!kp.reason.empty())
+        kp.reason = kp.reason.substr(2);
     return kp;
 }
-
 
 void CommandKick::Execute() const {
     KickParams result = ParseKick(this->args);
@@ -75,6 +72,6 @@ void CommandKick::Execute() const {
         kickedUser->GetNickName(),
         result.reason
     );
-    kickedUser->SendMessage(kickMsg, *this->server);
+	it->second->BroadcastAllMessage(kickMsg, this->server);
     it->second->RemoveUser(kickedUser);
 }
