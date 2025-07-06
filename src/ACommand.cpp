@@ -14,6 +14,7 @@
 #include "Commands/USER.hpp"
 #include "Commands/QUIT.hpp"
 #include "Commands/NOTICE.hpp"
+#include "Commands/BOT.hpp"
 
 //Constructors
 
@@ -51,6 +52,7 @@ void InitCommandFactory() {
 	commandFactory["USER"]		= &MakeUser;
 	commandFactory["QUIT"]		= &MakeQuit;
 	commandFactory["NOTICE"]	= &MakeNotice;
+	commandFactory["BOT"]		= &MakeBot;
 }
 
 void ClearCommandFactory() {
@@ -122,6 +124,10 @@ ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
 
 ACommand* MakeNotice(const std::string& args, Server* server, Client& client) {
 	return new CommandNotice("NOTICE", args, server, client);
+}
+
+ACommand* MakeBot(const std::string& args, Server* server, Client& client) {
+	return new CommandBot("BOT", args, server, client);
 }
 
 std::vector<std::string> SplitArguments(const std::string& input) {

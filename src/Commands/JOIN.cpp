@@ -195,3 +195,4 @@ void CommandJoin::Execute() const {
         this->client.SendMessage(joinMsg, *this->server);
     }
 }
+}

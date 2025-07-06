@@ -66,6 +66,7 @@ ACommand* MakeNick(const std::string& args, Server* server, Client&client);
 ACommand* MakeUser(const std::string& args, Server* server, Client&client);
 ACommand* MakeQuit(const std::string& args, Server* server, Client&client);
 ACommand* MakeNotice(const std::string& args, Server* server, Client&client);
+ACommand* MakeBot(const std::string& args, Server* server, Client&client);
 
 std::vector<std::string> SplitArguments(const std::string& input);
 

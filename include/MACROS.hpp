@@ -70,5 +70,4 @@
 #define RPL_NICK(old_nick, username, nick) (":" + old_nick + "!" + username + "@ft.irc NICK :" + nick + CRLF)
 #define RPL_JOIN(nickname, username, canal) (":" + nickname + "!" + username + "@ft.irc JOIN :" + canal + CRLF)
 
-
 #endif
