@@ -9,8 +9,6 @@ CommandBot::CommandBot(const std::string &command, const std::string &params, Se
 
 CommandBot::~CommandBot() {}
 
-
-void CommandBot::Execute() const {
 const std::string phrases[] = {
 	"Que a Força esteja com você – sempre.",
 	"Com grandes poderes, vêm grandes responsabilidades.",
@@ -67,12 +65,27 @@ const std::string phrases[] = {
 	"Seja persistente como um respawn infinito.",
 	"Suas escolhas são mais potentes que qualquer skill tree.",
 	"Ótimo, a quest continua — vá em frente."
-  };
+};
 
-  int allphrases = sizeof(phrases) / sizeof(phrases[0]);
-  int idx = rand() % allphrases;
+void CommandBot::Execute() const {
+	static unsigned int counter = 0;
+	srand(time(0) + (++counter * 1000));
+	int allphrases = sizeof(phrases) / sizeof(phrases[0]);
+	int idx = rand() % allphrases;
 
-  srand(time(0));
-  std::string Phrase = phrases[idx];
-  this->client.SendMessage(RPL_PRIVMSG("BOT", this->client.GetNickName(), Phrase), *this->server);
+	std::string Phrase = phrases[idx];
+
+	std::istringstream iss(this->args);
+	std::string channel, test;
+	iss >> channel;
+
+	if (channel.empty()) {
+		this->client.SendMessage(RPL_PRIVMSG("BOT", this->client.GetNickName(), Phrase), *this->server);
+	} else {
+		std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(channel);
+		if (it != this->server->GetChannel().end()) {
+			Channel* chan = it->second;
+			chan->BroadcastAllMessage(RPL_PRIVMSG("BOT", chan->GetName(), Phrase), this->server);
+		}
+	}
 }
