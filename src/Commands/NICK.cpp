@@ -34,20 +34,6 @@ bool CommandNick::ValidateCommand(const std::string& params){
 }
 
 void CommandNick::Execute() const {
-	// if (this->client.GetLoginState() == PASSWORD) {
-	//	 this->client.SendMessage("You're not signed in\n", *this->server);
-	//	 throw std::runtime_error("You're not signed in");
-	// }
-
-	// Aqui eu deixei comentado pq ele pode mudar o nome ou não
-	// Caso não seja possível, por não estar disponível ou ser inválido, o comando é ignorado com uma mensagem de erro
-	//
-	// if (this->client.GetLoginState() != NICK) {
-	// 	std::string message = ERR_ALREADYREGISTERED(this->client.GetUserName());
-	// 	this->client.SendMessage(message, *this->server);
-	// 	throw std::runtime_error(message);
-	// }
-
 	if (this->args.length() < 4 || this->args.length() > 20){
 		std::string message = ERR_ERRONEUSNICKNAME(this->args);
 		this->client.SendMessage(message, *this->server);
@@ -77,11 +63,8 @@ void CommandNick::Execute() const {
 		this->client.SetLoginState(USER);
 	} else {
 		std::string message = RPL_NICK(old_nick, this->client.GetUserName(), this->client.GetNickName());
-		// Envia a mensagem de mudança de nick para todos os clientes conectados
 		for (std::vector<Client *>::const_iterator it = this->server->GetClients().begin(); it != this->server->GetClients().end(); ++it) {
 			(*it)->SendMessage(message, *this->server);
 		}
-
-		// this->client.SendMessage(message, *this->server);
 	}
 }

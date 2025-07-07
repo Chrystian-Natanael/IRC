@@ -17,10 +17,6 @@ std::pair<std::string, std::string> CommandPart::ParsePart(const std::string& pa
 	if (!part.empty() && part[0] == ':')
 		part = part.substr(1);
 
-	// Teria que colocar algo aqui para verficar se tem o número de parâmetros correto.
-	// Aí caso não tenha, manda uma mensagem de erro ERR_NEEDMOREPARAMS("PART", "Not enough parameters");
-	// e dar throw std::runtime_error(ERR_NEEDMOREPARAMS("PART", "Not enough parameters"));
-
 	return std::make_pair(channel, part);
 }
 
@@ -45,9 +41,6 @@ void CommandPart::Execute() const {
 		throw std::runtime_error(errMsg);
 	}
 
-	// Aqui é pra ficar em cima
-	// Ele tem que avisar que o usuário saiu do canal
-	// Avisa pra ele mesmo que saiu do canal tambemm
 	if (!message.empty())
 		channel->BroadcastAllMessage(RPL_PARTMSG(this->client.GetNickName(), this->client.GetUserName(), channelName, message), this->server);
 	else

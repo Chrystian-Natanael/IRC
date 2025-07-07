@@ -6,6 +6,13 @@
 # include <string>
 # include "ACommand.hpp"
 
+/**
+ * @brief Command class for handling KICK IRC command
+ * 
+ * The KICK command allows channel operators to remove a user from
+ * a channel. An optional reason message can be provided.
+ */
+
 struct KickParams {
 	std::string channel;
 	std::string nick;

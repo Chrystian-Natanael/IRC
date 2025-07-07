@@ -5,6 +5,14 @@
 # include <string>
 # include "ACommand.hpp"
 
+/**
+ * @brief Command class for handling NICK IRC command
+ * 
+ * The NICK command is used to set or change a client's nickname.
+ * This is part of the client registration process and can also
+ * be used by registered clients to change their nickname.
+ */
+
 class ACommand;
 
 class CommandNick : public ACommand {

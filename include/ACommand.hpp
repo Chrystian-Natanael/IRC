@@ -1,3 +1,12 @@
+/**
+ * @file ACommand.hpp
+ * @brief Abstract base class for IRC command implementations
+ * 
+ * This file defines the abstract command pattern for handling IRC protocol commands.
+ * All IRC commands inherit from ACommand and implement the Execute() method.
+ * Uses a factory pattern for command creation and registration.
+ */
+
 # ifndef ACOMMAND_HPP
 # define ACOMMAND_HPP
 
@@ -11,63 +20,65 @@
 #include "Client.hpp"
 #include "MACROS.hpp"
 
-// PASS ERRORS
 #define ERR_ERROPASSSTATE "PASS command can only be used in the PASS state."
-#define ERR_ERROWRONGPASSSERVER "PASS command requires a valid password to connect to the server."
-
-// NICK ERRORS
-#define ERR_ERRONEUSNICKNAMEE "NICK command requires a nickname between 4 and 9 characters."
-#define ERR_ERRONICKSTATE "NICK command can only be used in the NICK state."
-#define ERR_ERROINVALIDNICKNAME "NICK command requires a valid nickname (alphanumeric, '-', or '_')."
-#define ERR_NICKNAMEDUPLICATE "NICK command requires a unique nickname."
-
-// USER ERROS
-#define ERR_ERROUSERSTATE "USER command can only be used in the USER state."
-#define ERR_ERROUSERNAME  "Username can only contain alphanumeric characters."
-#define ERR_ERROUSERREALNAME "Realname can only contain letters and spaces."
-#define ERR_ERROUSERREALNAMESIZE "Realname can't be longer than 25 characters."
-#define ERR_ERROUSERNAMESIZE "Realname can't be longer than 15 characters."
-
 
 class Server;
 class Client;
 
+/**
+ * @class ACommand
+ * @brief Abstract base class for all IRC commands
+ * 
+ * Provides common interface and data members for IRC command execution.
+ * Implements factory pattern for command creation and polymorphic execution.
+ */
 class ACommand {
 protected:
-	std::string rawCommand;
-	std::string args;
-	Server* server;
-	Client& client;
+	std::string rawCommand; ///< Original command string as received
+	std::string args;       ///< Command arguments parsed from input
+	Server* server;         ///< Pointer to server instance
+	Client& client;         ///< Reference to client executing the command
 
 public:
-	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
-	virtual ~ACommand();
-	virtual void Execute() const = 0;
-	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client);
+	// Constructor
+	ACommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client); ///< Initialize command with parameters
+
+	// Destructor
+	virtual ~ACommand(); ///< Virtual destructor for proper cleanup
+
+	// Pure virtual methods
+	virtual void Execute() const = 0; ///< Execute the command (must be implemented by derived classes)
+
+	// Static factory method
+	static ACommand *CreateCommand(const std::string& rawCommand, const std::string& args, Server* server, Client& client); ///< Create command instance based on command string
 
 };
 
-typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server, Client& client);
+// Type definitions
+typedef ACommand* (*CommandConstructor)(const std::string& args, Server* server, Client& client); ///< Function pointer type for command constructors
 
-void InitCommandFactory();
-void ClearCommandFactory();
+// Factory management functions
+void InitCommandFactory();  ///< Initialize the command factory with all available commands
+void ClearCommandFactory(); ///< Clean up and clear the command factory
 
-ACommand* MakeKick(const std::string& args, Server* server, Client&client);
-ACommand* MakeInvite(const std::string& args, Server* server, Client&client);
-ACommand* MakeTopic(const std::string& args, Server* server, Client&client);
-ACommand* MakeMode(const std::string& args, Server* server, Client&client);
-ACommand* MakePrivMsg(const std::string& args, Server* server, Client&client);
-ACommand* MakeList(const std::string& args, Server* server, Client&client);
-ACommand* MakeJoin(const std::string& args, Server* server, Client&client);
-ACommand* MakePart(const std::string& args, Server* server, Client& client);
-ACommand* MakeWho(const std::string& args, Server* server, Client& client);
-ACommand* MakePass(const std::string& args, Server* server, Client&client);
-ACommand* MakeNick(const std::string& args, Server* server, Client&client);
-ACommand* MakeUser(const std::string& args, Server* server, Client&client);
-ACommand* MakeQuit(const std::string& args, Server* server, Client&client);
-ACommand* MakeNotice(const std::string& args, Server* server, Client&client);
-ACommand* MakeBot(const std::string& args, Server* server, Client&client);
+// Command constructor functions
+ACommand* MakeKick(const std::string& args, Server* server, Client&client);     ///< Create KICK command instance
+ACommand* MakeInvite(const std::string& args, Server* server, Client&client);   ///< Create INVITE command instance
+ACommand* MakeTopic(const std::string& args, Server* server, Client&client);    ///< Create TOPIC command instance
+ACommand* MakeMode(const std::string& args, Server* server, Client&client);     ///< Create MODE command instance
+ACommand* MakePrivMsg(const std::string& args, Server* server, Client&client);  ///< Create PRIVMSG command instance
+ACommand* MakeList(const std::string& args, Server* server, Client&client);     ///< Create LIST command instance
+ACommand* MakeJoin(const std::string& args, Server* server, Client&client);     ///< Create JOIN command instance
+ACommand* MakePart(const std::string& args, Server* server, Client& client);    ///< Create PART command instance
+ACommand* MakeWho(const std::string& args, Server* server, Client& client);     ///< Create WHO command instance
+ACommand* MakePass(const std::string& args, Server* server, Client&client);     ///< Create PASS command instance
+ACommand* MakeNick(const std::string& args, Server* server, Client&client);     ///< Create NICK command instance
+ACommand* MakeUser(const std::string& args, Server* server, Client&client);     ///< Create USER command instance
+ACommand* MakeQuit(const std::string& args, Server* server, Client&client);     ///< Create QUIT command instance
+ACommand* MakeNotice(const std::string& args, Server* server, Client&client);   ///< Create NOTICE command instance
+ACommand* MakeBot(const std::string& args, Server* server, Client&client);      ///< Create BOT command instance
 
-std::vector<std::string> SplitArguments(const std::string& input);
+// Utility functions
+std::vector<std::string> SplitArguments(const std::string& input); ///< Parse and split command arguments into vector
 
 # endif

@@ -16,8 +16,6 @@
 #include "Commands/NOTICE.hpp"
 #include "Commands/BOT.hpp"
 
-//Constructors
-
 ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 				   Server* server, Client& client) :
 	rawCommand(rawCommand),
@@ -34,7 +32,6 @@ ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 
 ACommand::~ACommand() {}
 
-// O map não pode ser const, pois vamos popular depois
 static std::map<std::string, CommandConstructor> commandFactory;
 
 void InitCommandFactory() {
@@ -69,7 +66,6 @@ ACommand *ACommand::CreateCommand(const std::string& rawCommand, const std::stri
 	throw std::invalid_argument("Unknown command: " + rawCommand);
 }
 
-//makers
 ACommand* MakeKick(const std::string& args, Server* server, Client& client) {
 	return new CommandKick("KICK", args, server, client);
 }
@@ -137,15 +133,8 @@ std::vector<std::string> SplitArguments(const std::string& input) {
 	std::string current;
 
 	while (iss >> std::ws) {
-		// char c = iss.peek();
-		// if (c == '"') {
-		// 	iss.get(); // remove the quote
-		// 	std::getline(iss, current, '"');
-		// 	args.push_back(current);
-		// } else {
 			iss >> token;
 			args.push_back(token);
-		// }
 	}
 	return args;
 }

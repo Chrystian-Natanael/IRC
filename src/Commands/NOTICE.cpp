@@ -36,24 +36,14 @@ std::pair<std::string, std::string> CommandNotice::ValidateNotice(const std::str
 	return (std::make_pair(destination, msg));
 }
 
-/*
-Se o caractere ':' estiver ausente, o comando deve ser invalidado, e o servidor
-deve responder com o erro ERR_NOTEXTTOSEND (412), de acordo com o protocolo IRC.
-*/
 bool CommandNotice::HasTextDelimiter(const std::string& params) {
 	return (params.find(':') != std::string::npos);
 }
 
-/*Retorna true se houver texto antes do ':'.
-Deve ser chamada apenas se HasTextDelimiter(params) for true.
-*/
 bool CommandNotice::HasTextBeforeDelimiter(const std::string& params) {
 	return (params.find(':') != 0);
 }
 
-/*Retorna true se houver texto depois do ':'.
-Deve ser chamada apenas se HasTextDelimiter(params) for true.
-*/
 bool CommandNotice::HasTextAfterDelimiter(const std::string& params) {
 	return (params.find(':') + 1 < params.length());
 }
@@ -64,7 +54,6 @@ std::string CommandNotice::ExtractDestination(const std::string& params) {
 	return (Trim(dest));
 }
 
-// Remove espaços em branco no início e no fim da string
 std::string CommandNotice::Trim(const std::string& str) {
 	size_t start = 0;
 	while (start < str.size() && std::isspace(static_cast<unsigned char>(str[start])))
@@ -95,10 +84,6 @@ void CommandNotice::ValidateChannelTarget(const std::string& name) {
 	}
 }
 
-/*
- Com base na documentação disponível em:
-https://modern.ircdocs.horse/#clients
-*/
 void CommandNotice::ValidateNickTarget(const std::string& name) {
 	if (StartsWithInvalidPrefix(name[0]))
 		throw std::runtime_error("Nickname starts with forbbiden character");

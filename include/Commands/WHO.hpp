@@ -3,42 +3,30 @@
 
 # include "ACommand.hpp"
 
+/**
+ * @brief Command class for handling WHO IRC command
+ * 
+ * The WHO command is used to query information about users.
+ * It can search for all users, users in a specific channel, or a specific user.
+ */
 class CommandWho : public ACommand {
 	private:
-		CommandWho(); // Verificar se precisamos manter esse construtor aqui.
+		CommandWho(); // Default constructor (private)
 
-		bool search_all;		// Se true, busca todos os usuários conectados
-		bool is_channel;		// Se true, busca usuários em um canal específico
-		std::string channel;	// Canal a ser pesquisado, se is_channel for true
-		std::string nick;		// Nick a ser pesquisado, se não for um canal
+		bool search_all;        // Flag to search all users
+		bool is_channel;        // Flag indicating if target is a channel
+		std::string channel;    // Target channel name
+		std::string nick;       // Target nickname
 
 	public:
-		CommandWho(const std::string &command, const std::string &args, Server* server, Client& client);
-		CommandWho(const CommandWho& other);
-		~CommandWho();
-		CommandWho& operator=(const CommandWho& other);
+		CommandWho(const std::string &command, const std::string &args, Server* server, Client& client); // Main constructor
+		CommandWho(const CommandWho& other); // Copy constructor
+		~CommandWho(); // Destructor
+		CommandWho& operator=(const CommandWho& other); // Assignment operator
 
+		// Command validation and execution
 		void ValidateCommand(std::string args) const;
 		void Execute() const;
 };
-
-/*
-	Casos:
-	IMPORTANTE: definir se vamos usar wildcards * e ?
-	/WHO (sem args) -> pede ao servidor a lista de todos os usuários conectados
-		Resposta típica:
-			:irc.exemplo.net 352 seuNick * a1 host1.com irc.exemplo.net alice H :0 Alice A.
-			:irc.exemplo.net 352 seuNick * b2 host2.net irc.exemplo.net bob G :0 Bob B.
-			:irc.exemplo.net 352 seuNick * c3 host3.org irc.exemplo.net carol H :0 Carol C.
-			:irc.exemplo.net 315 seuNick * :End of WHO list
-	/WHO #canal -> lista todos os usuários presentes no canal #canal
-	/WHO #canal o -> lista apenas os operadores no canal #canal
-	/WHO nick -> filtra pelo apelido do usuário (definir se vamos usar wildcards * e ?)
-	/WHO ~user_name -> filtra pelo user_name (~ é obrigatório?)
-	/WHO host -> filtra pelo host ou IP do usuário
-	/WHO realName -> filtra pelo nome (Nem todos os servidores permitem busca por real name, por razões de privacidade.)
-	Se a máscara bater em qualquer um desses campos, o usuário será incluído na resposta do WHO.
-
-*/
 
 #endif
