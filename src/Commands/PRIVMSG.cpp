@@ -13,24 +13,24 @@ CommandPrivMsg::~CommandPrivMsg() {}
 std::pair<std::string, std::string> CommandPrivMsg::ValidatePrivMsg(const std::string& params) {
 	if (!HasTextDelimiter(params)) {
 		std::string message = ERR_NOTEXTTOSEND(this->client.GetNickName());
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 	if (!HasTextBeforeDelimiter(params)) {
 		std::string message = ERR_NORECIPIENT(this->client.GetNickName());
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 	if (!HasTextAfterDelimiter(params)) {
 		std::string message = ERR_NOTEXTTOSEND(this->client.GetNickName());
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 	std::string destination = ExtractDestination(params);
 	if (HasMultipleTargets(destination)) {
 		std::string message = ERR_TOOMANYTARGETS(this->client.GetNickName(), destination);
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 	if (IsChannelTarget(destination))
 		ValidateChannelTarget(destination);
@@ -161,8 +161,8 @@ void CommandPrivMsg::SendToChannel() const {
 
 	std::string message = RPL_PRIVMSG(this->client.GetUserName(), channel->GetName(), this->msgToDest.second);
 	if (!channel) {
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 
 	std::vector<Client *> users = channel->GetUsers();

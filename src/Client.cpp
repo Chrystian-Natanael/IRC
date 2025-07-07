@@ -78,28 +78,28 @@ void Client::SetBufferMessage(const std::string& message) {
 }
 
 void Client::AddChannel(Channel *channel) {
-    if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
-        return;
-    }
-    this->channels.push_back(channel);
+	if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
+		return;
+	}
+	this->channels.push_back(channel);
 }
 
 std::string Client::GetNextMessage() {
-    if (this->buffer_message.empty())
-        return "";
+	if (this->buffer_message.empty())
+		return "";
 
-    size_t pos = this->buffer_message.find("\r\n", 0);
-    if (pos == std::string::npos)
-        return "";
+	size_t pos = this->buffer_message.find("\r\n", 0);
+	if (pos == std::string::npos)
+		return "";
 
-    std::string result = this->buffer_message.substr(0, pos);
-    this->buffer_message.erase(0, pos + 2);
+	std::string result = this->buffer_message.substr(0, pos);
+	this->buffer_message.erase(0, pos + 2);
 
-    if (result.size() > 512) {
-        return GetNextMessage();
-    }
+	if (result.size() > 512) {
+		return GetNextMessage();
+	}
 
-    return result;
+	return result;
 }
 
 std::string	Client::GetArgs(std::istringstream& iss) {
@@ -168,9 +168,9 @@ void	Client::PerformMessages(Server *server) {
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-            // std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
-            // this->SendMessage(errorMsg, *server);
-            // std::cerr << "Error - " << e.what() << std::endl;
+			// std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+			// this->SendMessage(errorMsg, *server);
+			// std::cerr << "Error - " << e.what() << std::endl;
 			if (cmd != NULL)
 				delete cmd;
 		}

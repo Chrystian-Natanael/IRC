@@ -12,7 +12,7 @@ class CommandNick : public ACommand {
 		CommandNick(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandNick();
 		void Execute() const;
-        bool ValidateCommand(const std::string &params);
+		bool ValidateCommand(const std::string &params);
 };
 
 

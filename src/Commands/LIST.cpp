@@ -34,26 +34,26 @@ void CommandList::Execute() const {
 	std::string message_end = RPL_LISTEND(this->client.GetNickName());
 	this->client.SendMessage(message_first + message_chanels + message_end, *this->server);
 
-//     if (this->server->GetChannel().size() < 1) {
-//         std::string message = ERR_NOSUCHCHANNEL(this->client.GetNickName());
-//         this->client.SendMessage(message, *this->server);
-//         throw std::runtime_error(message);
-//     }
-//     std::ostringstream oss;
-//     oss << std::left << std::setw(30) << "Channel"
-//         << std::right << std::setw(10) << "Users"
-//         << "       " << std::left << std::setw(20) << "Topic" << std::endl;
+//	 if (this->server->GetChannel().size() < 1) {
+//		 std::string message = ERR_NOSUCHCHANNEL(this->client.GetNickName());
+//		 this->client.SendMessage(message, *this->server);
+//		 throw std::runtime_error(message);
+//	 }
+//	 std::ostringstream oss;
+//	 oss << std::left << std::setw(30) << "Channel"
+//		 << std::right << std::setw(10) << "Users"
+//		 << "	   " << std::left << std::setw(20) << "Topic" << std::endl;
 //
-//     for (std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().begin(); it != this->server->GetChannel().end(); ++it) {
-//         std::string lockEmoji = it->second->isBlock() ? "🔒" : "🔓";
-//         std::string topic = it->second->GetTopic();
-//         if (topic.length() > 18)
-//             topic = topic.substr(0, 18) + "...";
-//         oss << std::left << std::setw(30) << (it->first + " " + lockEmoji)
-//             << std::right << std::setw(10) << it->second->GetUsers().size()
-//             << "      " << std::left << std::setw(16) << topic << std::endl;
-//     }
+//	 for (std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().begin(); it != this->server->GetChannel().end(); ++it) {
+//		 std::string lockEmoji = it->second->isBlock() ? "🔒" : "🔓";
+//		 std::string topic = it->second->GetTopic();
+//		 if (topic.length() > 18)
+//			 topic = topic.substr(0, 18) + "...";
+//		 oss << std::left << std::setw(30) << (it->first + " " + lockEmoji)
+//			 << std::right << std::setw(10) << it->second->GetUsers().size()
+//			 << "	  " << std::left << std::setw(16) << topic << std::endl;
+//	 }
 //
-//     std::string message = oss.str();
-//     this->client.SendMessage(message, *this->server);
+//	 std::string message = oss.str();
+//	 this->client.SendMessage(message, *this->server);
 }

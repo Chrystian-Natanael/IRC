@@ -13,8 +13,8 @@ std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& pa
 
 	if (channel.empty()) {
 		std::string message = ERR_NEEDMOREPARAMS("JOIN", "Not enough parameters");
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 
 	if (channel[0] != '#' || channel.size() == 1) {
@@ -24,39 +24,43 @@ std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& pa
 }
 
 void CommandJoin::Execute() const {
-    std::pair<std::string, std::string> result;
-    try {
-        result = ParseJoin(this->args);
-    } catch (const std::invalid_argument& e) {
-        std::string message = ERR_NOSUCHCHANNEL(this->client.GetNickName());
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
-    }
-    std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(result.first);
-    if (it != this->server->GetChannel().end()) {
-        Channel* channel = it->second;
-        std::vector<Client *>::const_iterator user = std::find(channel->GetPendentInvites().begin(), channel->GetPendentInvites().end(), &this->client);
-        if (user != channel->GetPendentInvites().end()) {
-            channel->RemovePendentInvite(&this->client);
-            channel->AddUser(&this->client);
-            this->client.AddChannel(channel);
-            std::string Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-		    channel->BroadcastAllMessage(Msg, this->server);
-            Msg.clear();
+	std::pair<std::string, std::string> result;
+	try {
+		result = ParseJoin(this->args);
+	} catch (const std::invalid_argument& e) {
+		std::string message = ERR_NOSUCHCHANNEL(this->client.GetNickName());
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
+	}
+	std::map<std::string, Channel*>::const_iterator it = this->server->GetChannel().find(result.first);
+	if (it != this->server->GetChannel().end()) {
+		Channel* channel = it->second;
+		std::vector<Client *>::const_iterator user = std::find(channel->GetPendentInvites().begin(), channel->GetPendentInvites().end(), &this->client);
+		if (user != channel->GetPendentInvites().end()) {
+			if (channel->AddUser(&this->client) == 0) {
+				std::string message = ERR_CHANNELISFULL(channel->GetName());
+				this->client.SendMessage(message, *this->server);
+				throw std::runtime_error(message);
+			}
+			channel->RemovePendentInvite(&this->client);
+			this->client.AddChannel(channel);
+			std::string Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
+			channel->BroadcastAllMessage(Msg, this->server);
+			Msg.clear();
 
 
 			std::string topic;
 			if (channel->GetTopic().empty())
-			topic.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
+				topic.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
 			else
-			topic.append(RPL_TOPIC(this->client.GetNickName(), channel->GetName(), channel->GetTopic()));
+				topic.append(RPL_TOPIC(this->client.GetNickName(), channel->GetName(), channel->GetTopic()));
 
-            Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
+			Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
 			Msg.append(topic);
 			this->client.SendMessage(Msg, *this->server);
 			Msg.clear();
 
-            std::string members;
+			std::string members;
 			int i = 0;
 			const std::vector<Client *>& users = channel->GetUsers();
 			for (std::vector<Client *>::const_iterator itUser = users.begin(); itUser != users.end(); ++itUser) {
@@ -85,28 +89,32 @@ void CommandJoin::Execute() const {
 			Msg.clear();
 
 			Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
-            this->client.SendMessage(Msg, *this->server);
+			this->client.SendMessage(Msg, *this->server);
 
-            return ;
-        }
-        else if (channel->GetInviteOnly() == true) {
-            std::string message = ERR_INVITEONLYCHAN(result.first);
-            this->client.SendMessage(message, *this->server);
-            throw std::runtime_error(message);
-        }
-        if (channel->isBlock()) {
-            if (channel->ValidatePassword(result.second) == false) {
-                std::string message = ERR_BADCHANNELKEY(this->client.GetNickName(), result.first);
-                this->client.SendMessage(message, *this->server);
-                throw std::runtime_error(message);
-            }
-        }
-        channel->AddUser(&this->client);
-        this->client.AddChannel(channel);
+			return ;
+		}
+		else if (channel->GetInviteOnly() == true) {
+			std::string message = ERR_INVITEONLYCHAN(result.first);
+			this->client.SendMessage(message, *this->server);
+			throw std::runtime_error(message);
+		}
+		if (channel->isBlock()) {
+			if (channel->ValidatePassword(result.second) == false) {
+				std::string message = ERR_BADCHANNELKEY(this->client.GetNickName(), result.first);
+				this->client.SendMessage(message, *this->server);
+				throw std::runtime_error(message);
+			}
+		}
+		if (channel->AddUser(&this->client) == 0) {
+			std::string message = ERR_CHANNELISFULL(channel->GetName());
+			this->client.SendMessage(message, *this->server);
+			throw std::runtime_error(message);
+		}
+		this->client.AddChannel(channel);
 
 		// Primeira mensagem do JOIN
 		// Esse aqui precisa ser enviado para todos os usuários do canal
-        // std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
+		// std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
 		std::string joinMsg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
 		channel->BroadcastAllMessage(joinMsg, this->server);
 		joinMsg.clear();
@@ -155,21 +163,21 @@ void CommandJoin::Execute() const {
 
 		Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
 		this->client.SendMessage(Msg, *this->server);
-    }
-    else {
-        Channel* newChannel = new Channel(result.first);
-        if (!result.second.empty())
-        {
-            newChannel->SetBlockChannel(true);
-            newChannel->SetPassword(result.second);
-        }
-        newChannel->AddOperator(&this->client);
-        newChannel->AddUser(&this->client);
-        this->server->AddChannel(result.first, newChannel);
-        this->client.AddChannel(newChannel);
+	}
+	else {
+		Channel* newChannel = new Channel(result.first);
+		if (!result.second.empty())
+		{
+			newChannel->SetBlockChannel(true);
+			newChannel->SetPassword(result.second);
+		}
+		newChannel->AddOperator(&this->client);
+		newChannel->AddUser(&this->client);
+		this->server->AddChannel(result.first, newChannel);
+		this->client.AddChannel(newChannel);
 
 		// primeira mensagem do JOIN
-        std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + newChannel->GetName() + "\r\n";
+		std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + newChannel->GetName() + "\r\n";
 
 		// mensagem para falar o tópico, no caso sempre vai estar vazio
 		joinMsg.append(RPL_NOTOPIC(this->client.GetNickName(), newChannel->GetName()));
@@ -178,6 +186,6 @@ void CommandJoin::Execute() const {
 		// mensagem para falar todos os integrantes, no caso só tem o usuário que acabou de entrar
 		joinMsg.append(RPL_ENDOFNAMES(this->client.GetNickName(), newChannel->GetName()));
 
-        this->client.SendMessage(joinMsg, *this->server);
-    }
+		this->client.SendMessage(joinMsg, *this->server);
+	}
 }

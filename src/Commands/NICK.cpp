@@ -5,8 +5,8 @@ CommandNick::CommandNick(const std::string &command, const std::string &params, 
 
 	if (this->client.GetLoginState() < NICK) {
 		std::string message = ERR_NOTREGISTERED();
-        this->client.SendMessage(message, *this->server);
-        throw std::runtime_error(message);
+		this->client.SendMessage(message, *this->server);
+		throw std::runtime_error(message);
 	}
 
 	if (params.empty()) {

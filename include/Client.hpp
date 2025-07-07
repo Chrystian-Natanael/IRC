@@ -14,10 +14,10 @@
 
 
 enum AuthState {
-    PASSWORD,       // Esperando o comando PASS
-    NICK,           // Esperando o comando NICK
-    USER,           // Esperando o comando USER
-    REGISTERED,     // Autenticação completa
+	PASSWORD,	   // Esperando o comando PASS
+	NICK,		   // Esperando o comando NICK
+	USER,		   // Esperando o comando USER
+	REGISTERED,	 // Autenticação completa
 };
 
 class Channel;

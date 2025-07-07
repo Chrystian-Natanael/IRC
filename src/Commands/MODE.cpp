@@ -298,11 +298,11 @@ void CommandMode::ExecuteLimit(Channel *channel) const {
 		this->client.SendMessage(message, *this->server);
 		throw std::runtime_error(message);
 	}
-	if (static_cast<size_t>(limit) < channel->GetUsers().size()) {
-		std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit cannot be less than the number of users in the channel.");
-		this->client.SendMessage(message, *this->server);
-		throw std::runtime_error(message);
-	}
+	// if (static_cast<size_t>(limit) < channel->GetUsers().size()) {
+	// 	std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit cannot be less than the number of users in the channel.");
+	// 	this->client.SendMessage(message, *this->server);
+	// 	throw std::runtime_error(message);
+	// }
 	channel->SetMaxUsers(limit);
 
 	// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());

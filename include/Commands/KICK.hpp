@@ -7,9 +7,9 @@
 # include "ACommand.hpp"
 
 struct KickParams {
-    std::string channel;
-    std::string nick;
-    std::string reason;
+	std::string channel;
+	std::string nick;
+	std::string reason;
 };
 
 class CommandKick : public ACommand {

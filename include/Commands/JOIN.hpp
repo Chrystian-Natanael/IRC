@@ -7,7 +7,7 @@
 
 
 class CommandJoin : public ACommand {
-    public:
+	public:
 		CommandJoin(const std::string &command, const std::string &args, Server* server, Client& client);
 		~CommandJoin();
 		void Execute() const;

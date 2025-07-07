@@ -111,7 +111,7 @@ ACommand* MakePass(const std::string& args, Server* server, Client& client) {
 }
 
 ACommand* MakeNick(const std::string& args, Server* server, Client& client) {
-    return new CommandNick("NICK", args, server, client);
+	return new CommandNick("NICK", args, server, client);
 }
 
 ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
@@ -131,21 +131,21 @@ ACommand* MakeBot(const std::string& args, Server* server, Client& client) {
 }
 
 std::vector<std::string> SplitArguments(const std::string& input) {
-    std::vector<std::string> args;
-    std::istringstream iss(input);
-    std::string token;
-    std::string current;
+	std::vector<std::string> args;
+	std::istringstream iss(input);
+	std::string token;
+	std::string current;
 
-    while (iss >> std::ws) {
-        char c = iss.peek();
-        if (c == '"') {
-            iss.get(); // remove the quote
-            std::getline(iss, current, '"');
-            args.push_back(current);
-        } else {
-            iss >> token;
-            args.push_back(token);
-        }
-    }
-    return args;
+	while (iss >> std::ws) {
+		// char c = iss.peek();
+		// if (c == '"') {
+		// 	iss.get(); // remove the quote
+		// 	std::getline(iss, current, '"');
+		// 	args.push_back(current);
+		// } else {
+			iss >> token;
+			args.push_back(token);
+		// }
+	}
+	return args;
 }

@@ -19,8 +19,8 @@ int main() {
 		server.ServerLoop();
 	} catch (const std::exception& e) {
 		std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
-        std::cerr << "Error: " << errorMsg << std::endl;
-        return (1);
+		std::cerr << "Error: " << errorMsg << std::endl;
+		return (1);
 	}
 
 	return (0);
