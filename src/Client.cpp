@@ -5,7 +5,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip) :
-	ip(ip), fd(fd), login_state(PASSWORD) {}
+	ip(ip), fd(fd), login_state(PASSWORD), has_disconnected(false) {}
 
 Client::~Client() {
 	if (this->fd != -1)
@@ -174,6 +174,18 @@ void	Client::PerformMessages(Server *server) {
 			if (cmd != NULL)
 				delete cmd;
 		}
+
+		if (this->has_disconnected)
+			return;
+
 		msg = this->GetNextMessage();
 	}
+}
+
+void Client::SetQuit(bool quit) {
+	this->has_disconnected = quit;
+}
+
+bool Client::HasDisconnected() {
+	return this->has_disconnected;
 }

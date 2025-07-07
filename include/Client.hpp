@@ -33,6 +33,7 @@ private:
 	std::vector<Channel *> 	channels;
 	int			fd;
 	int			login_state;
+	bool		has_disconnected;
 	Client();
 
 	static std::string	GetRawCommand(std::istringstream& iss);
@@ -71,6 +72,8 @@ public:
 	bool operator<(const Client& other) const;
 	void AddChannel(Channel *channel);
 
+	void SetQuit(bool quit);
+	bool HasDisconnected();
 };
 
 #endif

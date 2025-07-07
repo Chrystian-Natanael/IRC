@@ -14,7 +14,6 @@ void CommandQuit::Execute() const {
 		quitMsg = this->args;
 	}
 
-
 	// std::vector<Channel*>& clientChannels = this->client.GetChannels();
 	// for (size_t i = 0; i < clientChannels.size(); ++i) {
 	//	 Channel *channel = clientChannels[i];
@@ -27,5 +26,5 @@ void CommandQuit::Execute() const {
 	//	 );
 	// }
 	this->server->DisconnectClient(this->client, quitMsg);
-	throw "";
+	this->client.SetQuit(true);
 }

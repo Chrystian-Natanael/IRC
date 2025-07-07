@@ -169,11 +169,7 @@ void	Server::DisconnectClient(Client &client, std::string quitMsg)
 	for (size_t i = 0; i < clientChannels.size(); ++i) {
 		Channel *channel = clientChannels[i];
 		std::string message = ":" + client.GetNickName() + " QUIT :" + quitMsg + "\r\n";
-
-
 		channel->BroadcastMessageDisconect(message);
-
-
 		channel->RemoveUser(&client);
 		client.GetChannels().erase(
 			std::remove(client.GetChannels().begin(), client.GetChannels().end(), channel),
@@ -209,7 +205,7 @@ void	Server::AcceptNewClient() {
 	int incofd = accept(this->server_socket_fd, (sockaddr *) &(cliadd), &len);
 	if (incofd == -1) {
 		std::string errorMsg = ":server 400 * :accept() failed\r\n";
-		throw std::runtime_error(errorMsg);
+		return ;
 	}
 
 	this->SetNonBlocking(incofd);
@@ -238,6 +234,12 @@ void	Server::ReceiveDataAllClients() {
 void	Server::PerformMessages() {
 	for (size_t i = 0; i < this->clients.size(); i++) {
 		this->clients[i]->PerformMessages(this);
+	}
+
+	for (size_t i = 0; i < this->clients.size(); i++) {
+		if (this->clients[i]->HasDisconnected()) {
+			this->DisconnectClient(*(this->clients[i]), "");
+		}
 	}
 }
 
