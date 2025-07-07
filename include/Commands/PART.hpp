@@ -10,7 +10,7 @@ class CommandPart : public ACommand {
 	public:
 		CommandPart(const std::string &command, const std::string &args, Server* server, Client& client);
 		~CommandPart();
-        std::pair<std::string, std::string> ParsePart(const std::string& params)const;
+		std::pair<std::string, std::string> ParsePart(const std::string& params)const;
 		void Execute() const;
 };
 

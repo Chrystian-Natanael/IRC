@@ -64,7 +64,7 @@ SHELL := /bin/bash
 #                                 FLAGS E COMP                                   #
 #* ******************************************************************************#
 
-CFLAGS = -std=c++98 -Wall -Wextra -Werror
+CFLAGS = -std=c++98 -Wall -Wextra -Werror -g3
 DFLAGS = -std=c++98 -Wall -Wextra -Werror -g3
 LDLIBS = -ldl -lglfw -pthread
 CPPFLAGS = $(addprefix -I,$(INCS_PATH)) -MMD -MP

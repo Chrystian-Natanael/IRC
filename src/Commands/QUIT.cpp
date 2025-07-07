@@ -9,23 +9,23 @@ CommandQuit::CommandQuit(const std::string &command, const std::string &params, 
 CommandQuit::~CommandQuit(){}
 
 void CommandQuit::Execute() const {
-    std::string quitMsg = "Client has quit the server.";
-    if (!this->args.empty()) {
-        quitMsg = this->args;
-    }
+	std::string quitMsg = "Client has quit the server.";
+	if (!this->args.empty()) {
+		quitMsg = this->args;
+	}
 
-    
-    std::vector<Channel*>& clientChannels = this->client.GetChannels();
-    for (size_t i = 0; i < clientChannels.size(); ++i) {
-        Channel *channel = clientChannels[i];
-        this->client.GetChannels().erase(
-            std::remove(this->client.GetChannels().begin(), this->client.GetChannels().end(), channel),
-            this->client.GetChannels().end()
-        );
-        channel->RemoveUser(&this->client);
-        channel->BroadcastMessage(quitMsg, this->server);
-    }
-    // mandar mensagem para todos os clientes desses canais
-    // remover o client do vector de user de cada canal
-    this->server->DisconnectClient(this->client);
+
+	// std::vector<Channel*>& clientChannels = this->client.GetChannels();
+	// for (size_t i = 0; i < clientChannels.size(); ++i) {
+	//	 Channel *channel = clientChannels[i];
+	//	 std::string message = ":" + this->client.GetNickName() + " QUIT :" + quitMsg + "\r\n";
+	//	 channel->BroadcastAllMessage(message, this->server);
+	//	 channel->RemoveUser(&this->client);
+	//	 this->client.GetChannels().erase(
+	//		 std::remove(this->client.GetChannels().begin(), this->client.GetChannels().end(), channel),
+	//		 this->client.GetChannels().end()
+	//	 );
+	// }
+	this->server->DisconnectClient(this->client, quitMsg);
+	throw "";
 }

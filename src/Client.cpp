@@ -10,8 +10,6 @@ Client::Client(int fd, std::string ip) :
 Client::~Client() {
 	if (this->fd != -1)
 		close(this->fd);
-
-	// std::cout << RED << "Client <" << this->fd << "> Disconnected" << RST << std::endl;
 }
 
 bool Client::operator==(const Client& other) const {
@@ -80,31 +78,28 @@ void Client::SetBufferMessage(const std::string& message) {
 }
 
 void Client::AddChannel(Channel *channel) {
-    // Verifica se o canal já está no vetor usando std::find
-    if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
-        // Canal já existe
-        return;
-    }
-    // Se não encontrado, adiciona o canal
-    this->channels.push_back(channel);
+	if (std::find(this->channels.begin(), this->channels.end(), channel) != this->channels.end()) {
+		return;
+	}
+	this->channels.push_back(channel);
 }
 
 std::string Client::GetNextMessage() {
-    if (this->buffer_message.empty())
-        return "";
+	if (this->buffer_message.empty())
+		return "";
 
-    size_t pos = this->buffer_message.find("\r\n", 0);
-    if (pos == std::string::npos)
-        return "";
+	size_t pos = this->buffer_message.find("\r\n", 0);
+	if (pos == std::string::npos)
+		return "";
 
-    std::string result = this->buffer_message.substr(0, pos);
-    this->buffer_message.erase(0, pos + 2);
+	std::string result = this->buffer_message.substr(0, pos);
+	this->buffer_message.erase(0, pos + 2);
 
-    if (result.size() > 512) {
-        return GetNextMessage();
-    }
+	if (result.size() > 512) {
+		return GetNextMessage();
+	}
 
-    return result;
+	return result;
 }
 
 std::string	Client::GetArgs(std::istringstream& iss) {
@@ -133,7 +128,7 @@ void	Client::ReceiveData() {
 
 	if (bytes <= 0) {
 		delete[] buff;
-		throw std::runtime_error("Desconectar cliente");
+		throw std::runtime_error(":server 400 * :Client disconnected (recv failed)\r\n");
 	}
 
 	buff[bytes] = '\0';
@@ -146,11 +141,13 @@ void	Client::ReceiveData() {
 void	Client::SendMessage(const std::string& msg, Server& server) {
 	if (msg.empty() || this->fd < 0)
 		return;
+
+	std::cout << fd << " -> " << msg << std::endl;
+
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
-		server.DisconnectClient(*this);
-		// throw std::runtime_error("Client disconnected: send() failed or returned 0.");
+		server.DisconnectClient(*this, "");
 	}
 }
 
@@ -163,13 +160,19 @@ void	Client::PerformMessages(Server *server) {
 		std::istringstream iss(msg);
 		rawCommand = GetRawCommand(iss);
 		args = GetArgs(iss);
+		std::cout << fd << " <- Command: " << rawCommand << " " << args << std::endl;
+		ACommand* cmd = NULL;
 		try {
-			ACommand* cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
+			cmd = ACommand::CreateCommand(rawCommand, args, server, *this);
 			cmd->Execute();
 			delete cmd;
 		}
 		catch(const std::exception &e) {
-			std::cerr << "Error - " << e.what() << std::endl;
+			// std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+			// this->SendMessage(errorMsg, *server);
+			// std::cerr << "Error - " << e.what() << std::endl;
+			if (cmd != NULL)
+				delete cmd;
 		}
 		msg = this->GetNextMessage();
 	}

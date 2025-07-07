@@ -43,6 +43,7 @@ struct SocketTestSetup {
         server->SetFd(listen_fd);
         
         client_fd = socket(AF_INET, SOCK_STREAM, 0);
+
         if (client_fd == -1) return;
         
         if (connect(client_fd, (sockaddr*)&serv_addr, sizeof(serv_addr)) != 0) return;
@@ -73,6 +74,9 @@ TEST(CommandQuitTest, ValidateCommandAlwaysReturnsTrue) {
     SocketTestSetup setup(5000);
     ASSERT_TRUE(setup.IsValid());
     
+    setup.client->SetLoginState(REGISTERED);
+
+
     CommandQuit cmd1("QUIT", "", setup.server, *setup.client);
     
     CommandQuit cmd2("QUIT", "Goodbye everyone!", setup.server, *setup.client);
@@ -84,6 +88,7 @@ TEST(CommandQuitTest, ExecuteWithNoChannels) {
     SocketTestSetup setup(5001);
     ASSERT_TRUE(setup.IsValid());
     
+    setup.client->SetLoginState(REGISTERED);
     // Client not in any channels - should not crash
     CommandQuit cmd("QUIT", "Quick exit", setup.server, *setup.client);
     
@@ -270,6 +275,8 @@ TEST(CommandQuitTest, QuitMessageContent) {
     SocketTestSetup setup(5010);
     ASSERT_TRUE(setup.IsValid());
     
+    setup.client->SetLoginState(REGISTERED);
+
     // Test with custom message
     std::string customMessage = "Custom quit message";
     CommandQuit cmd1("QUIT", customMessage, setup.server, *setup.client);

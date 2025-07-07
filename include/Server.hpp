@@ -1,8 +1,6 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#define RECEIVE_BUFFER_SIZE 1024
-
 #include <fcntl.h>
 #include <vector>
 #include <iostream>
@@ -61,7 +59,7 @@ private:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
-	void	DisconnectClient(Client &client);
+	void	DisconnectClient(Client &client, std::string quitMsg);
 	void	PerformMessages();
 	void	Poll();
 
@@ -77,6 +75,8 @@ private:
 	const std::vector<Client *>&	GetClients() const;
 	std::vector<struct pollfd>&		GetPollFds();
 	struct sockaddr_in&				GetServerAddr();
+
+	void	SetPass(const std::string& pass);
 
 	// ! FOR TESTS
 	void	SetFd(int fd);

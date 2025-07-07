@@ -96,7 +96,7 @@ TEST(ClientSendMessage, SendsSuccessfullyToConnectedClient) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }
 
@@ -217,7 +217,7 @@ TEST(ClientSendMessageTest, SendsEmptyMessageSuccessfully) {
 
     // limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }
 
@@ -265,7 +265,7 @@ TEST(ClientPerformMessagesTest, PerformHandlesInvalidCommand) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }
 
@@ -313,7 +313,7 @@ TEST(ClientPerformMessagesTest, HandlesMultipleInvalidCommands) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }
 
@@ -356,7 +356,7 @@ TEST(ClientPerformMessagesTest, HandlesEmptyCommand) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }
 
@@ -393,6 +393,6 @@ TEST(ClientPerformMessagesTest, NoMessagesDoesNothing) {
 
     // Limpeza
     close(client_fd);
-    server.DisconnectClient(client);
+    server.DisconnectClient(client, "");
     EXPECT_TRUE(server.GetClients().empty());
 }

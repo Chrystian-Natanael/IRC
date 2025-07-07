@@ -9,14 +9,17 @@ void sig_handler(int signum) {
 
 int main() {
 	Server server(6667);
+	server.SetPass("batata");
 
 	signal(SIGINT, sig_handler);
+	signal(SIGPIPE, SIG_IGN);
 
 	try {
 		server.ServerInit();
 		server.ServerLoop();
 	} catch (const std::exception& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+		std::string errorMsg = ":server 400 * :" + std::string(e.what()) + "\r\n";
+		std::cerr << "Error: " << errorMsg << std::endl;
 		return (1);
 	}
 

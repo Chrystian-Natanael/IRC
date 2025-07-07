@@ -13,6 +13,8 @@
 #include "Commands/NICK.hpp"
 #include "Commands/USER.hpp"
 #include "Commands/QUIT.hpp"
+#include "Commands/NOTICE.hpp"
+#include "Commands/BOT.hpp"
 
 //Constructors
 
@@ -21,7 +23,14 @@ ACommand::ACommand(const std::string &rawCommand, const std::string& args,
 	rawCommand(rawCommand),
 	args(args),
 	server(server),
-	client(client){}
+	client(client) {
+
+	if (client.GetLoginState() != REGISTERED && (rawCommand != "PASS" && rawCommand != "NICK" && rawCommand != "USER")) {
+		std::string errorMsg = ERR_NOTREGISTERED();
+		client.SendMessage(errorMsg, *server);
+		throw std::runtime_error("Client not registered");
+	}
+}
 
 ACommand::~ACommand() {}
 
@@ -38,10 +47,12 @@ void InitCommandFactory() {
 	commandFactory["PART"]		= &MakePart;
 	commandFactory["PRIVMSG"]	= &MakePrivMsg;
 	commandFactory["WHO"]		= &MakeWho;
-	commandFactory["PASS"]   = &MakePass;
-	commandFactory["NICK"]   = &MakeNick;
-	commandFactory["USER"]   = &MakeUser;
-    commandFactory["QUIT"]   = &MakeQuit;
+	commandFactory["PASS"]		= &MakePass;
+	commandFactory["NICK"]		= &MakeNick;
+	commandFactory["USER"]		= &MakeUser;
+	commandFactory["QUIT"]		= &MakeQuit;
+	commandFactory["NOTICE"]	= &MakeNotice;
+	commandFactory["BOT"]		= &MakeBot;
 }
 
 void ClearCommandFactory() {
@@ -100,7 +111,7 @@ ACommand* MakePass(const std::string& args, Server* server, Client& client) {
 }
 
 ACommand* MakeNick(const std::string& args, Server* server, Client& client) {
-    return new CommandNick("NICK", args, server, client);
+	return new CommandNick("NICK", args, server, client);
 }
 
 ACommand* MakeUser(const std::string& args, Server* server, Client& client) {
@@ -111,22 +122,30 @@ ACommand* MakeQuit(const std::string& args, Server* server, Client& client) {
 	return new CommandQuit("QUIT", args, server, client);
 }
 
-std::vector<std::string> SplitArguments(const std::string& input) {
-    std::vector<std::string> args;
-    std::istringstream iss(input);
-    std::string token;
-    std::string current;
+ACommand* MakeNotice(const std::string& args, Server* server, Client& client) {
+	return new CommandNotice("NOTICE", args, server, client);
+}
 
-    while (iss >> std::ws) {
-        char c = iss.peek();
-        if (c == '"') {
-            iss.get(); // remove the quote
-            std::getline(iss, current, '"');
-            args.push_back(current);
-        } else {
-            iss >> token;
-            args.push_back(token);
-        }
-    }
-    return args;
+ACommand* MakeBot(const std::string& args, Server* server, Client& client) {
+	return new CommandBot("BOT", args, server, client);
+}
+
+std::vector<std::string> SplitArguments(const std::string& input) {
+	std::vector<std::string> args;
+	std::istringstream iss(input);
+	std::string token;
+	std::string current;
+
+	while (iss >> std::ws) {
+		// char c = iss.peek();
+		// if (c == '"') {
+		// 	iss.get(); // remove the quote
+		// 	std::getline(iss, current, '"');
+		// 	args.push_back(current);
+		// } else {
+			iss >> token;
+			args.push_back(token);
+		// }
+	}
+	return args;
 }

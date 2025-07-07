@@ -13,7 +13,7 @@ class CommandQuit : public ACommand {
 		CommandQuit(const std::string &command, const std::string &params, Server* server, Client& client);
 		~CommandQuit();
 		void Execute() const;
-        bool ValidateCommand(const std::string &params);
+		bool ValidateCommand(const std::string &params);
 };
 
 # endif
