@@ -1,8 +1,5 @@
 #include "../include/Commands/USER.hpp"
 
-// USER carol  0 * :
-
-
 template <typename Iterator, typename Predicate>
 bool all_of(Iterator first, Iterator last, Predicate pred) {
 	for (; first != last; ++first) {
@@ -59,14 +56,12 @@ void CommandUser::Execute() const {
 		throw std::runtime_error(message);
 	}
 
-	// validar se realname contém apenas espaços
 	if (::all_of(this->realName.begin(), this->realName.end(), ::isspace)) {
 		std::string message = ERR_NEEDMOREPARAMS("USER", "Real name cannot be empty");
 		this->client.SendMessage(message, *this->server);
 		throw std::runtime_error(message);
 	}
 
-	// validar se realname contém apenas letras e espaços
 	if (!::all_of(this->realName.begin(), this->realName.end(), isAlphaOrSpace)) {
 		std::string message = ERR_NEEDMOREPARAMS("USER", "Real name must contain only letters and spaces");
 		this->client.SendMessage(message, *this->server);

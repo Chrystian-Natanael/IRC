@@ -128,12 +128,6 @@ void CommandMode::Execute() const {
 
 	bool isUserInChannel = false;
 
-	// if (this->tokens.size() < 1) {
-	// 	std::string message = ERR_NEEDMOREPARAMS("MODE", "Not enough parameters provided.");
-	// 	this->client.SendMessage(message, *this->server);
-	// 	throw std::runtime_error(message);
-	// }
-
 	if (!channel) {
 		std::string message = ERR_NOSUCHCHANNEL(this->tokens[0]);
 		this->client.SendMessage(message, *this->server);
@@ -213,9 +207,6 @@ void CommandMode::ExecuteInvite(Channel *channel) const {
 		channel->SetInviteOnly(true);
 	else if (this->tokens[1][0] == '-')
 		channel->SetInviteOnly(false);
-
-	// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-	// channel->BroadcastAllMessage(message + this->tokens[1][0] + "i" "\r\n", this->server);
 }
 
 void CommandMode::ExecuteTopic(Channel *channel) const {
@@ -223,9 +214,6 @@ void CommandMode::ExecuteTopic(Channel *channel) const {
 		channel->SetBlockTopic(true);
 	else if (this->tokens[1][0] == '-')
 		channel->SetBlockTopic(false);
-
-	// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-	// channel->BroadcastAllMessage(message + this->tokens[1][0] + "t" "\r\n", this->server);
 }
 
 void CommandMode::ExecuteKey(Channel *channel) const {
@@ -237,9 +225,6 @@ void CommandMode::ExecuteKey(Channel *channel) const {
 		}
 		channel->SetPassword(this->tokens[2]);
 		channel->SetBlockChannel(true);
-
-		// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-		// channel->BroadcastAllMessage(message + "+k " + this->tokens[2] + "\r\n", this->server);
 	}
 	else if (this->tokens[1][0] == '-') {
 		if (!channel->ValidatePassword(this->tokens[2])) {
@@ -249,9 +234,6 @@ void CommandMode::ExecuteKey(Channel *channel) const {
 		}
 		channel->SetBlockChannel(false);
 		channel->SetPassword("");
-
-		// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-		// channel->BroadcastAllMessage(message + "-k\r\n", this->server);
 	}
 }
 
@@ -268,9 +250,6 @@ void CommandMode::ExecuteOperator(Channel *channel) const {
 		channel->AddOperator(client);
 	else if (this->tokens[1][0] == '-' && channel->isOperator(client))
 		channel->RemoveOperator(client);
-
-	// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-	// channel->BroadcastAllMessage(message + this->tokens[1] + " " + nickname + "\r\n", this->server);
 }
 
 void CommandMode::ExecuteLimit(Channel *channel) const {
@@ -281,9 +260,6 @@ void CommandMode::ExecuteLimit(Channel *channel) const {
 	}
 	if (this->tokens[1][0] == '-'){
 		channel->SetMaxUsers(-1);
-
-		// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-		// channel->BroadcastAllMessage(message + this->tokens[1] + "\r\n", this->server);
 		return;
 	}
 	if (this->tokens[1].find_first_not_of("0123456789") == std::string::npos) {
@@ -298,13 +274,5 @@ void CommandMode::ExecuteLimit(Channel *channel) const {
 		this->client.SendMessage(message, *this->server);
 		throw std::runtime_error(message);
 	}
-	// if (static_cast<size_t>(limit) < channel->GetUsers().size()) {
-	// 	std::string message = ERR_NEEDMOREPARAMS("MODE", "Limit cannot be less than the number of users in the channel.");
-	// 	this->client.SendMessage(message, *this->server);
-	// 	throw std::runtime_error(message);
-	// }
 	channel->SetMaxUsers(limit);
-
-	// std::string message = RPL_MODEBASE(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
-	// channel->BroadcastAllMessage(message + this->tokens[1] + " " + this->tokens[2] + "\r\n", this->server);
 }

@@ -322,6 +322,7 @@ TEST(testChannel, testJoinFullChannel) {
 
     channel->AddUser(&user1);
     channel->AddUser(&user2);
+    channel->SetMaxUsers(2);
 
     server.AddChannel("#canal_cheio", channel);
 

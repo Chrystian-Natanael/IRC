@@ -125,9 +125,6 @@ void Server::ListenSocket() {
 	this->fds.push_back(server_poll_fd);
 }
 
-
-// Initialize the server socket
-
 void	Server::InitSocket() {
 	this->server_socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->server_socket_fd == -1) {

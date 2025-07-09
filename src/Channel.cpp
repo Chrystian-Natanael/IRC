@@ -84,9 +84,9 @@ void	Channel::AddOperator(Client *user){
 }
 
 bool	Channel::AddUser(Client *user){
-	if (std::find(this->users.begin(), this->users.end(), user) != this->users.end())
-		return (1);
 	if (this->maxUsers > 0 && this->users.size() >= static_cast<size_t>(this->maxUsers))
+		return (0);
+	if (std::find(this->users.begin(), this->users.end(), user) != this->users.end())
 		return (0);
 	this->users.push_back(user);
 	return (1);
