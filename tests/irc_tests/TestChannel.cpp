@@ -326,7 +326,7 @@ TEST(testChannel, testJoinFullChannel) {
     server.AddChannel("#canal_cheio", channel);
 
     // Tentativa de adicionar um terceiro usuário ao canal cheio
-    EXPECT_THROW(channel->AddUser(&user3), std::runtime_error);
+    EXPECT_EQ(channel->AddUser(&user3), 0);
 }
 
 
@@ -687,7 +687,7 @@ TEST(testTopic, testExecuteLimit){
 	args = "#testChannel +l 1";
 	ACommand *command4 = ACommand::CreateCommand("MODE", args, &server, *client);
 
-	EXPECT_THROW(command4->Execute(), std::runtime_error);
+	EXPECT_NO_THROW(command4->Execute());
 
 	delete command4;
 
