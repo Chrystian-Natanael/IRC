@@ -26,20 +26,21 @@ class Server;
 
 /**
  * @brief Represents an IRC client connection
- * 
+ *
  * This class manages a single client connection to the IRC server,
  * handling authentication, message buffering, and communication.
  */
 class Client {
 private:
-	std::string	ip;             // Client IP address
-	std::string	user_name;      // Client username
-	std::string	nick_name;      // Client nickname
-	std::string	real_name;      // Client real name
-	std::string buffer_message;  // Message buffer for incomplete messages
-	std::vector<Channel *> 	channels; // Channels the client has joined
-	int			fd;             // Socket file descriptor
-	int			login_state;    // Current authentication state
+	std::string	ip;						// Client IP address
+	std::string	user_name;				// Client username
+	std::string	nick_name;				// Client nickname
+	std::string	real_name;				// Client real name
+	std::string buffer_message;			// Message buffer for incomplete messages
+	std::vector<Channel *> 	channels;	// Channels the client has joined
+	int			fd;						// Socket file descriptor
+	int			login_state;			// Current authentication state
+	bool		has_disconnected;		// Flag to indicate if the client has disconnected
 	Client(); // Default constructor (private)
 
 	// Static utility methods for message parsing
@@ -76,6 +77,8 @@ public:
 	void		SendMessage(const std::string& msg, Server& server);
 	void		PerformMessages(Server *server);
 
+	void SetQuit(bool quit);
+	bool HasDisconnected();
 	// Channel management
 	void AddChannel(Channel *channel);
 };

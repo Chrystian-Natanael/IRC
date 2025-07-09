@@ -13,7 +13,6 @@ void CommandQuit::Execute() const {
 	if (!this->args.empty()) {
 		quitMsg = this->args;
 	}
-
 	this->server->DisconnectClient(this->client, quitMsg);
-	throw "";
+	this->client.SetQuit(true);
 }
