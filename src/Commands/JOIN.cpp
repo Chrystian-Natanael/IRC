@@ -112,14 +112,10 @@ void CommandJoin::Execute() const {
 		}
 		this->client.AddChannel(channel);
 
-		// Primeira mensagem do JOIN
-		// Esse aqui precisa ser enviado para todos os usuários do canal
-		// std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + channel->GetName() + "\r\n";
 		std::string joinMsg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
 		channel->BroadcastAllMessage(joinMsg, this->server);
 		joinMsg.clear();
 
-		// Mensagem para falar o tópico
 		std::string topic;
 		if (channel->GetTopic().empty())
 		topic.append(RPL_NOTOPIC(this->client.GetNickName(), channel->GetName()));
@@ -176,14 +172,11 @@ void CommandJoin::Execute() const {
 		this->server->AddChannel(result.first, newChannel);
 		this->client.AddChannel(newChannel);
 
-		// primeira mensagem do JOIN
 		std::string joinMsg = ":" + this->client.GetNickName() + " JOIN " + newChannel->GetName() + "\r\n";
 
-		// mensagem para falar o tópico, no caso sempre vai estar vazio
 		joinMsg.append(RPL_NOTOPIC(this->client.GetNickName(), newChannel->GetName()));
 
 		joinMsg.append(RPL_NAMREPLY(this->client.GetNickName(), newChannel->GetName(), "@" + this->client.GetNickName() + " "));
-		// mensagem para falar todos os integrantes, no caso só tem o usuário que acabou de entrar
 		joinMsg.append(RPL_ENDOFNAMES(this->client.GetNickName(), newChannel->GetName()));
 
 		this->client.SendMessage(joinMsg, *this->server);

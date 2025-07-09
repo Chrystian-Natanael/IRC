@@ -22,10 +22,26 @@
 #include "Channel.hpp"
 #include "ACommand.hpp"
 
+/**
+ * @file Server.hpp
+ * @brief IRC server main class definition
+ * 
+ * This header defines the Server class which manages the entire IRC server,
+ * including client connections, channels, authentication, and message routing.
+ */
+
 extern int volatile g_server;
 
 class Channel;
 
+/**
+ * @brief Main IRC server class
+ * 
+ * The Server class is responsible for managing all aspects of the IRC server
+ * including client connections, channel management, authentication, and
+ * message processing. It handles socket operations, client registration,
+ * and command execution.
+ */
 class Server {
 private:
 	int									port;
@@ -78,11 +94,9 @@ private:
 
 	void	SetPass(const std::string& pass);
 
-	// ! FOR TESTS
 	void	SetFd(int fd);
 	void	AddChannel(const std::string& name, Channel* channel);
 	void	addClient(Client* client);
-
 };
 
 #endif

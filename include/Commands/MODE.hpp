@@ -6,6 +6,14 @@
 # include <string>
 # include "ACommand.hpp"
 
+/**
+ * @brief Command class for handling MODE IRC command
+ * 
+ * The MODE command is used to set or query channel modes and user modes.
+ * Supports various channel modes like +i (invite-only), +t (topic protection),
+ * +k (channel key), +l (user limit), and +o (operator privileges).
+ */
+
 class CommandMode : public ACommand {
 	private:
 		std::vector<std::string> tokens;

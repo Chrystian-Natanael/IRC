@@ -6,6 +6,14 @@
 # include "ACommand.hpp"
 # include "../Server.hpp"
 
+/**
+ * @brief Command class for handling QUIT IRC command
+ * 
+ * The QUIT command terminates a client's connection to the server.
+ * An optional quit message can be provided to explain the reason
+ * for disconnecting.
+ */
+
 class ACommand;
 
 class CommandQuit : public ACommand {

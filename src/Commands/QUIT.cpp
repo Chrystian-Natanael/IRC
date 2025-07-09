@@ -14,18 +14,6 @@ void CommandQuit::Execute() const {
 		quitMsg = this->args;
 	}
 
-
-	// std::vector<Channel*>& clientChannels = this->client.GetChannels();
-	// for (size_t i = 0; i < clientChannels.size(); ++i) {
-	//	 Channel *channel = clientChannels[i];
-	//	 std::string message = ":" + this->client.GetNickName() + " QUIT :" + quitMsg + "\r\n";
-	//	 channel->BroadcastAllMessage(message, this->server);
-	//	 channel->RemoveUser(&this->client);
-	//	 this->client.GetChannels().erase(
-	//		 std::remove(this->client.GetChannels().begin(), this->client.GetChannels().end(), channel),
-	//		 this->client.GetChannels().end()
-	//	 );
-	// }
 	this->server->DisconnectClient(this->client, quitMsg);
 	throw "";
 }
