@@ -155,12 +155,12 @@ void	Server::Poll() {
 		throw std::runtime_error("Error: failed to poll.");
 }
 
-void	Server::DisconnectClient(Client &client, std::string quitMsg)
+void	Server::DisconnectClient(Client &client)
 {
-	std::string message = "Client has quit the server.";
-	if (quitMsg.empty()) {
-		quitMsg = message;
-	}
+	std::string quitMsg = client.GetQuitMessage();
+
+	if (quitMsg.empty())
+		quitMsg = "Client has quit the server.";
 
 	std::vector<Channel*>& clientChannels = client.GetChannels();
 	for (size_t i = 0; i < clientChannels.size(); ++i) {
@@ -222,7 +222,7 @@ void	Server::ReceiveDataAllClients() {
 			try {
 				this->clients[i]->ReceiveData();
 			} catch (std::exception &e) {
-				this->DisconnectClient(*(this->clients[i]), "");
+				this->DisconnectClient(*(this->clients[i]));
 			}
 		}
 	}
@@ -235,7 +235,7 @@ void	Server::PerformMessages() {
 
 	for (size_t i = 0; i < this->clients.size(); i++) {
 		if (this->clients[i]->HasDisconnected()) {
-			this->DisconnectClient(*(this->clients[i]), "");
+			this->DisconnectClient(*(this->clients[i]));
 		}
 	}
 }

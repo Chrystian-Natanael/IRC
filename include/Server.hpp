@@ -25,7 +25,7 @@
 /**
  * @file Server.hpp
  * @brief IRC server main class definition
- * 
+ *
  * This header defines the Server class which manages the entire IRC server,
  * including client connections, channels, authentication, and message routing.
  */
@@ -36,7 +36,7 @@ class Channel;
 
 /**
  * @brief Main IRC server class
- * 
+ *
  * The Server class is responsible for managing all aspects of the IRC server
  * including client connections, channel management, authentication, and
  * message processing. It handles socket operations, client registration,
@@ -75,7 +75,7 @@ private:
 	void	ServerLoop();
 	void	AcceptNewClient();
 	void	ReceiveDataAllClients();
-	void	DisconnectClient(Client &client, std::string quitMsg);
+	void	DisconnectClient(Client &client);
 	void	PerformMessages();
 	void	Poll();
 

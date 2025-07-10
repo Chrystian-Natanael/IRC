@@ -41,6 +41,7 @@ private:
 	int			fd;						// Socket file descriptor
 	int			login_state;			// Current authentication state
 	bool		has_disconnected;		// Flag to indicate if the client has disconnected
+	std::string	quit_message;			// Message to send on client disconnection
 	Client(); // Default constructor (private)
 
 	// Static utility methods for message parsing
@@ -77,8 +78,10 @@ public:
 	void		SendMessage(const std::string& msg, Server& server);
 	void		PerformMessages(Server *server);
 
-	void SetQuit(bool quit);
-	bool HasDisconnected();
+	void		SetQuit(bool quit, const std::string& quitMessage);
+	std::string	GetQuitMessage() const;
+	bool		HasDisconnected();
+
 	// Channel management
 	void AddChannel(Channel *channel);
 };
