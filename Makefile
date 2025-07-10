@@ -2,7 +2,7 @@
 #                                   NAME                                         #
 #* ******************************************************************************#
 
-NAME = irc
+NAME = ircserv
 FILE_EXTENSION = .cpp
 .DEFAULT_GOAL := all
 .PHONY: all clean fclean re tests help
@@ -46,7 +46,26 @@ GTEST_DIR = tests/googletest
 #* ******************************************************************************#
 
 GTEST_REPO = git@github.com:google/googletest.git
-SRCS = $(shell find $(SRCS_PATH) -type f)
+SRCS = src/Server.cpp \
+			src/Client.cpp \
+			src/Commands/QUIT.cpp \
+			src/Commands/NOTICE.cpp \
+			src/Commands/LIST.cpp \
+			src/Commands/JOIN.cpp \
+			src/Commands/PRIVMSG.cpp \
+			src/Commands/USER.cpp \
+			src/Commands/BOT.cpp \
+			src/Commands/KICK.cpp \
+			src/Commands/WHO.cpp \
+			src/Commands/TOPIC.cpp \
+			src/Commands/PASS.cpp \
+			src/Commands/INVITE.cpp \
+			src/Commands/MODE.cpp \
+			src/Commands/PART.cpp \
+			src/Commands/NICK.cpp \
+			src/ACommand.cpp \
+			src/Channel.cpp \
+			src/main.cpp
 OBJS = $(SRCS:%$(FILE_EXTENSION)=$(BUILD_DIR)%.o)
 DEPS = $(OBJS:.o=.d)
 
@@ -90,7 +109,7 @@ define comp_exe
 	$(MKDIR) $(TARGET_DIR)
 	$(COMP_EXE)
 	printf "\n"
-	printf "$(GREEN)$(NAME) ->$(RESET)$(PURPLE) Is Ready in directory '$(TARGET_DIR)'\n$(RESET)"
+	printf "$(GREEN)$(NAME) ->$(RESET)$(PURPLE) Is Ready in './$(NAME)'\n$(RESET)"
 endef
 
 define help
@@ -118,6 +137,7 @@ $(BUILD_DIR)%.o: %$(FILE_EXTENSION)
 
 $(NAME): $(OBJS)
 	$(call comp_exe)
+	@cp $(TARGET_DIR)$(NAME) ./$(NAME)
 
 clean:
 	$(RM) $(BUILD_DIR)
@@ -136,7 +156,7 @@ tests: $(GTEST_DIR)
 	cd tests && cmake -B build && $(MAKE) -C build && ./build/run_tests
 
 run: all
-	./bin/$(NAME)
+	./$(NAME) 6667 batata
 help:
 	$(call help)
 
