@@ -17,9 +17,8 @@ std::pair<std::string, std::string> CommandJoin::ParseJoin(const std::string& pa
 		throw std::runtime_error(message);
 	}
 
-	if (channel[0] != '#' || channel.size() == 1) {
-		throw std::invalid_argument("O nome do canal deve começar com '#'.");
-	}
+	if (channel[0] != '#' || channel.size() == 1)
+		throw std::invalid_argument("The channel name must start with '#'.");
 	return std::make_pair(channel, password);
 }
 
@@ -47,7 +46,6 @@ void CommandJoin::Execute() const {
 			std::string Msg = RPL_JOIN(this->client.GetNickName(), this->client.GetUserName(), channel->GetName());
 			channel->BroadcastAllMessage(Msg, this->server);
 			Msg.clear();
-
 
 			std::string topic;
 			if (channel->GetTopic().empty())
@@ -159,11 +157,10 @@ void CommandJoin::Execute() const {
 
 		Msg.append(RPL_ENDOFNAMES(this->client.GetNickName(), channel->GetName()));
 		this->client.SendMessage(Msg, *this->server);
-	}
-	else {
+
+	} else {
 		Channel* newChannel = new Channel(result.first);
-		if (!result.second.empty())
-		{
+		if (!result.second.empty()){
 			newChannel->SetBlockChannel(true);
 			newChannel->SetPassword(result.second);
 		}
