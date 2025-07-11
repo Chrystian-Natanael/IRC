@@ -5,7 +5,7 @@
 Client::Client() {}
 
 Client::Client(int fd, std::string ip) :
-	ip(ip), fd(fd), login_state(PASSWORD), has_disconnected(false) {}
+	ip(ip), fd(fd), login_state(PASSWORD), has_disconnected(false), quit_message("") {}
 
 Client::~Client() {
 	if (this->fd != -1)
@@ -147,7 +147,7 @@ void	Client::SendMessage(const std::string& msg, Server& server) {
 	ssize_t	bytesSent = send(this->fd, msg.c_str(), msg.length(), 0);
 
 	if (bytesSent <= 0) {
-		server.DisconnectClient(*this, "");
+		server.DisconnectClient(*this);
 	}
 }
 
@@ -179,10 +179,15 @@ void	Client::PerformMessages(Server *server) {
 	}
 }
 
-void Client::SetQuit(bool quit) {
+void Client::SetQuit(bool quit, const std::string& quitMessage) {
 	this->has_disconnected = quit;
+	this->quit_message = quitMessage;
 }
 
 bool Client::HasDisconnected() {
 	return this->has_disconnected;
+}
+
+std::string Client::GetQuitMessage() const {
+	return this->quit_message;
 }
